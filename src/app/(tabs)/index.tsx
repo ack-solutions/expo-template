@@ -1,0 +1,39 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { Button, SafeScreen, ScreenHeader } from '@/components/ui';
+import { Colors, Spacing } from '@/constants/theme';
+import { TemplateCard } from '@/modules/template/components/template-card';
+import { useRouter } from 'expo-router';
+
+export default function HomeTemplateScreen() {
+  const router = useRouter();
+
+  return (
+    <SafeScreen bottomSafe={false}>
+      <ScreenHeader title="Home" />
+      <View style={styles.container}>
+        <TemplateCard
+          title="Reusable App Template"
+          description="Project-specific feature code has been removed. Keep this structure and build your next app on top of it."
+        >
+          <View style={styles.actions}>
+            <Button title="Open Data" onPress={() => router.push('/(tabs)/history')} variant="secondary" />
+            <Button title="Open Settings" onPress={() => router.push('/(tabs)/settings')} variant="outline" />
+          </View>
+        </TemplateCard>
+      </View>
+    </SafeScreen>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: Spacing.lg,
+    backgroundColor: Colors.background,
+  },
+  actions: {
+    gap: Spacing.sm,
+  },
+});
