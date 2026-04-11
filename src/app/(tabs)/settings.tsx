@@ -1,4 +1,4 @@
-import { AppCard, Button, ConfirmDialog, FeedbackDialog, SafeScreen, ScreenHeader } from '@/components/ui';
+import { AppCard, Button, ConfirmDialog, FeedbackDialog, SafeScreen, Toolbar } from '@/components/ui';
 import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
 import { AppSettingsService } from '@/database';
 import { useScreenActive } from '@/hooks/use-screen-active';
@@ -119,8 +119,8 @@ export default function SettingsScreen() {
   if (!settings) return null;
 
   return (
-    <SafeScreen bottomSafe={false}>
-      <ScreenHeader title="Settings" />
+    <SafeScreen topSafe={false} bottomSafe={false}>
+      <Toolbar title="Settings" />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}

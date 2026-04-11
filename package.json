@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "db:generate": "drizzle-kit generate",
     "generate:assets": "node ./scripts/generate-assets.mjs",
-    "eas:local": "eas build --local --profile dev --platform android",
+    "eas:local": "eas build --local --profile dev --platform android --output local-android.apk",
     "android:apk": "eas build --local --profile preview --platform android --output android.apk",
     "android:build": "eas build --local --profile production --platform android --output android.aab"
   },

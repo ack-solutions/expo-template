@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Button, SafeScreen, ScreenHeader } from '@/components/ui';
+import { Button, SafeScreen, Toolbar } from '@/components/ui';
 import { Colors, Spacing } from '@/constants/theme';
 import { TemplateCard } from '@/modules/template/components/template-card';
 import { useRouter } from 'expo-router';
@@ -10,8 +10,8 @@ export default function HomeTemplateScreen() {
   const router = useRouter();
 
   return (
-    <SafeScreen bottomSafe={false}>
-      <ScreenHeader title="Home" />
+    <SafeScreen topSafe={false} bottomSafe={false}>
+      <Toolbar title="Home" />
       <View style={styles.container}>
         <TemplateCard
           title="Reusable App Template"

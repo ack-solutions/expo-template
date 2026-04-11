@@ -18,8 +18,9 @@ interface SafeScreenProps {
 /**
  * A reusable safe-area wrapper for screens.
  *
- * - **Tab screens** → use with both `topSafe` and `bottomSafe` (defaults).
- * - **Stack screens** → use with `topSafe={false}` since the native header
+ * - **Tab screens** → often use `<Toolbar />` (applies top inset) with `topSafe={false}`,
+ *   and set `bottomSafe` as needed for the tab bar.
+ * - **Stack screens with native header** → use `topSafe={false}` when the native header
  *   already accounts for the status bar.
  *
  * Handles iOS notch, Android status bar, and bottom home indicator on both platforms.

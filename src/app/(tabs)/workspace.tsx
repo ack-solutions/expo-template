@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { SafeScreen, ScreenHeader } from '@/components/ui';
+import { SafeScreen, Toolbar } from '@/components/ui';
 import { Colors, Spacing } from '@/constants/theme';
 import { TemplateCard } from '@/modules/template/components/template-card';
 
 export default function WorkspaceTemplateScreen() {
   return (
-    <SafeScreen bottomSafe={false}>
-      <ScreenHeader title="Workspace" />
+    <SafeScreen topSafe={false} bottomSafe={false}>
+      <Toolbar title="Workspace" />
       <View style={styles.container}>
         <TemplateCard
           title="Workspace tab template"
