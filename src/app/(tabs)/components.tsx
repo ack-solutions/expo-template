@@ -13,6 +13,7 @@ import {
   AppCheckbox,
   AppInput,
   AppPressableCard,
+  AppSelect,
   AppSwitch,
   AppText,
   Avatar,
@@ -64,6 +65,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function ComponentsScreen() {
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
+  const [selectValue, setSelectValue] = useState('');
+  const [selectLargeValue, setSelectLargeValue] = useState('');
   const [checked, setChecked] = useState(false);
   const [switchOn, setSwitchOn] = useState(false);
   const [radioValue, setRadioValue] = useState('option_a');
@@ -283,6 +286,125 @@ export default function ComponentsScreen() {
             placeholder="Search items…"
             onClear={() => setSearchValue('')}
           />
+        </Section>
+
+        <Divider />
+
+        {/* ── Select ──────────────────────────────────────────────────────── */}
+        <Section title="Select">
+          <AppText variant="captionMedium" color="secondary">
+            Small list — no search bar (auto-disabled when 5 or fewer options)
+          </AppText>
+          <AppSelect
+            label="Priority"
+            value={selectValue}
+            onChange={(opt) => setSelectValue(opt.value)}
+            placeholder="Choose priority"
+            options={[
+              { label: 'Low', value: 'low', description: 'Non-urgent, handle when possible' },
+              { label: 'Medium', value: 'medium', description: 'Normal priority' },
+              { label: 'High', value: 'high', description: 'Address as soon as possible' },
+              { label: 'Critical', value: 'critical', description: 'Drop everything' },
+            ]}
+          />
+
+          <AppText variant="captionMedium" color="secondary">
+            Large list — search bar auto-enabled (more than 5 options)
+          </AppText>
+          <AppSelect
+            label="Timezone"
+            value={selectLargeValue}
+            onChange={(opt) => setSelectLargeValue(opt.value)}
+            placeholder="Select timezone"
+            searchPlaceholder="Search timezones…"
+            sheetTitle="Select timezone"
+            options={TIMEZONE_OPTIONS}
+          />
+
+          <AppText variant="captionMedium" color="secondary">
+            Dialog mode — opens centered picker (with optional search)
+          </AppText>
+          <Stack gap="md">
+            <AppSelect
+              label="Category (dialog)"
+              mode="dialog"
+              value={selectValue}
+              onChange={(opt) => setSelectValue(opt.value)}
+              placeholder="Select category"
+              searchable={false}
+              options={[
+                { label: 'Product', value: 'product' },
+                { label: 'Service', value: 'service' },
+                { label: 'Billing', value: 'billing' },
+                { label: 'Support', value: 'support' },
+              ]}
+            />
+            <AppSelect
+              label="Timezone (dialog + search)"
+              mode="dialog"
+              value={selectLargeValue}
+              onChange={(opt) => setSelectLargeValue(opt.value)}
+              placeholder="Select timezone"
+              searchable
+              searchPlaceholder="Search timezones…"
+              sheetTitle="Select timezone"
+              options={TIMEZONE_OPTIONS}
+            />
+          </Stack>
+
+          <AppText variant="captionMedium" color="secondary">Variants and sizes</AppText>
+          <Stack gap="md">
+            <AppSelect
+              label="Filled variant"
+              variant="filled"
+              value={selectValue}
+              onChange={(opt) => setSelectValue(opt.value)}
+              placeholder="Choose one"
+              options={[
+                { label: 'Option A', value: 'a' },
+                { label: 'Option B', value: 'b' },
+                { label: 'Option C', value: 'c' },
+              ]}
+            />
+            <AppSelect
+              label="Small — 40 pt"
+              size="sm"
+              value={selectValue}
+              onChange={(opt) => setSelectValue(opt.value)}
+              placeholder="sm"
+              options={[{ label: 'One', value: '1' }, { label: 'Two', value: '2' }]}
+            />
+            <AppSelect
+              label="Large — 56 pt"
+              size="lg"
+              value={selectValue}
+              onChange={(opt) => setSelectValue(opt.value)}
+              placeholder="lg"
+              options={[{ label: 'One', value: '1' }, { label: 'Two', value: '2' }]}
+            />
+            <AppSelect
+              label="With error"
+              value=""
+              onChange={() => {}}
+              error="Please select an option"
+              options={[{ label: 'One', value: '1' }]}
+            />
+            <AppSelect
+              label="With hint"
+              value={selectValue}
+              onChange={(opt) => setSelectValue(opt.value)}
+              hint="This setting can be changed later"
+              placeholder="Choose one"
+              options={[{ label: 'Option A', value: 'a' }, { label: 'Option B', value: 'b' }]}
+            />
+            <AppSelect
+              label="Disabled"
+              value="a"
+              onChange={() => {}}
+              disabled
+              options={[{ label: 'Option A', value: 'a' }]}
+            />
+          </Stack>
         </Section>
 
         <Divider />
@@ -687,6 +809,40 @@ export default function ComponentsScreen() {
     </SafeScreen>
   );
 }
+
+// ─── Demo data ────────────────────────────────────────────────────────────────
+
+const TIMEZONE_OPTIONS = [
+  { label: 'UTC', value: 'UTC', description: 'Coordinated Universal Time' },
+  { label: 'America/New_York', value: 'America/New_York', description: 'Eastern Time (ET)' },
+  { label: 'America/Chicago', value: 'America/Chicago', description: 'Central Time (CT)' },
+  { label: 'America/Denver', value: 'America/Denver', description: 'Mountain Time (MT)' },
+  { label: 'America/Los_Angeles', value: 'America/Los_Angeles', description: 'Pacific Time (PT)' },
+  { label: 'America/Anchorage', value: 'America/Anchorage', description: 'Alaska Time' },
+  { label: 'Pacific/Honolulu', value: 'Pacific/Honolulu', description: 'Hawaii Time' },
+  { label: 'Europe/London', value: 'Europe/London', description: 'Greenwich Mean Time (GMT)' },
+  { label: 'Europe/Paris', value: 'Europe/Paris', description: 'Central European Time (CET)' },
+  { label: 'Europe/Berlin', value: 'Europe/Berlin', description: 'Central European Time (CET)' },
+  { label: 'Europe/Helsinki', value: 'Europe/Helsinki', description: 'Eastern European Time (EET)' },
+  { label: 'Europe/Istanbul', value: 'Europe/Istanbul', description: 'Turkey Time (TRT)' },
+  { label: 'Asia/Dubai', value: 'Asia/Dubai', description: 'Gulf Standard Time (GST)' },
+  { label: 'Asia/Karachi', value: 'Asia/Karachi', description: 'Pakistan Standard Time (PKT)' },
+  { label: 'Asia/Kolkata', value: 'Asia/Kolkata', description: 'India Standard Time (IST)' },
+  { label: 'Asia/Dhaka', value: 'Asia/Dhaka', description: 'Bangladesh Standard Time (BST)' },
+  { label: 'Asia/Bangkok', value: 'Asia/Bangkok', description: 'Indochina Time (ICT)' },
+  { label: 'Asia/Singapore', value: 'Asia/Singapore', description: 'Singapore Time (SGT)' },
+  { label: 'Asia/Shanghai', value: 'Asia/Shanghai', description: 'China Standard Time (CST)' },
+  { label: 'Asia/Tokyo', value: 'Asia/Tokyo', description: 'Japan Standard Time (JST)' },
+  { label: 'Asia/Seoul', value: 'Asia/Seoul', description: 'Korea Standard Time (KST)' },
+  { label: 'Australia/Sydney', value: 'Australia/Sydney', description: 'Australian Eastern Time (AET)' },
+  { label: 'Australia/Perth', value: 'Australia/Perth', description: 'Australian Western Time (AWT)' },
+  { label: 'Pacific/Auckland', value: 'Pacific/Auckland', description: 'New Zealand Time (NZT)' },
+  { label: 'America/Sao_Paulo', value: 'America/Sao_Paulo', description: 'Brasilia Time (BRT)' },
+  { label: 'America/Buenos_Aires', value: 'America/Buenos_Aires', description: 'Argentina Time (ART)' },
+  { label: 'Africa/Cairo', value: 'Africa/Cairo', description: 'Eastern European Time (EET)' },
+  { label: 'Africa/Lagos', value: 'Africa/Lagos', description: 'West Africa Time (WAT)' },
+  { label: 'Africa/Nairobi', value: 'Africa/Nairobi', description: 'East Africa Time (EAT)' },
+];
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 

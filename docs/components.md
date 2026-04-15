@@ -99,6 +99,7 @@ All interactive components meet the **44 pt minimum touch target** guideline.
 | [AppText](#apptext) | `app-text.tsx` | Typography |
 | [Button](#button) | `button.tsx` | Actions |
 | [AppInput](#appinput) | `app-input.tsx` | Forms |
+| [AppSelect](#appselect) | `app-select.tsx` | Forms |
 | [SearchBar](#searchbar) | `search-bar.tsx` | Forms |
 | [AppCheckbox](#appcheckbox) | `app-checkbox.tsx` | Forms |
 | [AppSwitch](#appswitch) | `app-switch.tsx` | Forms |
@@ -331,6 +332,99 @@ const { register, formState } = useForm();
   keyboardType="decimal-pad"
   value={amount}
   onChangeText={setAmount}
+/>
+```
+
+---
+
+## AppSelect
+
+Styled select field that opens a searchable bottom sheet. The trigger is visually identical to `AppInput` (same label, error, hint, variant, size system).
+
+- Sheet slides up with a Reanimated spring; backdrop fades in.
+- `searchable` shows a `SearchBar` inside the sheet for filtering options.
+  Auto-enabled when `options.length > 5`.
+- Empty-state is shown when the search query returns no results.
+- Option rows are 52 pt tall (touch-target compliant).
+- Chevron icon indicates open/closed state.
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `options` | `SelectOption[]` | — | All available options |
+| `value` | `string` | — | Currently selected value |
+| `onChange` | `(option: SelectOption) => void` | — | Called with the full option object on select |
+| `label` | `string` | — | Label above the trigger |
+| `placeholder` | `string` | `'Select an option'` | Shown when no value is selected |
+| `error` | `string` | — | Error message (puts field in error state) |
+| `hint` | `string` | — | Helper text below field |
+| `variant` | `SelectVariant` | `'outlined'` | Visual style of the trigger |
+| `size` | `SelectSize` | `'md'` | Height of the trigger (40 / 48 / 56 pt) |
+| `disabled` | `boolean` | `false` | Prevents opening the sheet |
+| `searchable` | `boolean` | auto (`options.length > 5`) | Show search bar in the sheet |
+| `sheetTitle` | `string` | falls back to `label` | Title shown at the top of the sheet |
+| `searchPlaceholder` | `string` | `'Search…'` | Placeholder for the search bar |
+| `containerStyle` | `ViewStyle` | — | Outer container style override |
+
+### `SelectOption`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `label` | `string` | Display text |
+| `value` | `string` | Unique identifier stored on selection |
+| `description` | `string` | Optional secondary text shown below the label |
+| `disabled` | `boolean` | Dims the row and prevents selection |
+
+### Example
+
+```tsx
+// Basic — auto search disabled (4 options)
+const [priority, setPriority] = useState('');
+
+<AppSelect
+  label="Priority"
+  value={priority}
+  onChange={(opt) => setPriority(opt.value)}
+  placeholder="Choose priority"
+  options={[
+    { label: 'Low',      value: 'low',      description: 'Handle when possible' },
+    { label: 'Medium',   value: 'medium',   description: 'Normal priority' },
+    { label: 'High',     value: 'high',     description: 'Address soon' },
+    { label: 'Critical', value: 'critical', description: 'Drop everything' },
+  ]}
+/>
+
+// Large searchable list — search bar auto-enabled (> 5 options)
+<AppSelect
+  label="Timezone"
+  value={tz}
+  onChange={(opt) => setTz(opt.value)}
+  placeholder="Select timezone"
+  searchPlaceholder="Search timezones…"
+  sheetTitle="Select timezone"
+  options={timezoneOptions}   // can be hundreds of options
+/>
+
+// With React Hook Form
+const { watch, setValue, formState: { errors } } = useForm();
+
+<AppSelect
+  label="Category"
+  value={watch('category')}
+  onChange={(opt) => setValue('category', opt.value, { shouldValidate: true })}
+  error={errors.category?.message}
+  options={categoryOptions}
+/>
+
+// Filled variant, lg size
+<AppSelect
+  label="Status"
+  variant="filled"
+  size="lg"
+  value={status}
+  onChange={(opt) => setStatus(opt.value)}
+  options={statusOptions}
 />
 ```
 

@@ -17,6 +17,8 @@ export { Button } from './button';
 // ─── Inputs & Forms ───────────────────────────────────────────────────────────
 export { AppInput } from './app-input';
 export type { InputVariant, InputSize } from './app-input';
+export { AppSelect } from './app-select';
+export type { SelectOption, SelectVariant, SelectSize } from './app-select';
 export { SearchBar } from './search-bar';
 export { AppCheckbox } from './app-checkbox';
 export { AppSwitch } from './app-switch';
