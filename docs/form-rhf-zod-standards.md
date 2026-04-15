@@ -64,7 +64,7 @@ import { z } from 'zod';
 
 export const profileSchema = z.object({
   fullName: z.string().min(1, { message: 'validation.fullName.required' }),
-  email: z.email({ message: 'validation.email.invalid' }),
+  email: z.string().email({ message: 'validation.email.invalid' }),
   category: z.string().min(1, { message: 'validation.category.required' }),
 });
 

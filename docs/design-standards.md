@@ -1,6 +1,6 @@
-# Design standards
+# Design Standards
 
-This document defines the design system standards for the project.
+This document defines the design system standards for this Expo / React Native template and any app built from it.
 
 The goal is to keep the UI clean, modern, consistent, reusable, and easy to scale across the application.
 
@@ -20,16 +20,16 @@ The goal is to keep the UI clean, modern, consistent, reusable, and easy to scal
 
 ### Rules
 
-- Use our as the base for common UI components.
-- Make proper layout, spacing, responsiveness, and component styling.
+- Use shared UI from `src/components/ui/` as the base for common patterns (see `docs/components.md`).
+- Apply consistent layout, spacing, responsiveness, and component styling using theme tokens.
 - Do not overuse decorative effects or animations.
 - Prefer simple and maintainable UI over flashy UI.
 
 ---
 
-## 3. General Visual Style
+## 2. General Visual Style
 
-The portal should feel:
+The app should feel:
 
 - modern
 - clean
@@ -48,11 +48,11 @@ The portal should feel:
 
 ---
 
-## 4. Color Rules
+## 3. Color Rules
 
 - Do not hardcode colors directly in feature components.
-- Always use theme-based (design tokens).
-- Every color token must have both a light and dark variant defined in file.
+- Always use theme-based design tokens (`src/constants/theme.ts`).
+- Every semantic color must work in both light and dark themes (token pairs or resolved theme values).
 - Keep color usage consistent across the application.
 - Use color with purpose, not decoration.
 
@@ -66,7 +66,7 @@ The portal should feel:
 
 ---
 
-## 5. Typography Rules
+## 4. Typography Rules
 
 - Keep typography simple and readable.
 - Use a consistent heading and text scale across the project.
@@ -75,7 +75,7 @@ The portal should feel:
 
 ---
 
-## 6. Spacing Rules
+## 5. Spacing Rules
 
 - Use consistent spacing throughout the project.
 - Prefer standard spacing steps instead of random values.
@@ -90,7 +90,7 @@ The portal should feel:
 
 ---
 
-## 7. Layout Rules
+## 6. Layout Rules
 
 - Build responsive layouts by default that support all devices.
 
@@ -103,7 +103,7 @@ The portal should feel:
 
 ---
 
-## 8. Component Standards
+## 7. Component Standards
 
 - Reuse shared UI components wherever possible.
 - Use standard variants for buttons, inputs, cards, badges, dialogs, and tables.
@@ -129,7 +129,7 @@ The portal should feel:
 
 ---
 
-## 9. Button Rules
+## 8. Button Rules
 
 - Use buttons consistently by purpose.
 - Keep a clear hierarchy between primary, secondary, ghost, and destructive actions.
@@ -138,7 +138,7 @@ The portal should feel:
 
 ---
 
-## 10. Form Design Rules
+## 9. Form Design Rules
 
 - Forms must be clean, consistent, and easy to complete.
 - Use shared field components across the project.
@@ -161,7 +161,7 @@ The portal should feel:
 
 ---
 
-## 11. Card and Surface Rules
+## 10. Card and Surface Rules
 
 - Use cards and surfaces consistently for grouped content.
 - Keep surface styling subtle and clean.
@@ -175,7 +175,7 @@ The portal should feel:
 
 ---
 
-## 13. Status and Feedback Rules
+## 11. Status and Feedback Rules
 
 Use standard visual treatment for:
 
@@ -194,7 +194,7 @@ Use standard visual treatment for:
 
 ---
 
-## 14. Dialog and Overlay Rules
+## 12. Dialog and Overlay Rules
 
 - Use dialogs, drawers, dropdowns, and popovers consistently.
 - Use overlays only when they improve the user flow.
@@ -208,7 +208,7 @@ Use standard visual treatment for:
 
 ---
 
-## 15. Icons and Visual Elements
+## 13. Icons and Visual Elements
 
 - Use icons only when they improve clarity.
 - Keep icon usage consistent across navigation, actions, and statuses.
@@ -222,7 +222,7 @@ Use standard visual treatment for:
 
 ---
 
-## 16. Motion and Effects
+## 14. Motion and Effects
 
 - Motion should be subtle and purposeful.
 - Prefer small transition and interaction feedback.
@@ -230,14 +230,14 @@ Use standard visual treatment for:
 
 ### Rules
 
-- Use Magic UI carefully and only where it adds value.
+- Use **react-native-reanimated** for interactive motion (see `docs/components.md` — Animation System). Avoid the legacy `Animated` API for new work.
 - Keep transitions smooth and minimal.
 - Do not make animations a distraction.
 - Prioritize performance and usability over effects.
 
 ---
 
-## 17. Dark and Light Theme Rules
+## 15. Dark and Light Theme Rules
 
 The app must support light, dark, and system themes on both mobile (React Native) and web.
 
@@ -254,7 +254,7 @@ The app must support light, dark, and system themes on both mobile (React Native
 - **Web**: respect `prefers-color-scheme` and apply theme before first paint when possible.
 - **React Native**: use system color scheme APIs and update screens/components reactively.
 
-## 18. QA Checklists
+## 16. QA Checklists
 
 ### i18n Checklist
 
@@ -285,21 +285,21 @@ The app must support light, dark, and system themes on both mobile (React Native
 
 ---
 
-## 19. Responsive Design Rules
+## 17. Responsive Design Rules
 
-- All screens must work well on common desktop, tablet, and mobile sizes.
-- Build mobile-friendly layouts even if desktop is the primary experience.
+- All screens must work well on common phone, tablet, and desktop (web) sizes.
+- Build mobile-friendly layouts; treat small screens as the default constraint.
 
 ### Rules
 
-- Avoid horizontal overflow unless we need special as feature.
+- Avoid horizontal overflow unless horizontal scrolling is an intentional feature.
 - Keep actions accessible on smaller screens.
 - Stack content cleanly when space becomes limited.
 - Tables and dense data areas should degrade gracefully on smaller screens.
 
 ---
 
-## 21. Reuse Rules
+## 18. Reuse Rules
 
 Before creating a new UI pattern, check whether the design system already has a usable solution.
 
@@ -313,7 +313,7 @@ Do not create duplicate visual patterns for the same problem.
 
 ---
 
-## 22. Things to Avoid
+## 19. Things to Avoid
 
 - hardcoded colors in feature components
 - hardcoded user-facing text in components
@@ -329,7 +329,7 @@ Do not create duplicate visual patterns for the same problem.
 
 ---
 
-## 23. Definition of Good UI in This Project
+## 20. Definition of Good UI in This Project
 
 Good UI in this project should be:
 
@@ -347,7 +347,7 @@ Good UI in this project should be:
 
 ---
 
-## 24. Final Rule
+## 21. Final Rule
 
 When in doubt:
 
@@ -357,4 +357,4 @@ When in doubt:
 - prioritize clarity
 - avoid visual noise
 - design for consistency first
-- verify all four combinations: Dark, Light,
+- verify **light and dark** themes and **LTR and RTL** on representative screens before shipping

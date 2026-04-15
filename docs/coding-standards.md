@@ -24,7 +24,7 @@ The goal is to keep the codebase clean, consistent, reusable, scalable, and easy
 
 Use the approved project stack only:
 
-- React native expo
+- React Native (Expo)
 - TypeScript
 - React Native
 - React Hook Form
@@ -109,12 +109,13 @@ Examples:
 
 ### Hook Names
 
-- Always start custom hooks with `use`.
+- Hook **files** use kebab-case with a `use-` prefix (e.g. `use-customer-orders.ts`).
+- Exported hook **functions** use camelCase and start with `use` (e.g. `useCustomerOrders`).
 
 Examples:
 
-- `use-auth-user`
-- `use-customer-orders`
+- `use-auth-user.ts` → `useAuthUser`
+- `use-customer-orders.ts` → `useCustomerOrders`
 
 ### Service Names
 
@@ -307,12 +308,13 @@ Do not scatter global logic across unrelated components.
 
 ## 12. Styling Standards
 
-- Use stayling in a maintainable and consistent way.
+- Use styling in a maintainable and consistent way.
 - Reuse shared UI patterns and theme styles.
 - Do not hardcode colors directly when theme-based styles should be used.
 - Keep spacing, layout, and component styling consistent.
 - Prefer reusable style patterns over repeated inline utility combinations when appropriate.
-- Use stayling logical properties (`ps-*`, `pe-*`, `ms-*`, `me-*`, `start-*`, `end-*`, `text-start`, `text-end`) instead of physical directional properties (`pl-*`, `pr-*`, `ml-*`, `mr-*`, `left-*`, `right-*`, `text-left`, `text-right`) so layouts work in both LTR and RTL.
+- On **web**, use CSS logical properties (`padding-inline-*`, `margin-inline-*`, `inset-inline-*`, `text-start`, `text-end`) instead of physical left/right-only properties so layouts work in both LTR and RTL.
+- On **native**, follow the same intent: prefer start/end and theme-aware layout; avoid hard-coded left/right alignment where it breaks RTL (see `docs/design-standards.md`).
 - Ensure all color usage references theme tokens (`bg-background`, `text-foreground`, `bg-primary`, etc.) so both light and dark themes render correctly.
 
 The UI should be:
@@ -376,7 +378,7 @@ Important project documentation should remain aligned with implementation.
 
 ---
 
-## 18. Things to Avoid
+## 16. Things to Avoid
 
 - duplicate code
 - hardcoded colors
@@ -395,7 +397,7 @@ Important project documentation should remain aligned with implementation.
 
 ---
 
-## 19. Definition of Good Code in This Project
+## 17. Definition of Good Code in This Project
 
 Good code in this project should be:
 

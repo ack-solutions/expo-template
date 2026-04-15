@@ -188,10 +188,22 @@ npx expo export --platform android --platform ios
 
 ---
 
-## 7) Engineering docs
+## 7) Documentation index
 
-- `docs/coding-standards.md` — global coding conventions
-- `docs/components.md` — UI component APIs and examples
-- `docs/form-rhf-zod-standards.md` — required form architecture (RHF + Zod)
-- `docs/UPDATES.md` — OTA update strategy (EAS Update + store prompt)
+Authoritative standards for this **Expo React Native** template. Read these before adding features or changing architecture.
+
+| Document | Purpose |
+|----------|---------|
+| [`docs/project-overview.md`](./docs/project-overview.md) | Product scope and constraints — **fill in when forking** for a real app |
+| [`docs/coding-standards.md`](./docs/coding-standards.md) | TypeScript, structure, naming, forms, API, styling, quality |
+| [`docs/design-standards.md`](./docs/design-standards.md) | Visual system, themes, RTL, motion, QA checklists |
+| [`docs/components.md`](./docs/components.md) | UI kit reference (`src/components/ui/`) |
+| [`docs/form-rhf-zod-standards.md`](./docs/form-rhf-zod-standards.md) | React Hook Form + Zod patterns |
+| [`docs/api-standards.md`](./docs/api-standards.md) | Services, Axios, React Query, errors |
+| [`docs/translation-standards.md`](./docs/translation-standards.md) | Copy, keys, and locale rules |
+| [`docs/app-updates.md`](./docs/app-updates.md) | EAS Update vs store releases |
+| [`docs/CLAUDE.md`](./docs/CLAUDE.md) | Quick agent / contributor context and stack |
+| [`docs/AGENTS.md`](./docs/AGENTS.md) | Agent workflow and constraints |
+
+**Single source of truth:** Do not duplicate long rule lists across files; link to the document above that owns the topic.
 

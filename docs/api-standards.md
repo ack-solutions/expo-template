@@ -13,7 +13,7 @@ This document defines API calls and server-state conventions for the consistent 
 5. [Feature services](#5-feature-services)
 6. [Request and response typing](#6-request-and-response-typing)
 7. [React Query](#7-react-query)
-8. [Component usage](#8-component-usage)
+8. [UI layer usage](#8-ui-layer-usage)
 9. [Error handling](#9-error-handling)
 10. [Authentication](#10-authentication)
 11. [File organization](#11-file-organization)
@@ -131,15 +131,26 @@ export class CustomerService extends Service {
 
 ---
 
-## 7. Component Usage
+## 7. React Query
 
-- Do not import Axios or `instanceApi` in UI files.
-- Do not embed raw endpoint paths in components.
-- Handle loading, empty, and error states in the UI; keep HTTP execution in services.
+- Use **TanStack React Query** for server state (fetching, caching, mutations, invalidation).
+- Keep query and mutation definitions in dedicated hooks or colocated modules (e.g. `use-orders-query.ts`, `use-update-profile-mutation.ts`), not inside presentational components.
+- Call **service methods** from `queryFn` / `mutationFn`; do not duplicate HTTP logic in components.
+- Prefer consistent patterns for loading and error handling (see `docs/coding-standards.md`, React Query standards).
+
+If the app does not yet include React Query, add `@tanstack/react-query` and wrap the root layout with `QueryClientProvider` before using this pattern.
 
 ---
 
-## 8. Error Handling
+## 8. UI Layer Usage
+
+- Do not import Axios or `instanceApi` in screen or leaf UI files.
+- Do not embed raw endpoint paths in components.
+- Handle loading, empty, and error states in the UI; keep HTTP execution in services and query/mutation hooks.
+
+---
+
+## 9. Error Handling
 
 - Handle HTTP details near the API layer; show user-friendly messages in the UI.
 - Do not surface raw technical errors to users unless intentional.

@@ -124,11 +124,15 @@ src/
 
 ## Canonical standards (single source of truth)
 
+- Project overview (fill when forking): `docs/project-overview.md`
 - Component reference: `docs/components.md`
 - Coding standards: `docs/coding-standards.md`
 - Form standards (RHF + Zod): `docs/form-rhf-zod-standards.md`
 - API standards: `docs/api-standards.md`
 - Design standards: `docs/design-standards.md`
+- Translation / copy: `docs/translation-standards.md`
+- App updates (EAS / store): `docs/app-updates.md`
+- Docs index: `docs/README.md`
 
 These files are authoritative for implementation rules.
 
