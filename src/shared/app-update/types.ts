@@ -42,6 +42,13 @@ export type UpdateEvaluation = {
 /** Async loader so local config today can become a remote fetch tomorrow without changing consumers. */
 export type AppUpdateConfigLoader = () => Promise<AppUpdateConfig | null>;
 
+/** Result of the EAS Update / expo-updates pass (JS bundle OTA). */
+export type AppUpdateOtaState = {
+  status: 'idle' | 'checking' | 'up_to_date' | 'downloaded' | 'skipped' | 'error';
+  skipReason: string | null;
+  error: string | null;
+};
+
 export type AppUpdateContextValue = {
   isChecking: boolean;
   lastError: string | null;
@@ -51,4 +58,6 @@ export type AppUpdateContextValue = {
   isOpeningStore: boolean;
   openStore: () => Promise<void>;
   recheck: () => Promise<void>;
+  /** EAS Update (expo-updates) status for the current session. */
+  ota: AppUpdateOtaState;
 };

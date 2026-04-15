@@ -4,7 +4,9 @@ import { Linking, Platform, StyleSheet, View } from 'react-native';
 
 import { evaluateAppUpdate } from './app-update.service';
 import { loadLocalAppUpdateConfig } from './config';
-import type { AppUpdateConfigLoader, AppUpdateContextValue, UpdateInfo } from './types';
+import { runEasOtaCheck } from './eas-ota';
+import type { AppUpdateConfigLoader, AppUpdateContextValue, AppUpdateOtaState, UpdateInfo } from './types';
+import { UPDATE_STRATEGY } from './update-strategy';
 import { UpdateDialog } from './update-dialog';
 import { AppUpdateContext } from './use-app-update';
 
@@ -39,12 +41,19 @@ function buildStoreUrl(info: UpdateInfo | null, platform: 'ios' | 'android' | 'w
   return null;
 }
 
+const initialOta: AppUpdateOtaState = {
+  status: 'idle',
+  skipReason: null,
+  error: null,
+};
+
 export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderProps) {
   const [isChecking, setIsChecking] = useState(true);
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
   const [isOpeningStore, setIsOpeningStore] = useState(false);
   const [softDismissed, setSoftDismissed] = useState(false);
+  const [ota, setOta] = useState<AppUpdateOtaState>(initialOta);
 
   const resolveLoader = useCallback<() => AppUpdateConfigLoader>(() => {
     return loadConfig ?? loadLocalAppUpdateConfig;
@@ -58,7 +67,6 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
 
     try {
       const currentVersion = Application.nativeApplicationVersion ?? null;
-      console.log('currentVersion', currentVersion);
       const evaluation = await evaluateAppUpdate({
         currentVersion,
         platform: nativePlatform,
@@ -76,7 +84,42 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
   }, [nativePlatform, resolveLoader]);
 
   useEffect(() => {
-    void runCheck();
+    let cancelled = false;
+
+    async function boot() {
+      if (UPDATE_STRATEGY.easOta.enabled) {
+        setOta({ status: 'checking', skipReason: null, error: null });
+        const result = await runEasOtaCheck(UPDATE_STRATEGY.easOta);
+        if (cancelled) return;
+
+        if (result.kind === 'skipped') {
+          setOta({ status: 'skipped', skipReason: result.reason, error: null });
+        } else if (result.kind === 'error') {
+          setOta({ status: 'error', skipReason: null, error: result.message });
+        } else if (result.kind === 'up_to_date') {
+          setOta({ status: 'up_to_date', skipReason: null, error: null });
+        } else if (result.kind === 'downloaded') {
+          setOta({ status: 'downloaded', skipReason: null, error: null });
+          if (result.reloaded) {
+            return;
+          }
+        }
+      } else {
+        setOta({ status: 'skipped', skipReason: 'disabled_in_config', error: null });
+      }
+
+      if (UPDATE_STRATEGY.storeVersionPrompt.enabled) {
+        await runCheck();
+      } else {
+        setIsChecking(false);
+      }
+    }
+
+    void boot();
+
+    return () => {
+      cancelled = true;
+    };
   }, [runCheck]);
 
   const isForceUpdate = false;
@@ -105,7 +148,28 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
   }, [nativePlatform, updateInfo]);
 
   const recheck = useCallback(async () => {
-    await runCheck();
+    if (UPDATE_STRATEGY.easOta.enabled) {
+      setOta({ status: 'checking', skipReason: null, error: null });
+      const result = await runEasOtaCheck(UPDATE_STRATEGY.easOta);
+      if (result.kind === 'skipped') {
+        setOta({ status: 'skipped', skipReason: result.reason, error: null });
+      } else if (result.kind === 'error') {
+        setOta({ status: 'error', skipReason: null, error: result.message });
+      } else if (result.kind === 'up_to_date') {
+        setOta({ status: 'up_to_date', skipReason: null, error: null });
+      } else if (result.kind === 'downloaded') {
+        setOta({ status: 'downloaded', skipReason: null, error: null });
+        if (result.reloaded) return;
+      }
+    } else {
+      setOta({ status: 'skipped', skipReason: 'disabled_in_config', error: null });
+    }
+
+    if (UPDATE_STRATEGY.storeVersionPrompt.enabled) {
+      await runCheck();
+    } else {
+      setIsChecking(false);
+    }
   }, [runCheck]);
 
   const value = useMemo<AppUpdateContextValue>(
@@ -118,8 +182,9 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
       isOpeningStore,
       openStore,
       recheck,
+      ota,
     }),
-    [isChecking, lastError, updateInfo, isForceUpdate, isSoftUpdate, isOpeningStore, openStore, recheck],
+    [isChecking, lastError, updateInfo, isForceUpdate, isSoftUpdate, isOpeningStore, openStore, recheck, ota],
   );
 
   const showSoftDialog = isSoftUpdate && updateInfo != null && !softDismissed;

@@ -47,17 +47,20 @@
  * ----------------------------------------------------------------------------
  *
  * 1. Copy the entire `src/shared/app-update` folder.
- * 2. Run: `npx expo install expo-application` (and ensure `react-native-safe-area-context` exists — default in Expo templates).
- * 3. Edit `config.ts` (title/message + store options).
+ * 2. Run: `npx expo install expo-application expo-updates` (and `react-native-safe-area-context` — default in Expo templates).
+ * 3. Edit `update-strategy.ts` (EAS OTA + store prompt) and `config.ts` (store dialog copy / IDs).
  * 4. Wrap your root component with `AppUpdateProvider`.
+ * 5. Read `docs/UPDATES.md` for `eas update` and runtimeVersion.
  */
 
 export * from './app-update-provider';
 export * from './app-update.service';
 export * from './config';
+export * from './eas-ota';
 export * from './force-update-screen';
 export * from './types';
 export * from './update-dialog';
+export * from './update-strategy';
 export * from './use-app-update';
 export * from './version-utils';
 

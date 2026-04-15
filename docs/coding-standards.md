@@ -12,10 +12,11 @@ The goal is to keep the codebase clean, consistent, reusable, scalable, and easy
 - Prefer consistency over personal preference.
 - Follow existing project patterns before introducing a new approach.
 - Avoid duplicate code.
-- Don't use emoji, in code
+- Never use emoji in code or UI — use `@expo/vector-icons/Ionicons` or images.
 - Prefer reusable solutions over one-off implementations.
 - Keep changes scoped to the actual requirement.
 - Write production-ready code.
+- Do not maintain legacy patterns unless explicitly asked. Update all usages to the current standard.
 
 ---
 
@@ -138,8 +139,44 @@ Rules:
 - Prefer composition over deeply nested conditional rendering.
 - Keep props typed and meaningful.
 - Do not create large monolithic components when smaller components are more maintainable.
+- Use shared components wherever possible before creating new ones.
 
-Use shared components wherever possible before creating new ones.
+### UI Component authoring
+
+- Never use raw `<Text>` for UI copy — use `<AppText>` from `src/components/ui`.
+- Variants must be stored as `Record<VariantType, StyleObject>` lookup maps, not as `if/switch` chains.
+- All colors, spacing, and radii come from `src/constants/theme.ts` tokens.
+- Every interactive element must declare `accessibilityRole` and `accessibilityState`.
+- New components must be exported from `src/components/ui/index.ts` and documented in `docs/components.md`.
+- New components must have a demo section in `src/app/(tabs)/components.tsx`.
+
+### Full component reference
+
+See `docs/components.md` for all available components, props, variants, and usage examples.
+
+---
+
+## 6a. Utility / Helper Standards
+
+- Do not write standalone exported functions in `src/utils/`.
+- Group utilities as **static methods** on domain-specific classes:
+
+| Class | File | Responsibility |
+|-------|------|---------------|
+| `FormatUtils` | `src/utils/format.ts` | Date, number, string, file size formatting |
+| `ValidationUtils` | `src/utils/validation.ts` | Field validation (RHF-compatible) |
+
+- Add new utility methods to the relevant existing class.
+- Create a new class only when a method clearly belongs to a new, distinct domain.
+
+```ts
+// Correct
+const label = FormatUtils.relativeTime(post.createdAt);
+const error = ValidationUtils.email(emailValue);
+
+// Wrong — do not write standalone util functions
+export function formatDate(date: Date) { … }
+```
 
 ---
 

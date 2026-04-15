@@ -15,8 +15,10 @@
  *
  * COPYING THIS MODULE
  * -------------------
- * Copy the whole `app-update` folder, run `npx expo install expo-application`, wrap your root with
+ * Copy the whole `app-update` folder, run `npx expo install expo-application expo-updates`, wrap your root with
  * `AppUpdateProvider`, and render `UpdateDialog` + children as shown in `index.ts` usage comments.
+ *
+ * OTA vs store: see repo root `docs/UPDATES.md` and `update-strategy.ts`.
  */
 
 import type { AppUpdateConfig } from './types';

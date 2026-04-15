@@ -80,6 +80,19 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="components"
+        options={{
+          title: 'UI Kit',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? 'color-palette' : 'color-palette-outline'}
+              size={20}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
