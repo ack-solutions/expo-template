@@ -18,10 +18,12 @@ Help implement and maintain the RushHour Customer Portal frontend with clean, re
 
 - All layouts must use CSS logical properties for RTL/LTR support.
 - All components must use theme tokens for light/dark mode correctness.
+- Avoid unnecessary `index.ts` barrel files and duplicate re-exports.
 
 ## Canonical standards (single source of truth)
 
 - Coding: `docs/coding-standards.md`
+- Forms (RHF + Zod): `docs/form-rhf-zod-standards.md`
 - API and server-state: `docs/api-standards.md`
 - Design and UI behavior: `docs/design-standards.md`
 - Translation: `docs/translation-standards.md`
@@ -43,6 +45,8 @@ Use these files as authoritative standards. Do not duplicate or redefine those r
 - Clear loading/error/empty states for UI changes
 - No unrelated refactors
 - All text via translation keys (no hardcoded strings)
+- All forms use RHF + Zod (`zodResolver`) with shared UI fields
+- No unwanted barrel exports (`index.ts`) when direct imports are clearer
 - Logical CSS properties for direction-neutral layouts
 - Theme tokens for all colors (no raw values)
 

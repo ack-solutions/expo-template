@@ -11,6 +11,9 @@ import {
   ActionSheetRow,
   AppCard,
   AppCheckbox,
+  AppDatePicker,
+  AppDateRangePicker,
+  AppDateTimePicker,
   AppInput,
   AppPressableCard,
   AppSelect,
@@ -67,6 +70,12 @@ export default function ComponentsScreen() {
   const [searchValue, setSearchValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
   const [selectLargeValue, setSelectLargeValue] = useState('');
+  const [dateValue, setDateValue] = useState<Date | null>(null);
+  const [dateTimeValue, setDateTimeValue] = useState<Date | null>(null);
+  const [dateRangeValue, setDateRangeValue] = useState<{ startDate: Date | null; endDate: Date | null }>({
+    startDate: null,
+    endDate: null,
+  });
   const [checked, setChecked] = useState(false);
   const [switchOn, setSwitchOn] = useState(false);
   const [radioValue, setRadioValue] = useState('option_a');
@@ -405,6 +414,43 @@ export default function ComponentsScreen() {
               options={[{ label: 'Option A', value: 'a' }]}
             />
           </Stack>
+        </Section>
+
+        <Divider />
+
+        {/* ── Date Pickers ─────────────────────────────────────────────────── */}
+        <Section title="Date Pickers">
+          <AppText variant="captionMedium" color="secondary">
+            Date picker
+          </AppText>
+          <AppDatePicker
+            label="Due date"
+            value={dateValue}
+            onChange={setDateValue}
+            placeholder="Select due date"
+            hint="Choose the target date"
+          />
+
+          <AppText variant="captionMedium" color="secondary">
+            Date and time picker
+          </AppText>
+          <AppDateTimePicker
+            label="Reminder"
+            value={dateTimeValue}
+            onChange={setDateTimeValue}
+            placeholder="Select reminder date and time"
+          />
+
+          <AppText variant="captionMedium" color="secondary">
+            Date range picker
+          </AppText>
+          <AppDateRangePicker
+            label="Report range"
+            value={dateRangeValue}
+            onChange={setDateRangeValue}
+            placeholder="Select start and end dates"
+            hint="End date cannot be before start date"
+          />
         </Section>
 
         <Divider />

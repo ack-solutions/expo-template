@@ -186,3 +186,12 @@ npx expo export --platform android --platform ios
 - Root `app/` contains re-export route files for Expo tooling compatibility.
 - Keep module-based organization in `src/modules`.
 
+---
+
+## 7) Engineering docs
+
+- `docs/coding-standards.md` — global coding conventions
+- `docs/components.md` — UI component APIs and examples
+- `docs/form-rhf-zod-standards.md` — required form architecture (RHF + Zod)
+- `docs/UPDATES.md` — OTA update strategy (EAS Update + store prompt)
+

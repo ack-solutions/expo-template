@@ -28,6 +28,7 @@ Use the approved project stack only:
 - TypeScript
 - React Native
 - React Hook Form
+- Zod
 - pnpm
 
 ---
@@ -46,6 +47,25 @@ Use the approved project stack only:
 - Use `any` only when absolutely necessary and no better type is practical.
 - Prefer explicit types when it improves clarity.
 - Reuse shared types where possible instead of redefining similar types in multiple places.
+
+---
+
+## 3a. Formatting Standards
+
+Formatting is enforced with ESLint (and should be auto-fixed via `pnpm run lint:fix`).
+
+Preferred formatting rules:
+
+- In React TSX, if a component has more than 2 props, place one prop per line.
+- For objects with more than 2 keys, use multiline object format with one key per line.
+- For arrays with more than 2 values, use multiline array format with one value per line.
+- Keep clear empty lines between major code blocks (imports, constants, hooks, handlers, return).
+- Keep one empty line between class members/functions when it improves readability.
+
+Notes:
+
+- Some empty-line preferences are guidelines (readability-driven) rather than strict hard errors.
+- Use lint warnings as guidance and keep changes practical, not noisy.
 
 ---
 
@@ -130,6 +150,22 @@ Rules:
 
 ---
 
+## 5a. Import / Export Standards
+
+- Do not create unnecessary `index.ts` barrel files.
+- Prefer direct imports from the source file when that keeps dependencies clearer.
+- Create a barrel file only when it improves module ergonomics and is actively used.
+- Avoid duplicated re-exports across multiple barrel files.
+- For shared module entry points, prefer explicit named exports.
+- Use `export *` only when the module is intentionally designed as a broad public surface.
+
+Examples:
+
+- Preferred direct import: `import { RHFInputField } from '@/components/form/rhf-input-field';`
+- Allowed module entry import (when intentionally maintained): `import { RHFInputField } from '@/components/form';`
+
+---
+
 ## 6. Component Standards
 
 - Keep components small and focused.
@@ -183,9 +219,13 @@ export function formatDate(date: Date) { … }
 ## 7. Form Standards
 
 - Always use React Hook Form for forms.
+- Always use Zod schemas for form validation.
+- Use `@hookform/resolvers/zod` for RHF + Zod integration.
+- Infer form value types from schema (`z.infer<typeof schema>`).
 - Use reusable base field components first.
 - Build reusable RHF-integrated field components on top of base fields.
 - Reuse standard form field components across the project.
+- Prefer shared RHF wrappers from `src/components/form` (`RHF*Field`) for feature forms.
 
 All forms should include:
 
@@ -196,6 +236,10 @@ All forms should include:
 - consistent field structure
 
 Do not create one-off form handling patterns unless there is a strong reason.
+
+For complete implementation rules, examples, and AI-generation checklist, see:
+
+- `docs/form-rhf-zod-standards.md`
 
 ---
 

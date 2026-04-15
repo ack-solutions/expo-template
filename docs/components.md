@@ -313,12 +313,14 @@ Labeled text input with variants, validation states, and icon slots.
   keyboardType="email-address"
 />
 
-// With error (from React Hook Form)
-const { register, formState } = useForm();
+// With error (from React Hook Form + Zod)
+const form = useForm<FormValues>({
+  resolver: zodResolver(schema),
+});
 <AppInput
   label="Password"
   secureTextEntry
-  error={formState.errors.password?.message}
+  error={form.formState.errors.password?.message}
   value={pw}
   onChangeText={setPw}
 />
@@ -406,14 +408,16 @@ const [priority, setPriority] = useState('');
   options={timezoneOptions}   // can be hundreds of options
 />
 
-// With React Hook Form
-const { watch, setValue, formState: { errors } } = useForm();
+// With React Hook Form + Zod
+const form = useForm<FormValues>({
+  resolver: zodResolver(schema),
+});
 
 <AppSelect
   label="Category"
-  value={watch('category')}
-  onChange={(opt) => setValue('category', opt.value, { shouldValidate: true })}
-  error={errors.category?.message}
+  value={form.watch('category')}
+  onChange={(opt) => form.setValue('category', opt.value, { shouldValidate: true })}
+  error={form.formState.errors.category?.message}
   options={categoryOptions}
 />
 

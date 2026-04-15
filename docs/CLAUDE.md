@@ -31,6 +31,7 @@ Deliver a scalable, maintainable, and consistent frontend aligned with approved 
 | TypeScript | 5.9 |
 | Expo Router | 6 (file-based routing) |
 | React Hook Form | 7 (all forms) |
+| Zod + `@hookform/resolvers` | Required for form validation |
 | Drizzle ORM + Expo SQLite | local database |
 | pnpm | package manager |
 
@@ -125,6 +126,7 @@ src/
 
 - Component reference: `docs/components.md`
 - Coding standards: `docs/coding-standards.md`
+- Form standards (RHF + Zod): `docs/form-rhf-zod-standards.md`
 - API standards: `docs/api-standards.md`
 - Design standards: `docs/design-standards.md`
 

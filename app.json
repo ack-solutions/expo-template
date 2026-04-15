@@ -50,7 +50,8 @@
       ],
       "expo-notifications",
       "@sentry/react-native",
-      "expo-sqlite"
+      "expo-sqlite",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

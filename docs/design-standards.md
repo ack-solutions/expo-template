@@ -14,6 +14,7 @@ The goal is to keep the UI clean, modern, consistent, reusable, and easy to scal
 - Build UI that feels modern, simple, and customer-friendly.
 - Focus on clarity, usability, and maintainability.
 - Keep the design system lightweight and practical.
+- Always leave room for creativity: explore fresh UI ideas when they improve user experience, while still respecting accessibility, consistency, and design-token standards.
 
 ---
 
@@ -50,22 +51,15 @@ The portal should feel:
 ## 4. Color Rules
 
 - Do not hardcode colors directly in feature components.
-- Always use theme-based CSS custom properties (design tokens).
+- Always use theme-based (design tokens).
 - Every color token must have both a light and dark variant defined in file.
 - Keep color usage consistent across the application.
 - Use color with purpose, not decoration.
 
-### Recommended Usage
-
-- primary color for main actions
-- muted colors for secondary content
-- destructive color for delete/remove/danger actions
-- success/warning/error colors only where needed
-
 ### Rules
 
 - Primary buttons should always look consistent.
-- Status colors should be reused consistently.
+- Status / Enums / Chips / Label colors should be reused consistently.
 - Text contrast must remain readable in both light and dark themes.
 - Avoid adding random custom colors per page.
 - Every new color must be defined as a token with light and dark values — never as a one-off raw value.
@@ -78,22 +72,6 @@ The portal should feel:
 - Use a consistent heading and text scale across the project.
 - Use font weight and size to create hierarchy.
 - Avoid too many font sizes on one screen.
-
-### Basic Hierarchy
-
-- page title
-- section title
-- card title
-- body text
-- helper text
-- table/meta text
-
-### Rules
-
-- Page headings should be clear and prominent.
-- Secondary text should be visually softer than primary text.
-- Helper text and descriptions should not compete with key content.
-- Keep line length readable where possible.
 
 ---
 
@@ -114,16 +92,7 @@ The portal should feel:
 
 ## 7. Layout Rules
 
-- Build responsive layouts by default.
-- Keep page structure predictable.
-- Use shared layout patterns across pages.
-
-### Common Layout Pattern
-
-- page header
-- summary or actions area
-- main content section
-- supporting sections if needed
+- Build responsive layouts by default that support all devices.
 
 ### Rules
 
@@ -139,6 +108,7 @@ The portal should feel:
 - Reuse shared UI components wherever possible.
 - Use standard variants for buttons, inputs, cards, badges, dialogs, and tables.
 - Do not create multiple visual styles for the same type of component without a strong reason.
+- Keep one component per file by default. If multiple small components belong to the same feature and are tightly related, place them in a feature folder and organize them clearly. Only keep multiple components in a single file when there is a strong reason.
 
 ### Shared Components Should Stay Consistent
 
@@ -163,11 +133,6 @@ The portal should feel:
 
 - Use buttons consistently by purpose.
 - Keep a clear hierarchy between primary, secondary, ghost, and destructive actions.
-
-### Rules
-
-- One main primary action per section where possible.
-- Secondary actions should not compete visually with the main action.
 - Destructive actions must be clearly distinguishable.
 - Button sizes should remain consistent across similar screens.
 
@@ -178,18 +143,18 @@ The portal should feel:
 - Forms must be clean, consistent, and easy to complete.
 - Use shared field components across the project.
 - Keep field spacing and alignment consistent.
+- If a new specialized field is needed, create a reusable component (for example: upload-related fields, specific list selectors, or autocomplete fields such as country and customer autocomplete).
 
-### Every form should include
+### Every form field should include
 
-- label
-- input control
-- validation message
-- optional help text when needed
+- a clear label
+- an appropriate input control
+- a validation message when invalid
+- optional helper text when needed
 
 ### Rules
 
 - Use React Hook Form-based shared field components.
-- Keep labels clear and short.
 - Show validation messages consistently.
 - Group related fields logically.
 - Do not create inconsistent one-off form layouts.
@@ -274,75 +239,22 @@ Use standard visual treatment for:
 
 ## 17. Dark and Light Theme Rules
 
-The portal supports light, dark, and system themes. System auto-detects from the user's OS/browser preference.
+The app must support light, dark, and system themes on both mobile (React Native) and web.
 
 ### Behavior
 
-- On first visit, follow the user's OS preference (`prefers-color-scheme`).
-- Provide a manual toggle (light / dark / system) in the header or settings.
-- Persist the user's choice across sessions.
-- Theme changes should be smooth with no flash of wrong theme on page load.
+- On first launch/visit, follow the device or browser system preference.
+- Provide a manual theme toggle (`light` / `dark` / `system`) in settings.
+- Persist user choice across sessions.
+- Theme changes should be smooth and avoid visual flicker.
+- All surfaces, text, borders, and states must come from theme tokens (no hardcoded colors).
 
-## 18. RTL and LTR Layout Rules
+### Platform notes
 
-The portal supports LTR (English) and RTL (Hebrew) layouts, with the ability to add more languages in the future.
+- **Web**: respect `prefers-color-scheme` and apply theme before first paint when possible.
+- **React Native**: use system color scheme APIs and update screens/components reactively.
 
-### Behavior
-
-- The layout direction is set on the `<html>` element based on the active language.
-- Hebrew activates `dir="rtl"`; English activates `dir="ltr"`.
-- The entire UI flips automatically using CSS logical properties — no separate RTL layouts.
-
-App direction must always come from the shared `getDirection()` / `isRtlLocale()` helper. Never hardcode `dir="rtl"` or `dir="ltr"` on the `<html>` element or on components unless required for isolated content.
-
-When `dir="rtl"` is set, CSS logical properties and Tailwind logical utilities automatically flip the layout. No separate RTL stylesheet or layout is needed.
-
-### CSS Logical Properties
-
-Use logical utilities instead of physical directional utilities so layouts auto-flip:
-
-| Physical (avoid)     | Logical (use)       |
-| -------------------- | ------------------- |
-| `pl-4` / `pr-4`      | `ps-4` / `pe-4`     |
-| `ml-4` / `mr-4`      | `ms-4` / `me-4`     |
-| `left-0` / `right-0` | `start-0` / `end-0` |
-| `text-left`          | `text-start`        |
-| `text-right`         | `text-end`          |
-| `rounded-l-md`       | `rounded-s-md`      |
-| `rounded-r-md`       | `rounded-e-md`      |
-| `border-l`           | `border-s`          |
-| `border-r`           | `border-e`          |
-
----
-
-## 19. Internationalization Design Rules
-
-All user-facing text must come from translation files, not hardcoded in components.
-
-### Design Rules
-
-- Design layouts to accommodate varying text lengths (Hebrew and English text lengths differ significantly).
-- Allow buttons, labels, and menu items to grow with longer translations — do not set fixed widths on text containers.
-- Do not depend on specific character counts for layout alignment.
-- Truncation with tooltips is acceptable for very long translations in constrained spaces.
-- Number formatting, date formatting, and currency display must respect the active locale.
-
-### Component-Level Rules
-
-- **Shared components** (buttons, inputs, cards, dialogs, tables, badges, navigation): must accept translated labels/placeholders via props or translation keys, use logical properties, and use theme tokens.
-- **Forms**: labels, placeholders, helper text, and validation messages must come from translation files. Field alignment must adapt to RTL/LTR automatically.
-- **Tables**: header labels, empty states, and action labels must be translated. Table alignment should use logical properties.
-- **Navigation**: all menu items, breadcrumbs, and route titles must come from translation files. Navigation layout must work in both directions.
-
-### Rules
-
-- No visible string in the UI should be hardcoded.
-- Empty states, loading text, error messages, and tooltips must also be translated.
-- Placeholder text in inputs must be translated.
-
----
-
-## 19.1. QA Checklists
+## 18. QA Checklists
 
 ### i18n Checklist
 
@@ -373,21 +285,21 @@ All user-facing text must come from translation files, not hardcoded in componen
 
 ---
 
-## 20. Responsive Design Rules
+## 19. Responsive Design Rules
 
 - All screens must work well on common desktop, tablet, and mobile sizes.
 - Build mobile-friendly layouts even if desktop is the primary experience.
 
 ### Rules
 
-- Avoid horizontal overflow.
+- Avoid horizontal overflow unless we need special as feature.
 - Keep actions accessible on smaller screens.
 - Stack content cleanly when space becomes limited.
 - Tables and dense data areas should degrade gracefully on smaller screens.
 
 ---
 
-## 22. Reuse Rules
+## 21. Reuse Rules
 
 Before creating a new UI pattern, check whether the design system already has a usable solution.
 
@@ -401,11 +313,10 @@ Do not create duplicate visual patterns for the same problem.
 
 ---
 
-## 23. Things to Avoid
+## 22. Things to Avoid
 
 - hardcoded colors in feature components
 - hardcoded user-facing text in components
-- physical directional CSS properties (left/right/pl/pr) where logical equivalents exist
 - components that only work in one theme or one direction
 - inconsistent spacing
 - inconsistent button styles
@@ -418,7 +329,7 @@ Do not create duplicate visual patterns for the same problem.
 
 ---
 
-## 24. Definition of Good UI in This Project
+## 23. Definition of Good UI in This Project
 
 Good UI in this project should be:
 
@@ -429,14 +340,14 @@ Good UI in this project should be:
 - responsive
 - accessible
 - reusable
+- user friendly and easy to navigate
 - easy to maintain
-- correct in both LTR and RTL
 - correct in both light and dark themes
 - fully translatable (no hardcoded text)
 
 ---
 
-## 25. Final Rule
+## 24. Final Rule
 
 When in doubt:
 
