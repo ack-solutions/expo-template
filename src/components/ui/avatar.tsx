@@ -1,7 +1,10 @@
-import { Colors, Radii, Typography } from '@/constants/theme';
+import { Radii } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import { Image } from 'expo-image';
 import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+ StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -79,12 +82,15 @@ function getColorFromName(name: string): string {
  * <Avatar name="John Doe" size="lg" />
  * <Avatar name="Support Bot" shape="rounded" size="sm" />
  */
-export function Avatar({ source, name = '', size = 'md', shape = 'circle', style }: AvatarProps) {
+export function Avatar({
+ source, name = '', size = 'md', shape = 'circle', style 
+}: AvatarProps) {
+  const colors = useAppColors();
   const dimension = sizeMap[size];
   const fontSize = fontSizes[size];
   const borderRadius = shape === 'circle' ? dimension / 2 : Radii.md;
   const initials = getInitials(name);
-  const bgColor = name ? getColorFromName(name) : Colors.textTertiary;
+  const bgColor = name ? getColorFromName(name) : colors.textTertiary;
 
   const containerStyle: ViewStyle = {
     width: dimension,
@@ -107,9 +113,20 @@ export function Avatar({ source, name = '', size = 'md', shape = 'circle', style
   }
 
   return (
-    <View style={[containerStyle, { backgroundColor: bgColor }, style]}>
+    <View style={[
+containerStyle,
+{ backgroundColor: bgColor },
+style
+]}>
       <View style={styles.initialsContainer}>
-        <Text style={[styles.initialsText, { fontSize, lineHeight: dimension }]}>
+        <Text style={[
+styles.initialsText,
+{
+ color: colors.textInverse,
+fontSize,
+lineHeight: dimension 
+}
+]}>
           {initials}
         </Text>
       </View>
@@ -124,7 +141,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   initialsText: {
-    color: Colors.textInverse,
     fontWeight: '600',
     textAlign: 'center',
   },

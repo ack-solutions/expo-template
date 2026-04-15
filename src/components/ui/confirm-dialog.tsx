@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Modal,
   View,
@@ -6,7 +6,10 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
-import { Colors, Spacing, Radii, Typography, Shadows } from '@/constants/theme';
+import {
+ AppColors, Radii, Shadows, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import { Button } from './button';
 
 interface ConfirmDialogProps {
@@ -30,6 +33,9 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Modal
       visible={visible}
@@ -43,7 +49,12 @@ export function ConfirmDialog({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
           <View style={styles.actions}>
-            <Button title={cancelLabel} onPress={onCancel} variant="ghost" size="sm" style={styles.actionBtn} />
+            <Button
+title={cancelLabel}
+onPress={onCancel}
+variant="ghost"
+size="sm"
+style={styles.actionBtn} />
             <Button
               title={confirmLabel}
               onPress={onConfirm}
@@ -58,40 +69,41 @@ export function ConfirmDialog({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: Colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xxl,
-  },
-  dialog: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radii.xl,
-    padding: Spacing.xxl,
-    width: '100%',
-    maxWidth: 340,
-  },
-  title: {
-    ...Typography.h3,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.sm,
-  },
-  message: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-    lineHeight: 22,
-    marginBottom: Spacing.xxl,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    flexWrap: 'wrap',
-  },
-  actionBtn: {
-    minWidth: 120,
-  },
-});
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: Spacing.xxl,
+    },
+    dialog: {
+      backgroundColor: colors.surface,
+      borderRadius: Radii.xl,
+      padding: Spacing.xxl,
+      width: '100%',
+      maxWidth: 340,
+    },
+    title: {
+      ...Typography.h3,
+      color: colors.textPrimary,
+      marginBottom: Spacing.sm,
+    },
+    message: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      lineHeight: 22,
+      marginBottom: Spacing.xxl,
+    },
+    actions: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: Spacing.sm,
+      flexWrap: 'wrap',
+    },
+    actionBtn: {
+      minWidth: 120,
+    },
+  });

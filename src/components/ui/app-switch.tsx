@@ -1,6 +1,16 @@
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import React from 'react';
-import { Platform, Pressable, StyleSheet, Switch, Text, View, ViewStyle } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Switch,
+  View,
+  ViewStyle,
+} from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -44,14 +54,18 @@ export function AppSwitch({
   switchSide = 'right',
   style,
 }: AppSwitchProps) {
+  const colors = useAppColors();
   const switchEl = (
     <Switch
       value={value}
       onValueChange={onValueChange}
       disabled={disabled}
-      trackColor={{ false: Colors.border, true: Colors.primaryLight }}
-      thumbColor={Platform.OS === 'android' ? (value ? Colors.primary : Colors.surface) : undefined}
-      ios_backgroundColor={Colors.border}
+      trackColor={{
+        false: colors.border,
+        true: colors.primaryLight
+      }}
+      thumbColor={Platform.OS === 'android' ? (value ? colors.primary : colors.surface) : undefined}
+      ios_backgroundColor={colors.border}
     />
   );
 
@@ -66,17 +80,30 @@ export function AppSwitch({
         style,
       ]}
       accessibilityRole="switch"
-      accessibilityState={{ checked: value, disabled }}
+      accessibilityState={{
+        checked: value,
+        disabled
+      }}
     >
       {switchSide === 'left' && switchEl}
 
       {(label || description) && (
         <View style={styles.textBlock}>
           {label && (
-            <Text style={[styles.label, disabled && styles.textDisabled]}>{label}</Text>
+            <AppText
+              variant="bodyMedium"
+              color={disabled ? 'tertiary' : 'primary'}
+              style={styles.label}>
+              {label}
+            </AppText>
           )}
           {description && (
-            <Text style={[styles.description, disabled && styles.textDisabled]}>{description}</Text>
+            <AppText
+              variant="caption"
+              color={disabled ? 'tertiary' : 'secondary'}
+              style={styles.description}>
+              {description}
+            </AppText>
           )}
         </View>
       )}
@@ -100,19 +127,14 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
   },
   description: {
     ...Typography.caption,
-    color: Colors.textSecondary,
   },
   pressed: {
     opacity: 0.8,
   },
   disabled: {
     opacity: 0.45,
-  },
-  textDisabled: {
-    color: Colors.textTertiary,
   },
 });

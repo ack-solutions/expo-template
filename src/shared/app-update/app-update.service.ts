@@ -1,5 +1,7 @@
-import type { AppUpdateConfig, AppUpdateConfigLoader, UpdateEvaluation, UpdateInfo } from './types';
-import { compareSemver, parseSemver } from './version-utils';
+import type {
+  AppUpdateConfig, AppUpdateConfigLoader, UpdateEvaluation, UpdateInfo
+} from './types';
+import { VersionUtils } from './version-utils';
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.trim().length > 0;
@@ -66,9 +68,12 @@ async function fetchIosStoreVersion(params: {
   if (!json.resultCount || !json.results?.length) return null;
   const first = json.results[0];
   const version = typeof first.version === 'string' ? first.version.trim() : '';
-  if (!version || !parseSemver(version)) return null;
+  if (!version || !VersionUtils.parse(version)) return null;
   const url = typeof first.trackViewUrl === 'string' ? first.trackViewUrl : undefined;
-  return { latestVersion: version, storeUrl: url };
+  return {
+    latestVersion: version,
+storeUrl: url
+  };
 }
 
 async function fetchAndroidStoreVersion(params: { appId: string | null }): Promise<StoreLookupResult | null> {
@@ -89,7 +94,7 @@ async function fetchAndroidStoreVersion(params: { appId: string | null }): Promi
   let version = '';
   for (const pattern of patterns) {
     const match = html.match(pattern);
-    if (match?.[1] && parseSemver(match[1])) {
+    if (match?.[1] && VersionUtils.parse(match[1])) {
       version = match[1];
       break;
     }
@@ -114,37 +119,65 @@ export async function evaluateAppUpdate(options: {
   appId: string | null;
   loadConfig: AppUpdateConfigLoader;
 }): Promise<UpdateEvaluation> {
-  const { currentVersion, platform, appId, loadConfig } = options;
+  const {
+    currentVersion,
+    platform,
+    appId,
+    loadConfig,
+  } = options;
 
   if (platform === 'web') {
-    return { decision: 'none', info: null, skipReason: 'web_not_supported' };
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'web_not_supported',
+    };
   }
 
   let config: AppUpdateConfig | null = null;
   try {
     config = await loadConfig();
   } catch {
-    return { decision: 'none', info: null, skipReason: 'config_load_failed' };
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'config_load_failed',
+    };
   }
 
   const rules = pickPlatformConfig(config, platform);
   if (!rules) {
-    return { decision: 'none', info: null, skipReason: 'missing_or_invalid_platform_config' };
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'missing_or_invalid_platform_config',
+    };
   }
 
   const current = typeof currentVersion === 'string' ? currentVersion.trim() : '';
   if (!current) {
-    return { decision: 'none', info: null, skipReason: 'missing_current_version' };
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'missing_current_version',
+    };
   }
 
-  if (!parseSemver(current)) {
-    return { decision: 'none', info: null, skipReason: 'invalid_current_version' };
+  if (!VersionUtils.parse(current)) {
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'invalid_current_version',
+    };
   }
 
   let store: StoreLookupResult | null = null;
   try {
     if (platform === 'ios') {
-      store = await fetchIosStoreVersion({ appId, appStoreId: rules.appStoreId });
+      store = await fetchIosStoreVersion({
+        appId,
+        appStoreId: rules.appStoreId,
+      });
     } else if (platform === 'android') {
       store = await fetchAndroidStoreVersion({ appId });
     }
@@ -152,16 +185,31 @@ export async function evaluateAppUpdate(options: {
     store = null;
   }
   if (!store) {
-    return { decision: 'none', info: null, skipReason: 'store_version_unavailable' };
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'store_version_unavailable',
+    };
   }
 
-  const vsLatest = compareSemver(current, store.latestVersion);
+  const vsLatest = VersionUtils.compare(current, store.latestVersion);
   if (vsLatest == null) {
-    return { decision: 'none', info: null, skipReason: 'uncomparable_current_vs_latest' };
+    return {
+      decision: 'none',
+      info: null,
+      skipReason: 'uncomparable_current_vs_latest',
+    };
   }
   if (vsLatest < 0) {
-    return { decision: 'soft', info: buildInfo(rules, store) };
+    return {
+      decision: 'soft',
+      info: buildInfo(rules, store),
+    };
   }
 
-  return { decision: 'none', info: null, skipReason: 'up_to_date' };
+  return {
+    decision: 'none',
+    info: null,
+    skipReason: 'up_to_date',
+  };
 }

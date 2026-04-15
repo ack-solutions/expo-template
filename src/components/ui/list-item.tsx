@@ -1,12 +1,18 @@
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+  Pressable, StyleSheet, View, ViewStyle
+} from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 /** Controls what accessory is shown on the trailing edge of the row. */
 export type ListItemAccessory = 'arrow' | 'none';
+type ListItemTone = 'default' | 'danger';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -25,6 +31,7 @@ interface ListItemProps {
   onPress?: () => void;
   /** Show a hairline divider at the bottom. Default: false */
   showDivider?: boolean;
+  tone?: ListItemTone;
   disabled?: boolean;
   style?: ViewStyle;
 }
@@ -59,21 +66,48 @@ export function ListItem({
   accessory = 'none',
   onPress,
   showDivider = false,
+  tone = 'default',
   disabled = false,
   style,
 }: ListItemProps) {
+  const colors = useAppColors();
   const content = (
-    <View style={[styles.row, showDivider && styles.rowDivider]}>
+    <View
+      style={[
+        styles.row,
+        { borderBottomColor: colors.borderLight },
+        showDivider && styles.rowDivider,
+      ]}>
       {left && <View style={styles.leftSlot}>{left}</View>}
 
       <View style={styles.center}>
-        <Text style={[styles.title, disabled && styles.textDisabled]} numberOfLines={1}>
+        <AppText
+          variant="bodyMedium"
+          style={[
+            styles.title,
+            { color: colors.textPrimary },
+            tone === 'danger' && styles.titleDanger,
+            tone === 'danger' && { color: colors.error },
+            disabled && styles.textDisabled
+            ,
+            disabled && { color: colors.textTertiary },
+          ]}
+          numberOfLines={1}
+        >
           {title}
-        </Text>
+        </AppText>
         {subtitle && (
-          <Text style={[styles.subtitle, disabled && styles.textDisabled]} numberOfLines={2}>
+          <AppText
+            variant="caption"
+            style={[
+              styles.subtitle,
+              { color: colors.textSecondary },
+              disabled && styles.textDisabled,
+              disabled && { color: colors.textTertiary },
+            ]}
+            numberOfLines={2}>
             {subtitle}
-          </Text>
+          </AppText>
         )}
       </View>
 
@@ -83,7 +117,7 @@ export function ListItem({
             <Ionicons
               name="chevron-forward"
               size={18}
-              color={Colors.textTertiary}
+              color={colors.textTertiary}
             />
           )
         )}
@@ -98,7 +132,9 @@ export function ListItem({
         disabled={disabled}
         style={({ pressed }) => [
           styles.container,
+          { backgroundColor: colors.surface },
           pressed && !disabled && styles.pressed,
+          pressed && !disabled && { backgroundColor: colors.borderLight },
           disabled && styles.disabled,
           style,
         ]}
@@ -110,7 +146,12 @@ export function ListItem({
   }
 
   return (
-    <View style={[styles.container, disabled && styles.disabled, style]}>
+    <View style={[
+      styles.container,
+      { backgroundColor: colors.surface },
+      disabled && styles.disabled,
+      style
+    ]}>
       {content}
     </View>
   );
@@ -120,7 +161,6 @@ export function ListItem({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.surface,
   },
   row: {
     flexDirection: 'row',
@@ -132,7 +172,6 @@ const styles = StyleSheet.create({
   },
   rowDivider: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
   },
   leftSlot: {
     alignItems: 'center',
@@ -150,19 +189,15 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+  },
+  titleDanger: {
   },
   subtitle: {
     ...Typography.caption,
-    color: Colors.textSecondary,
   },
-  pressed: {
-    backgroundColor: Colors.borderLight,
-  },
+  pressed: {},
   disabled: {
     opacity: 0.45,
   },
-  textDisabled: {
-    color: Colors.textTertiary,
-  },
+  textDisabled: {},
 });

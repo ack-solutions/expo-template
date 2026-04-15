@@ -1,6 +1,8 @@
+import { Appearance } from 'react-native';
+
 // ─── Color Palette ─────────────────────────────────────────────
 
-export const Colors = {
+export const LightColors = {
   /** Logo / brand navy */
   primary: '#1E3A8A',
   primaryLight: '#3B82F6',
@@ -39,6 +41,60 @@ export const Colors = {
   gradientSuccess: ['#10B981', '#059669'] as const,
   gradientWarm: ['#F59E0B', '#EF4444'] as const,
 } as const;
+
+export const DarkColors = {
+  primary: '#60A5FA',
+  primaryLight: '#93C5FD',
+  primaryDark: '#1D4ED8',
+  primaryFaded: 'rgba(96, 165, 250, 0.16)',
+  primaryFaded12: 'rgba(96, 165, 250, 0.22)',
+
+  accent: '#FBBF24',
+  accentLight: '#FCD34D',
+  accentDark: '#D97706',
+
+  success: '#34D399',
+  successFaded: 'rgba(52, 211, 153, 0.16)',
+  error: '#F87171',
+  errorFaded: 'rgba(248, 113, 113, 0.16)',
+  warning: '#FBBF24',
+  warningFaded: 'rgba(251, 191, 36, 0.16)',
+
+  background: '#020617',
+  surface: '#0F172A',
+  surfaceElevated: '#111827',
+  card: '#111827',
+  border: '#1F2937',
+  borderLight: '#334155',
+
+  textPrimary: '#F8FAFC',
+  textSecondary: '#CBD5E1',
+  textTertiary: '#94A3B8',
+  textInverse: '#020617',
+
+  overlay: 'rgba(2, 6, 23, 0.7)',
+  shadow: 'rgba(0, 0, 0, 0.45)',
+  shadowDark: 'rgba(0, 0, 0, 0.6)',
+
+  gradientPrimary: ['#1D4ED8', '#3B82F6'] as const,
+  gradientSuccess: ['#059669', '#10B981'] as const,
+  gradientWarm: ['#D97706', '#EF4444'] as const,
+} as const;
+
+export type AppColors = typeof LightColors;
+
+/**
+ * Backward-compatible static color object.
+ * It resolves from the current system appearance at module load time.
+ * Use `getThemeColors()` (or hooks that wrap it) for live light/dark reactive rendering.
+ */
+export const Colors = getThemeColors(Appearance.getColorScheme());
+
+export function getThemeColors(
+  scheme: 'light' | 'dark' | null | undefined,
+): AppColors {
+  return scheme === 'dark' ? DarkColors : LightColors;
+}
 
 // ─── Spacing (tightened for mobile) ────────────────────────────
 
@@ -142,28 +198,40 @@ export const Shadows = {
   },
   sm: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
     shadowOpacity: 0.04,
     shadowRadius: 2,
     elevation: 1,
   },
   md: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
     shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 3,
   },
   lg: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 5,
   },
   xl: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: {
+      width: 0,
+      height: 6
+    },
     shadowOpacity: 0.12,
     shadowRadius: 20,
     elevation: 8,

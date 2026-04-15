@@ -1,7 +1,12 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import {
+ AppColors, Radii, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import {
+ Pressable, StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -30,7 +35,11 @@ interface AppCheckboxProps {
 
 // ─── Animation config ─────────────────────────────────────────────────────────
 
-const CHECK_SPRING = { damping: 14, stiffness: 260, mass: 0.7 };
+const CHECK_SPRING = {
+ damping: 14,
+stiffness: 260,
+mass: 0.7 
+};
 const BOX_TIMING = { duration: 160 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -59,6 +68,8 @@ export function AppCheckbox({
   indeterminate = false,
   style,
 }: AppCheckboxProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isActive = checked || indeterminate;
 
   // 0 = unchecked, 1 = checked
@@ -70,18 +81,19 @@ export function AppCheckbox({
     iconScale.value = isActive
       ? withSpring(1, CHECK_SPRING)
       : withTiming(0, { duration: 100 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- shared values are stable refs
   }, [isActive]);
 
   const animBoxStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
       checkProgress.value,
       [0, 1],
-      [Colors.surface, Colors.primary],
+      [colors.surface, colors.primary],
     ),
     borderColor: interpolateColor(
       checkProgress.value,
       [0, 1],
-      [Colors.border, Colors.primary],
+      [colors.border, colors.primary],
     ),
   }));
 
@@ -98,11 +110,20 @@ export function AppCheckbox({
   return (
     <Pressable
       onPress={onPress}
-      onPressIn={() => { rowPressScale.value = withSpring(0.98, { damping: 20, stiffness: 300 }); }}
-      onPressOut={() => { rowPressScale.value = withSpring(1, { damping: 20, stiffness: 300 }); }}
+      onPressIn={() => { rowPressScale.value = withSpring(0.98, {
+ damping: 20,
+stiffness: 300 
+}); }}
+      onPressOut={() => { rowPressScale.value = withSpring(1, {
+ damping: 20,
+stiffness: 300 
+}); }}
       disabled={disabled}
       accessibilityRole="checkbox"
-      accessibilityState={{ checked: indeterminate ? 'mixed' : checked, disabled }}
+      accessibilityState={{
+ checked: indeterminate ? 'mixed' : checked,
+disabled 
+}}
     >
       <Animated.View
         style={[
@@ -117,7 +138,7 @@ export function AppCheckbox({
             <Ionicons
               name={indeterminate ? 'remove' : 'checkmark'}
               size={14}
-              color={Colors.textInverse}
+              color={colors.textInverse}
             />
           </Animated.View>
         </Animated.View>
@@ -139,7 +160,8 @@ export function AppCheckbox({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -164,16 +186,16 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   description: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   disabled: {
     opacity: 0.45,
   },
   textDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
-});
+  });

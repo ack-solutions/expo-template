@@ -1,5 +1,8 @@
-import { Colors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
-import React from 'react';
+import {
+ AppColors, Radii, Shadows, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import React, { useMemo } from 'react';
 import {
   PressableProps,
   StyleProp,
@@ -39,10 +42,19 @@ interface AppCardProps {
  *   <AppText variant="body" color="secondary">Body content.</AppText>
  * </AppCard>
  */
-export function AppCard({ children, style, shadow = 'none', noPadding = false }: AppCardProps) {
+export function AppCard({
+ children, style, shadow = 'none', noPadding = false 
+}: AppCardProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const shadowStyle = shadow === 'none' ? undefined : Shadows[shadow];
   return (
-    <View style={[styles.card, noPadding && styles.noPadding, shadowStyle, style]}>
+    <View style={[
+styles.card,
+noPadding && styles.noPadding,
+shadowStyle,
+style
+]}>
       {children}
     </View>
   );
@@ -74,6 +86,8 @@ export function AppPressableCard({
   noPadding = false,
   ...pressableProps
 }: AppPressableCardProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({
@@ -86,11 +100,17 @@ export function AppPressableCard({
     <AnimatedPressable
       {...pressableProps}
       onPressIn={(e) => {
-        scale.value = withSpring(0.975, { damping: 20, stiffness: 300 });
+        scale.value = withSpring(0.975, {
+ damping: 20,
+stiffness: 300 
+});
         pressableProps.onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        scale.value = withSpring(1, { damping: 20, stiffness: 300 });
+        scale.value = withSpring(1, {
+ damping: 20,
+stiffness: 300 
+});
         pressableProps.onPressOut?.(e);
       }}
       style={[
@@ -121,7 +141,11 @@ interface CardHeaderProps {
  * @example
  * <CardHeader title="Settings" subtitle="Manage your preferences" right={<Badge label="3" variant="error" />} />
  */
-export function CardHeader({ title, subtitle, right, style }: CardHeaderProps) {
+export function CardHeader({
+ title, subtitle, right, style 
+}: CardHeaderProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <View style={[styles.header, style]}>
       <View style={styles.headerLeft}>
@@ -135,13 +159,14 @@ export function CardHeader({ title, subtitle, right, style }: CardHeaderProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: Radii.md,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   noPadding: {
     padding: 0,
@@ -157,11 +182,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   headerSubtitle: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginTop: Spacing.xxs,
   },
-});
+  });

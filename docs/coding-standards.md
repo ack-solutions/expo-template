@@ -58,7 +58,9 @@ Preferred formatting rules:
 
 - In React TSX, if a component has more than 2 props, place one prop per line.
 - For objects with more than 2 keys, use multiline object format with one key per line.
+- Do not keep multiple object key/value pairs on a single line (for example: `return { a: 1, b: 2 }`).
 - For arrays with more than 2 values, use multiline array format with one value per line.
+- For import statements with more than 3 named imports, use multiline formatting and place each imported symbol on its own line.
 - Keep clear empty lines between major code blocks (imports, constants, hooks, handlers, return).
 - Keep one empty line between class members/functions when it improves readability.
 

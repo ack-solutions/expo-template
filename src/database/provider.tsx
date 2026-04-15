@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { Appearance, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { getThemeColors } from '@/constants/theme';
 
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 
@@ -9,6 +9,7 @@ import { db } from './client';
 import migrations from './migrations/migrations';
 
 export function DatabaseProvider({ children }: PropsWithChildren) {
+  const colors = getThemeColors(Appearance.getColorScheme());
   const { success, error } = useMigrations(db, migrations);
 
   const blockingError = useMemo(() => {
@@ -18,11 +19,24 @@ export function DatabaseProvider({ children }: PropsWithChildren) {
 
   if (blockingError) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-        <Text style={{ color: Colors.textPrimary, fontSize: 16, fontWeight: '600' as const }}>
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16
+      }}>
+        <Text style={{
+          color: colors.textPrimary,
+          fontSize: 16,
+          fontWeight: '600' as const
+        }}>
           Database error
         </Text>
-        <Text style={{ color: Colors.textSecondary, marginTop: 8, textAlign: 'center' }}>
+        <Text style={{
+          color: colors.textSecondary,
+          marginTop: 8,
+          textAlign: 'center'
+        }}>
           {blockingError.message}
         </Text>
       </View>
@@ -31,8 +45,13 @@ export function DatabaseProvider({ children }: PropsWithChildren) {
 
   if (!success) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-        <Text style={{ color: Colors.textSecondary }}>Preparing database…</Text>
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16
+      }}>
+        <Text style={{ color: colors.textSecondary }}>Preparing database...</Text>
       </View>
     );
   }

@@ -1,6 +1,9 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
-import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Radii, Spacing, Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import React, { useMemo } from 'react';
+import {
+ StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -27,22 +30,6 @@ interface BadgeProps {
 }
 
 // ─── Style Maps ───────────────────────────────────────────────────────────────
-
-const variantBg: Record<BadgeVariant, string> = {
-  primary: Colors.primaryFaded12,
-  success: Colors.successFaded,
-  error: Colors.errorFaded,
-  warning: Colors.warningFaded,
-  neutral: Colors.borderLight,
-};
-
-const variantText: Record<BadgeVariant, string> = {
-  primary: Colors.primary,
-  success: Colors.success,
-  error: Colors.error,
-  warning: Colors.warning,
-  neutral: Colors.textSecondary,
-};
 
 const sizePaddingH: Record<BadgeSize, number> = {
   sm: Spacing.xs,
@@ -85,6 +72,29 @@ export function Badge({
   dot = false,
   style,
 }: BadgeProps) {
+  const colors = useAppColors();
+  const variantBg: Record<BadgeVariant, string> = useMemo(
+    () => ({
+      primary: colors.primaryFaded12,
+      success: colors.successFaded,
+      error: colors.errorFaded,
+      warning: colors.warningFaded,
+      neutral: colors.borderLight,
+    }),
+    [colors],
+  );
+
+  const variantText: Record<BadgeVariant, string> = useMemo(
+    () => ({
+      primary: colors.primary,
+      success: colors.success,
+      error: colors.error,
+      warning: colors.warning,
+      neutral: colors.textSecondary,
+    }),
+    [colors],
+  );
+
   if (dot) {
     return (
       <View

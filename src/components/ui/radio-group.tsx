@@ -1,6 +1,11 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
-import React from 'react';
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+AppColors, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import React, { useMemo } from 'react';
+import {
+ Pressable, StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -31,7 +36,11 @@ interface RadioItemProps extends RadioOption {
   onSelect: () => void;
 }
 
-function RadioItem({ label, value, description, disabled = false, selected, onSelect }: RadioItemProps) {
+function RadioItem({
+ label, value, description, disabled = false, selected, onSelect 
+}: RadioItemProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <Pressable
       onPress={onSelect}
@@ -42,7 +51,10 @@ function RadioItem({ label, value, description, disabled = false, selected, onSe
         disabled && styles.disabled,
       ]}
       accessibilityRole="radio"
-      accessibilityState={{ checked: selected, disabled }}
+      accessibilityState={{
+ checked: selected,
+disabled 
+}}
       accessibilityLabel={label}
     >
       <View style={[styles.radio, selected ? styles.radioSelected : styles.radioUnselected]}>
@@ -84,6 +96,8 @@ export function RadioGroup({
   direction = 'vertical',
   style,
 }: RadioGroupProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <View
       style={[
@@ -110,7 +124,8 @@ export function RadioGroup({
 const RADIO_SIZE = 20;
 const DOT_SIZE = 10;
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   group: {
     gap: Spacing.md,
   },
@@ -134,19 +149,19 @@ const styles = StyleSheet.create({
   },
   radioUnselected: {
     borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   radioSelected: {
     borderWidth: 1.5,
-    borderColor: Colors.primary,
-    backgroundColor: Colors.surface,
+    borderColor: colors.primary,
+    backgroundColor: colors.surface,
   },
   radioDot: {
     width: DOT_SIZE,
     height: DOT_SIZE,
     borderRadius: DOT_SIZE / 2,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   textBlock: {
     flex: 1,
@@ -154,11 +169,11 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   description: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   pressed: {
     opacity: 0.75,
@@ -167,6 +182,6 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   textDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
-});
+  });

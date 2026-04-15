@@ -1,12 +1,23 @@
-import { Colors, Radii, Spacing, Typography, Shadows } from '@/constants/theme';
+import {
+  Radii,
+  Shadows,
+  Spacing, Typography
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle, TextStyle } from 'react-native';
+import {
+  ActivityIndicator, Pressable, StyleSheet,
+  TextStyle,
+  ViewStyle
+} from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -30,25 +41,13 @@ interface ButtonProps {
 
 // ─── Animation config ─────────────────────────────────────────────────────────
 
-const SPRING = { damping: 18, stiffness: 280, mass: 0.6 };
+const SPRING = {
+  damping: 18,
+  stiffness: 280,
+  mass: 0.6
+};
 
 // ─── Style Maps ───────────────────────────────────────────────────────────────
-
-const variantStyles: Record<ButtonVariant, ViewStyle> = {
-  primary: { backgroundColor: Colors.primary },
-  secondary: { backgroundColor: Colors.primaryFaded },
-  outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: Colors.border },
-  ghost: { backgroundColor: 'transparent' },
-  danger: { backgroundColor: Colors.error },
-};
-
-const variantTextStyles: Record<ButtonVariant, TextStyle> = {
-  primary: { color: Colors.textInverse },
-  secondary: { color: Colors.primary },
-  outline: { color: Colors.textPrimary },
-  ghost: { color: Colors.primary },
-  danger: { color: Colors.textInverse },
-};
 
 /**
  * Sizes follow the 44 pt minimum touch-target guideline (Apple HIG / Material Design).
@@ -58,15 +57,36 @@ const variantTextStyles: Record<ButtonVariant, TextStyle> = {
  * lg  → 56 pt  (prominent CTAs)
  */
 const sizeStyles: Record<ButtonSize, ViewStyle> = {
-  sm: { paddingVertical: 10, paddingHorizontal: Spacing.lg, minHeight: 40 },
-  md: { paddingVertical: 13, paddingHorizontal: Spacing.xxl, minHeight: 48 },
-  lg: { paddingVertical: 16, paddingHorizontal: Spacing.xxxl, minHeight: 56 },
+  sm: {
+    paddingVertical: 10,
+    paddingHorizontal: Spacing.lg,
+    minHeight: 40
+  },
+  md: {
+    paddingVertical: 13,
+    paddingHorizontal: Spacing.xxl,
+    minHeight: 48
+  },
+  lg: {
+    paddingVertical: 16,
+    paddingHorizontal: Spacing.xxxl,
+    minHeight: 56
+  },
 };
 
 const sizeTextStyles: Record<ButtonSize, TextStyle> = {
-  sm: { fontSize: 13, fontWeight: '600' as const },
-  md: { fontSize: 15, fontWeight: '600' as const },
-  lg: { fontSize: 16, fontWeight: '600' as const },
+  sm: {
+    ...Typography.bodySemibold,
+    fontSize: 13
+  },
+  md: {
+    ...Typography.bodySemibold,
+    fontSize: 15
+  },
+  lg: {
+    ...Typography.bodySemibold,
+    fontSize: 16
+  },
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -101,7 +121,27 @@ export function Button({
   textStyle,
   fullWidth = false,
 }: ButtonProps) {
+  const colors = useAppColors();
   const isDisabled = disabled || loading;
+  const variantStyles: Record<ButtonVariant, ViewStyle> = {
+    primary: { backgroundColor: colors.primary },
+    secondary: { backgroundColor: colors.primaryFaded },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderColor: colors.border,
+    },
+    ghost: { backgroundColor: 'transparent' },
+    danger: { backgroundColor: colors.error },
+  };
+
+  const variantTextStyles: Record<ButtonVariant, TextStyle> = {
+    primary: { color: colors.textInverse },
+    secondary: { color: colors.primary },
+    outline: { color: colors.textPrimary },
+    ghost: { color: colors.primary },
+    danger: { color: colors.textInverse },
+  };
 
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -122,7 +162,7 @@ export function Button({
   }
 
   const spinnerColor =
-    variant === 'primary' || variant === 'danger' ? Colors.textInverse : Colors.primary;
+    variant === 'primary' || variant === 'danger' ? colors.textInverse : colors.primary;
 
   return (
     <AnimatedPressable
@@ -141,14 +181,18 @@ export function Button({
         style,
       ]}
       accessibilityRole="button"
-      accessibilityState={{ disabled: isDisabled, busy: loading }}
+      accessibilityState={{
+        disabled: isDisabled,
+        busy: loading
+      }}
     >
       {loading ? (
         <ActivityIndicator size="small" color={spinnerColor} />
       ) : (
         <>
           {icon}
-          <Text
+          <AppText
+            variant="bodySemibold"
             style={[
               styles.text,
               variantTextStyles[variant],
@@ -157,7 +201,7 @@ export function Button({
             ]}
           >
             {title}
-          </Text>
+          </AppText>
         </>
       )}
     </AnimatedPressable>

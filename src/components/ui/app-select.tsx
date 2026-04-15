@@ -1,6 +1,11 @@
-import { Colors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
+import {
+ AppColors, Radii, Shadows, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+ useCallback, useEffect, useMemo, useState 
+} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -85,13 +90,30 @@ interface AppSelectProps {
 const WINDOW_H = Dimensions.get('window').height;
 const MAX_SHEET_HEIGHT = Math.round(WINDOW_H * 0.72);
 
-const SPRING_SHEET = { damping: 28, stiffness: 320, mass: 0.8 };
-const SPRING_DIALOG = { damping: 20, stiffness: 300, mass: 0.7 };
+const SPRING_SHEET = {
+ damping: 28,
+stiffness: 320,
+mass: 0.8 
+};
+const SPRING_DIALOG = {
+ damping: 20,
+stiffness: 300,
+mass: 0.7 
+};
 
 const sizeConfig: Record<SelectSize, { height: number; fontSize: number }> = {
-  sm: { height: 40, fontSize: 13 },
-  md: { height: 48, fontSize: 14 },
-  lg: { height: 56, fontSize: 15 },
+  sm: {
+ height: 40,
+fontSize: 13 
+},
+  md: {
+ height: 48,
+fontSize: 14 
+},
+  lg: {
+ height: 56,
+fontSize: 15 
+},
 };
 
 function useKeyboardHeight(enabled: boolean) {
@@ -137,6 +159,9 @@ function OptionRow({
   selected: boolean;
   onPress: (o: SelectOption) => void;
 }) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Pressable
       onPress={() => onPress(option)}
@@ -147,7 +172,10 @@ function OptionRow({
         option.disabled && styles.optionDisabled,
       ]}
       accessibilityRole="menuitem"
-      accessibilityState={{ selected, disabled: option.disabled }}
+      accessibilityState={{
+ selected,
+disabled: option.disabled 
+}}
     >
       <View style={styles.optionText}>
         <Text
@@ -164,7 +192,11 @@ function OptionRow({
       </View>
 
       {selected && (
-        <Ionicons name="checkmark" size={18} color={Colors.primary} style={styles.optionCheck} />
+        <Ionicons
+name="checkmark"
+size={18}
+color={colors.primary}
+style={styles.optionCheck} />
       )}
     </Pressable>
   );
@@ -198,6 +230,9 @@ function SelectBody({
   query,
   onQueryChange,
 }: SelectBodyProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const filteredOptions = useMemo(() => {
     if (!query.trim()) return options;
     const lower = query.toLowerCase();
@@ -226,12 +261,20 @@ function SelectBody({
         </Text>
         <Pressable
           onPress={onClose}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={{
+ top: 10,
+bottom: 10,
+left: 10,
+right: 10 
+}}
           style={styles.closeBtn}
           accessibilityRole="button"
           accessibilityLabel="Close"
         >
-          <Ionicons name="close" size={20} color={Colors.textSecondary} />
+          <Ionicons
+name="close"
+size={20}
+color={colors.textSecondary} />
         </Pressable>
       </View>
 
@@ -260,7 +303,7 @@ function SelectBody({
             <Ionicons
               name="search-outline"
               size={32}
-              color={Colors.textTertiary}
+              color={colors.textTertiary}
               style={styles.emptyIcon}
             />
             <Text style={styles.emptyTitle}>No results</Text>
@@ -304,6 +347,8 @@ function SelectSheet({
   searchable,
   searchPlaceholder,
 }: PickerProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, Spacing.lg);
 
@@ -337,7 +382,12 @@ function SelectSheet({
         if (finished) runOnJS(setRendered)(false);
       });
     }
-  }, [backdropOpacity, rendered, translateY, visible]);
+  }, [
+backdropOpacity,
+rendered,
+translateY,
+visible
+]);
 
   const animBackdrop = useAnimatedStyle(() => ({ opacity: backdropOpacity.value }));
   const animSheet = useAnimatedStyle(() => ({
@@ -358,7 +408,11 @@ function SelectSheet({
         <View style={styles.sheetOverlay} pointerEvents="box-none">
           {/* Backdrop — visual only, no touch handling */}
           <Animated.View
-            style={[StyleSheet.absoluteFill, styles.backdrop, animBackdrop]}
+            style={[
+StyleSheet.absoluteFill,
+styles.backdrop,
+animBackdrop
+]}
             pointerEvents="none"
           />
           {/* Dismiss area — full screen, behind the sheet */}
@@ -408,6 +462,8 @@ function SelectDialog({
   searchable,
   searchPlaceholder,
 }: PickerProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const [rendered, setRendered] = useState(visible);
   const [query, setQuery] = useState('');
@@ -445,7 +501,13 @@ function SelectDialog({
         if (finished) runOnJS(setRendered)(false);
       });
     }
-  }, [backdropOpacity, opacity, rendered, scale, visible]);
+  }, [
+backdropOpacity,
+opacity,
+rendered,
+scale,
+visible
+]);
 
   const animBackdrop = useAnimatedStyle(() => ({ opacity: backdropOpacity.value }));
   const animDialog = useAnimatedStyle(() => ({
@@ -474,14 +536,23 @@ function SelectDialog({
         <View style={styles.dialogOverlay} pointerEvents="box-none">
           {/* Backdrop */}
           <Animated.View
-            style={[StyleSheet.absoluteFill, styles.backdrop, animBackdrop]}
+            style={[
+StyleSheet.absoluteFill,
+styles.backdrop,
+animBackdrop
+]}
             pointerEvents="none"
           />
           {/* Dismiss area */}
           <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 
           {/* Dialog card */}
-          <Animated.View style={[styles.dialog, { maxHeight: dialogMaxHeight }, Shadows.xl, animDialog]}>
+          <Animated.View style={[
+styles.dialog,
+{ maxHeight: dialogMaxHeight },
+Shadows.xl,
+animDialog
+]}>
             <SelectBody
               title={title}
               options={options}
@@ -561,6 +632,8 @@ export function AppSelect({
   mode = 'sheet',
   containerStyle,
 }: AppSelectProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const hasError = Boolean(error);
@@ -568,15 +641,15 @@ export function AppSelect({
   const selectedOption = options.find((o) => o.value === value);
   const isSearchable = searchable ?? options.length > 5;
 
-  let borderColor: string = Colors.border;
-  if (hasError) borderColor = Colors.error;
-  else if (pickerOpen) borderColor = Colors.primary;
+  let borderColor: string = colors.border;
+  if (hasError) borderColor = colors.error;
+  else if (pickerOpen) borderColor = colors.primary;
 
   const fieldBg = disabled
-    ? Colors.borderLight
+    ? colors.borderLight
     : variant === 'filled'
-    ? Colors.primaryFaded
-    : Colors.surface;
+    ? colors.primaryFaded
+    : colors.surface;
 
   function handleOpen() {
     if (!disabled) setPickerOpen(true);
@@ -605,7 +678,10 @@ export function AppSelect({
         style={[styles.container, containerStyle]}
         disabled={disabled}
         accessibilityRole="button"
-        accessibilityState={{ disabled, expanded: pickerOpen }}
+        accessibilityState={{
+ disabled,
+expanded: pickerOpen 
+}}
         accessibilityLabel={label}
       >
         {/* Label */}
@@ -650,7 +726,7 @@ export function AppSelect({
           <Ionicons
             name={pickerOpen ? 'chevron-up' : 'chevron-down'}
             size={16}
-            color={disabled ? Colors.textTertiary : Colors.textSecondary}
+            color={disabled ? colors.textTertiary : colors.textSecondary}
             style={styles.chevron}
           />
         </View>
@@ -674,23 +750,23 @@ export function AppSelect({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   // ── Trigger ──
   container: {
     gap: Spacing.xs,
   },
   label: {
     ...Typography.captionMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   labelOpen: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   labelError: {
-    color: Colors.error,
+    color: colors.error,
   },
   labelDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   field: {
     flexDirection: 'row',
@@ -702,13 +778,13 @@ const styles = StyleSheet.create({
   valueText: {
     flex: 1,
     ...Typography.body,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   placeholder: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   valueDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   chevron: {
     marginLeft: Spacing.xs,
@@ -717,10 +793,10 @@ const styles = StyleSheet.create({
     ...Typography.small,
   },
   errorText: {
-    color: Colors.error,
+    color: colors.error,
   },
   hintText: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
 
   // ── Shared ──
@@ -728,7 +804,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backdrop: {
-    backgroundColor: Colors.overlay,
+    backgroundColor: colors.overlay,
   },
 
   // ── Sheet ──
@@ -737,7 +813,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: Radii.xl,
     borderTopRightRadius: Radii.xl,
     maxHeight: MAX_SHEET_HEIGHT,
@@ -755,7 +831,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xxxl,
   },
   dialog: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: Radii.xl,
     maxHeight: MAX_SHEET_HEIGHT,
     width: '100%',
@@ -769,7 +845,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
     marginTop: Spacing.sm,
     marginBottom: Spacing.xs,
   },
@@ -781,11 +857,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   pickerTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     flex: 1,
   },
   closeBtn: {
@@ -794,14 +870,14 @@ const styles = StyleSheet.create({
     borderRadius: Radii.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.borderLight,
+    backgroundColor: colors.borderLight,
     marginLeft: Spacing.sm,
   },
   searchWrap: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
 
   // ── Options ──
@@ -815,10 +891,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     minHeight: 52,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   optionPressed: {
-    backgroundColor: Colors.primaryFaded,
+    backgroundColor: colors.primaryFaded,
   },
   optionDisabled: {
     opacity: 0.4,
@@ -829,15 +905,15 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   optionLabelSelected: {
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   optionDescription: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   optionCheck: {
     marginLeft: Spacing.md,
@@ -856,12 +932,12 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.xs,
   },
   emptyDesc: {
     ...Typography.body,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

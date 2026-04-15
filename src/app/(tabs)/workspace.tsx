@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { SafeScreen, Toolbar } from '@/components/ui';
-import { Colors, Spacing } from '@/constants/theme';
+import { AppColors, Spacing } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import { TemplateCard } from '@/modules/template/components/template-card';
 
 export default function WorkspaceTemplateScreen() {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <SafeScreen topSafe={false} bottomSafe={false}>
       <Toolbar title="Workspace" />
@@ -19,10 +22,10 @@ export default function WorkspaceTemplateScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
     padding: Spacing.lg,
   },
 });

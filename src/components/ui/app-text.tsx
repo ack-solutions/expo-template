@@ -1,6 +1,7 @@
-import { Colors, Typography } from '@/constants/theme';
+import { Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import React from 'react';
-import { Text, TextStyle, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TextStyle } from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -46,17 +47,6 @@ interface AppTextProps {
 
 // ─── Color Map ────────────────────────────────────────────────────────────────
 
-const colorMap: Record<TextColor, string> = {
-  primary: Colors.textPrimary,
-  secondary: Colors.textSecondary,
-  tertiary: Colors.textTertiary,
-  inverse: Colors.textInverse,
-  error: Colors.error,
-  success: Colors.success,
-  warning: Colors.warning,
-  accent: Colors.accent,
-};
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 /**
@@ -79,12 +69,27 @@ export function AppText({
   numberOfLines,
   nowrap = false,
 }: AppTextProps) {
+  const colors = useAppColors();
+  const colorMap: Record<TextColor, string> = {
+    primary: colors.textPrimary,
+    secondary: colors.textSecondary,
+    tertiary: colors.textTertiary,
+    inverse: colors.textInverse,
+    error: colors.error,
+    success: colors.success,
+    warning: colors.warning,
+    accent: colors.accent,
+  };
+
   return (
     <Text
       style={[
         styles.base,
         Typography[variant],
-        { color: colorMap[color], textAlign: align },
+        {
+          color: colorMap[color],
+          textAlign: align
+        },
         nowrap && styles.nowrap,
         style,
       ]}

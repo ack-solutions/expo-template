@@ -1,8 +1,13 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import {
+ AppColors, Radii, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import React, { useMemo } from 'react';
+import {
+ Platform, StyleSheet, Text, TouchableOpacity, View, ViewStyle 
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface ToolbarProps {
@@ -52,12 +57,15 @@ export function Toolbar({
   left,
   right,
   safeAreaTop = true,
-  backgroundColor = Colors.background,
+  backgroundColor,
   style,
 }: ToolbarProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const hasTitleCluster = Boolean(titleStart || subtitle);
+  const resolvedBackgroundColor = backgroundColor ?? colors.background;
 
   const handleBack = () => {
     if (onBack) {
@@ -74,12 +82,17 @@ export function Toolbar({
       style={styles.backBtn}
       onPress={handleBack}
       activeOpacity={0.6}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      hitSlop={{
+ top: 10,
+bottom: 10,
+left: 10,
+right: 10 
+}}
     >
       <Ionicons
         name={Platform.OS === 'ios' ? 'chevron-back' : 'arrow-back'}
         size={22}
-        color={Colors.primary}
+        color={colors.primary}
       />
     </TouchableOpacity>
   ) : null;
@@ -90,7 +103,7 @@ export function Toolbar({
         styles.root,
         {
           paddingTop: safeAreaTop ? insets.top : 0,
-          backgroundColor,
+          backgroundColor: resolvedBackgroundColor,
         },
         style,
       ]}
@@ -124,75 +137,76 @@ export function Toolbar({
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
-  },
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 48,
-    paddingHorizontal: Spacing.sm,
-  },
-  barTall: {
-    minHeight: 56,
-    paddingVertical: Spacing.xs,
-  },
-  left: {
-    width: 44,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  leftInner: {
-    minWidth: 36,
-    minHeight: 36,
-    justifyContent: 'center',
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: Radii.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  centerCluster: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    minWidth: 0,
-    marginHorizontal: Spacing.xs,
-  },
-  titleStart: {
-    marginRight: Spacing.sm,
-  },
-  titleBlock: {
-    flex: 1,
-    minWidth: 0,
-    justifyContent: 'center',
-  },
-  titleBase: {
-    ...Typography.h2,
-    color: Colors.textPrimary,
-  },
-  titleCentered: {
-    flex: 1,
-    textAlign: 'center',
-    marginHorizontal: Spacing.xs,
-  },
-  titleClustered: {
-    flexShrink: 1,
-    textAlign: 'left',
-  },
-  subtitle: {
-    ...Typography.small,
-    color: Colors.textSecondary,
-    marginTop: 1,
-  },
-  right: {
-    minWidth: 44,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-});
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
+    root: {
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: colors.borderLight,
+    },
+    bar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      minHeight: 48,
+      paddingHorizontal: Spacing.sm,
+    },
+    barTall: {
+      minHeight: 56,
+      paddingVertical: Spacing.xs,
+    },
+    left: {
+      width: 44,
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+    },
+    leftInner: {
+      minWidth: 36,
+      minHeight: 36,
+      justifyContent: 'center',
+    },
+    backBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: Radii.sm,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    centerCluster: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      minWidth: 0,
+      marginHorizontal: Spacing.xs,
+    },
+    titleStart: {
+      marginRight: Spacing.sm,
+    },
+    titleBlock: {
+      flex: 1,
+      minWidth: 0,
+      justifyContent: 'center',
+    },
+    titleBase: {
+      ...Typography.h2,
+      color: colors.textPrimary,
+    },
+    titleCentered: {
+      flex: 1,
+      textAlign: 'center',
+      marginHorizontal: Spacing.xs,
+    },
+    titleClustered: {
+      flexShrink: 1,
+      textAlign: 'left',
+    },
+    subtitle: {
+      ...Typography.small,
+      color: colors.textSecondary,
+      marginTop: 1,
+    },
+    right: {
+      minWidth: 44,
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+    },
+  });

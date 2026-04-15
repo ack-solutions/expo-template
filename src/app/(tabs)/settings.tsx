@@ -1,33 +1,63 @@
-import { AppCard, Button, ConfirmDialog, FeedbackDialog, SafeScreen, Toolbar } from '@/components/ui';
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import {
+  AppCard, AppSwitch, AppText, Button, ConfirmDialog, FeedbackDialog, ListItem, SafeScreen, Toolbar
+} from '@/components/ui';
 import { AppSettingsService } from '@/database';
+import { useAppTheme } from '@/hooks/use-app-theme';
 import { useScreenActive } from '@/hooks/use-screen-active';
 import { useToast } from '@/hooks/use-toast';
-import { AppSettings } from '@/types';
+import { AppSettings, ThemeMode } from '@/types';
 import {
-  exportDatabaseAndShare,
-  importDatabaseFile,
-  pickDatabaseFile,
+  BackupUtils,
   type ImportResult,
 } from '@/utils/backup';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Platform,
   ScrollView,
   StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
+const THEME_MODE_OPTIONS: {
+  value: ThemeMode;
+  title: string;
+  description: string;
+  icon: 'phone-portrait-outline' | 'sunny-outline' | 'moon-outline';
+}[] = [
+  {
+    value: 'system',
+    title: 'System default',
+    description: 'Follow your device appearance setting automatically.',
+    icon: 'phone-portrait-outline',
+  },
+  {
+    value: 'light',
+    title: 'Light',
+    description: 'Always use light colors.',
+    icon: 'sunny-outline',
+  },
+  {
+    value: 'dark',
+    title: 'Dark',
+    description: 'Always use dark colors.',
+    icon: 'moon-outline',
+  },
+];
+
 export default function SettingsScreen() {
+  const theme = useAppTheme();
+  const { colors, setThemeMode } = theme;
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const tabBarHeight = useBottomTabBarHeight();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [showClearAll, setShowClearAll] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const { toast, showToast, hideToast } = useToast();
+  const {
+    toast, showToast, hideToast
+  } = useToast();
   const { isActive, isMountedRef } = useScreenActive();
 
   const loadSettings = useCallback(async () => {
@@ -46,18 +76,40 @@ export default function SettingsScreen() {
     async (notificationsEnabled: boolean) => {
       if (!settings) return;
       if (!isActive()) return;
-      const newSettings: AppSettings = { ...settings, notificationsEnabled };
+      const newSettings: AppSettings = {
+        ...settings,
+        notificationsEnabled,
+      };
       setSettings(newSettings);
       await AppSettingsService.saveSettings(newSettings);
     },
     [settings, isActive],
   );
 
+  const updateThemeMode = useCallback(
+    async (themeMode: ThemeMode) => {
+      if (!settings) return;
+      if (!isActive()) return;
+      const newSettings: AppSettings = {
+        ...settings,
+        themeMode,
+      };
+      setSettings(newSettings);
+      setThemeMode(themeMode);
+      await AppSettingsService.saveSettings(newSettings);
+    },
+    [
+      settings,
+      isActive,
+      setThemeMode,
+    ],
+  );
+
   const handleExport = useCallback(async () => {
     if (!isActive()) return;
     setExporting(true);
     try {
-      await exportDatabaseAndShare();
+      await BackupUtils.exportDatabaseAndShare();
       if (!isActive()) return;
       showToast(
         Platform.OS === 'web'
@@ -94,16 +146,16 @@ export default function SettingsScreen() {
       input.onchange = async (e) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (!file) return;
-        const result = await importDatabaseFile(file);
+        const result = await BackupUtils.importDatabaseFile(file);
         await applyResult(result);
       };
       input.click();
     } else {
       void (async () => {
-        const picked = await pickDatabaseFile();
+        const picked = await BackupUtils.pickDatabaseFile();
         if (!picked) return;
         if (!isActive()) return;
-        const result = await importDatabaseFile(picked);
+        const result = await BackupUtils.importDatabaseFile(picked);
         await applyResult(result);
       })();
     }
@@ -112,9 +164,18 @@ export default function SettingsScreen() {
   const handleClearAll = useCallback(async () => {
     await AppSettingsService.clearAll();
     if (!isActive()) return;
+    setSettings({
+      notificationsEnabled: false,
+      themeMode: 'system',
+    });
+    setThemeMode('system');
     setShowClearAll(false);
     showToast('Template settings were reset.', 'success');
-  }, [showToast, isActive]);
+  }, [
+    showToast,
+    isActive,
+    setThemeMode,
+  ]);
 
   if (!settings) return null;
 
@@ -123,28 +184,66 @@ export default function SettingsScreen() {
       <Toolbar title="Settings" />
       <ScrollView
         style={styles.container}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={{
+          ...styles.content,
+          paddingBottom: tabBarHeight + theme.spacing.xl,
+        }}
         showsVerticalScrollIndicator={false}
       >
+        {/* ─── Appearance ─────────────────────────────────────── */}
+        <AppCard style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons
+              name="color-palette-outline"
+              size={20}
+              color={colors.primary} />
+            <AppText variant="h3">
+              Appearance
+            </AppText>
+          </View>
+          <View style={styles.themeOptionList}>
+            {THEME_MODE_OPTIONS.map((option, index) => (
+              <ListItem
+                key={option.value}
+                title={option.title}
+                subtitle={option.description}
+                left={<Ionicons
+                  name={option.icon}
+                  size={18}
+                  color={settings.themeMode === option.value ? colors.primary : colors.textSecondary} />}
+                right={settings.themeMode === option.value
+                  ? <Ionicons
+                    name="checkmark-circle"
+                    size={18}
+                    color={colors.primary} />
+                  : undefined}
+                onPress={() => {
+                  void updateThemeMode(option.value);
+                }}
+                showDivider={index < THEME_MODE_OPTIONS.length - 1}
+              />
+            ))}
+          </View>
+        </AppCard>
+
         {/* ─── Notifications (app-wide) ───────────────────────── */}
         <AppCard style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="notifications-outline" size={20} color={Colors.primary} />
-            <Text style={styles.sectionTitle}>Notifications</Text>
+            <Ionicons
+              name="notifications-outline"
+              size={20}
+              color={colors.primary} />
+            <AppText variant="h3">
+              Notifications
+            </AppText>
           </View>
 
           <View style={[styles.settingRow, styles.settingRowLast]}>
-            <View style={styles.settingLabel}>
-              <Text style={styles.settingText}>App notifications</Text>
-              <Text style={styles.settingHint}>
-                Generic notifications toggle for reusable templates.
-              </Text>
-            </View>
-            <Switch
+            <AppSwitch
               value={settings.notificationsEnabled}
               onValueChange={updateNotificationsEnabled}
-              trackColor={{ false: Colors.border, true: Colors.primaryFaded12 }}
-              thumbColor={settings.notificationsEnabled ? Colors.primary : Colors.textTertiary}
+              label="App notifications"
+              description="Generic notifications toggle for reusable templates."
             />
           </View>
         </AppCard>
@@ -152,14 +251,22 @@ export default function SettingsScreen() {
         {/* ─── Backup & Restore ──────────────────────────────── */}
         <AppCard style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="cloud-outline" size={20} color={Colors.primary} />
-            <Text style={styles.sectionTitle}>Backup & Restore</Text>
+            <Ionicons
+              name="cloud-outline"
+              size={20}
+              color={colors.primary} />
+            <AppText variant="h3">
+              Backup & Restore
+            </AppText>
           </View>
 
-          <Text style={styles.sectionDesc}>
+          <AppText
+            variant="caption"
+            color="secondary"
+            style={styles.sectionDesc}>
             Export your full app database as a .db file. Import a .db backup to replace data on this device (the app
             restarts).
-          </Text>
+          </AppText>
 
           <View style={styles.backupButtons}>
             <Button
@@ -168,7 +275,10 @@ export default function SettingsScreen() {
               variant="secondary"
               size="md"
               loading={exporting}
-              icon={<Ionicons name="download-outline" size={16} color={Colors.primary} />}
+              icon={<Ionicons
+                name="download-outline"
+                size={16}
+                color={colors.primary} />}
               style={styles.backupBtn}
             />
             <Button
@@ -176,7 +286,10 @@ export default function SettingsScreen() {
               onPress={handleImport}
               variant="outline"
               size="md"
-              icon={<Ionicons name="push-outline" size={16} color={Colors.primary} />}
+              icon={<Ionicons
+                name="push-outline"
+                size={16}
+                color={colors.primary} />}
               style={styles.backupBtn}
             />
           </View>
@@ -185,50 +298,90 @@ export default function SettingsScreen() {
         {/* ─── Data Management ───────────────────────────────── */}
         <AppCard style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="server-outline" size={20} color={Colors.primary} />
-            <Text style={styles.sectionTitle}>Data Management</Text>
+            <Ionicons
+              name="server-outline"
+              size={20}
+              color={colors.primary} />
+            <AppText variant="h3">
+              Data Management
+            </AppText>
           </View>
 
-          <TouchableOpacity
-            style={[styles.dangerRow, { borderBottomWidth: 0 }]}
+          <ListItem
+            title="Reset Template Settings"
+            tone="danger"
+            left={<Ionicons
+              name="trash-outline"
+              size={18}
+              color={colors.error} />}
+            accessory="arrow"
             onPress={() => setShowClearAll(true)}
-          >
-            <Ionicons name="trash-outline" size={18} color={Colors.error} />
-            <Text style={styles.dangerText}>Reset Template Settings</Text>
-            <Ionicons name="chevron-forward" size={16} color={Colors.textTertiary} />
-          </TouchableOpacity>
+            style={styles.dangerRow}
+          />
         </AppCard>
 
         {/* ─── About ─────────────────────────────────────────── */}
         <AppCard style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="information-circle-outline" size={20} color={Colors.primary} />
-            <Text style={styles.sectionTitle}>About</Text>
+            <Ionicons
+              name="information-circle-outline"
+              size={20}
+              color={colors.primary} />
+            <AppText variant="h3">
+              About
+            </AppText>
           </View>
 
           <View style={styles.aboutRow}>
-            <Text style={styles.aboutLabel}>Version</Text>
-            <Text style={styles.aboutValue}>1.0.0</Text>
+            <AppText
+              variant="caption"
+              color="secondary">
+              Version
+            </AppText>
+            <AppText variant="captionMedium">
+              1.0.0
+            </AppText>
           </View>
           <View style={styles.aboutRow}>
-            <Text style={styles.aboutLabel}>Storage</Text>
-            <Text style={styles.aboutValue}>Local only</Text>
+            <AppText
+              variant="caption"
+              color="secondary">
+              Storage
+            </AppText>
+            <AppText variant="captionMedium">
+              Local only
+            </AppText>
           </View>
-          <View style={[styles.aboutRow, { borderBottomWidth: 0 }]}>
-            <Text style={styles.aboutLabel}>Internet</Text>
+          <View style={[styles.aboutRow, styles.aboutRowLast]}>
+            <AppText
+              variant="caption"
+              color="secondary">
+              Internet
+            </AppText>
             <View style={styles.offlineBadge}>
-              <Ionicons name="cloud-offline-outline" size={12} color={Colors.success} />
-              <Text style={styles.offlineBadgeText}>Not required</Text>
+              <Ionicons
+                name="cloud-offline-outline"
+                size={12}
+                color={colors.success} />
+              <AppText variant="smallMedium" color="success">
+                Not required
+              </AppText>
             </View>
           </View>
         </AppCard>
 
         {/* Privacy footer */}
         <View style={styles.footer}>
-          <Ionicons name="lock-closed-outline" size={13} color={Colors.textTertiary} />
-          <Text style={styles.footerText}>
+          <Ionicons
+            name="lock-closed-outline"
+            size={13}
+            color={colors.textTertiary} />
+          <AppText
+            variant="small"
+            color="tertiary"
+            style={styles.footerText}>
             All your data stays on this device
-          </Text>
+          </AppText>
         </View>
 
         <ConfirmDialog
@@ -247,130 +400,80 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: theme.colors.background,
   },
   content: {
-    paddingHorizontal: Spacing.lg,
-  },
-  header: {
-    marginBottom: Spacing.lg,
-  },
-  title: {
-    ...Typography.h1,
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-    marginTop: Spacing.xs,
+    paddingHorizontal: theme.spacing.lg,
   },
   section: {
-    marginBottom: Spacing.md,
+    marginBottom: theme.spacing.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  sectionTitle: {
-    ...Typography.h3,
-    color: Colors.textPrimary,
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
   },
   sectionDesc: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-    lineHeight: 20,
-    marginBottom: Spacing.lg,
+    marginBottom: theme.spacing.lg,
   },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: theme.colors.borderLight,
   },
   settingRowLast: {
     borderBottomWidth: 0,
   },
-  settingLabel: {
-    flex: 1,
-    marginRight: Spacing.md,
-  },
-  settingText: {
-    ...Typography.bodySemibold,
-    color: Colors.textPrimary,
-    fontSize: 14,
-  },
-  settingHint: {
-    ...Typography.small,
-    color: Colors.textTertiary,
-    marginTop: Spacing.xxs,
-  },
   backupButtons: {
     flexDirection: 'row',
-    gap: Spacing.md,
+    gap: theme.spacing.md,
+  },
+  themeOptionList: {
+    borderRadius: theme.radii.md,
+    overflow: 'hidden',
   },
   backupBtn: {
     flex: 1,
   },
   dangerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: Spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
-  },
-  dangerText: {
-    ...Typography.body,
-    color: Colors.error,
-    flex: 1,
+    borderRadius: theme.radii.md,
   },
   aboutRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: theme.colors.borderLight,
   },
-  aboutLabel: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-  },
-  aboutValue: {
-    ...Typography.captionMedium,
-    color: Colors.textPrimary,
+  aboutRowLast: {
+    borderBottomWidth: 0,
   },
   offlineBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xxs,
-    backgroundColor: Colors.successFaded,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xxs,
-    borderRadius: Radii.pill,
-  },
-  offlineBadgeText: {
-    ...Typography.small,
-    color: Colors.success,
-    fontWeight: '600',
+    gap: theme.spacing.xxs,
+    backgroundColor: theme.colors.successFaded,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xxs,
+    borderRadius: theme.radii.pill,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.xl,
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.xl,
     opacity: 0.6,
   },
   footerText: {
-    ...Typography.small,
-    color: Colors.textTertiary,
+    textAlign: 'center',
   },
 });

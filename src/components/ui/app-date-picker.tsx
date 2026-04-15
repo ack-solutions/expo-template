@@ -1,8 +1,52 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import {
+  AppColors,
+  Radii,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/hooks/use-app-theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+  Modal, Platform, Pressable, StyleSheet, Text, View, ViewStyle
+} from 'react-native';
+
+type DateTimePickerEvent = {
+  type: 'set' | 'dismissed' | 'neutralButtonPressed';
+};
+
+const DateTimePickerNative: React.ComponentType<{
+  value: Date;
+  mode: 'date' | 'time';
+  display?: 'default' | 'spinner';
+  minimumDate?: Date;
+  maximumDate?: Date;
+  onChange: (event: DateTimePickerEvent, date?: Date) => void;
+  style?: ViewStyle;
+  themeVariant?: 'light' | 'dark';
+  accentColor?: string;
+  textColor?: string;
+}> | null = (() => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require('@react-native-community/datetimepicker');
+    return (mod.default ?? mod) as React.ComponentType<{
+      value: Date;
+      mode: 'date' | 'time';
+      display?: 'default' | 'spinner';
+      minimumDate?: Date;
+      maximumDate?: Date;
+      onChange: (event: DateTimePickerEvent, date?: Date) => void;
+      style?: ViewStyle;
+      themeVariant?: 'light' | 'dark';
+      accentColor?: string;
+      textColor?: string;
+    }>;
+  } catch {
+    return null;
+  }
+})();
 
 type PickerVariant = 'outlined' | 'filled';
 type PickerSize = 'sm' | 'md' | 'lg';
@@ -41,9 +85,18 @@ export type AppDateRangePickerProps = Omit<BasePickerProps, 'minimumDate' | 'max
 };
 
 const sizeConfig: Record<PickerSize, { height: number; fontSize: number }> = {
-  sm: { height: 40, fontSize: 13 },
-  md: { height: 48, fontSize: 14 },
-  lg: { height: 56, fontSize: 15 },
+  sm: {
+    height: 40,
+    fontSize: 13
+  },
+  md: {
+    height: 48,
+    fontSize: 14
+  },
+  lg: {
+    height: 56,
+    fontSize: 15
+  },
 };
 
 function toDateOnly(d: Date): Date {
@@ -78,6 +131,43 @@ function isDatePickerSet(event: DateTimePickerEvent): boolean {
   return event.type === 'set' || Platform.OS === 'ios';
 }
 
+function useNativePickerThemeProps() {
+  const colors = useAppColors();
+  const { resolvedColorScheme } = useAppTheme();
+
+  return useMemo(() => {
+    if (Platform.OS === 'ios') {
+      return {
+        themeVariant: resolvedColorScheme,
+        accentColor: colors.primary,
+        textColor: colors.textPrimary,
+      };
+    }
+
+    return {};
+  }, [
+colors.primary,
+colors.textPrimary,
+resolvedColorScheme
+]);
+}
+
+function useDatePickerStyles() {
+  const colors = useAppColors();
+  return useMemo(() => createStyles(colors), [colors]);
+}
+
+function DatePickerUnavailableNotice() {
+  const styles = useDatePickerStyles();
+  return (
+    <View style={styles.unavailableWrap}>
+      <Text style={styles.unavailableText}>
+        Date picker is not available in this build. Install native dependencies and rebuild the app.
+      </Text>
+    </View>
+  );
+}
+
 function PickerField({
   label,
   valueText,
@@ -101,17 +191,19 @@ function PickerField({
   onPress: () => void;
   containerStyle?: ViewStyle;
 }) {
+  const colors = useAppColors();
+  const styles = useDatePickerStyles();
   const hasError = Boolean(error);
   const cfg = sizeConfig[size];
 
-  let borderColor: string = Colors.border;
-  if (hasError) borderColor = Colors.error;
+  let borderColor: string = colors.border;
+  if (hasError) borderColor = colors.error;
 
   const fieldBg = disabled
-    ? Colors.borderLight
+    ? colors.borderLight
     : variant === 'filled'
-      ? Colors.primaryFaded
-      : Colors.surface;
+      ? colors.primaryFaded
+      : colors.surface;
 
   return (
     <Pressable
@@ -123,7 +215,11 @@ function PickerField({
       accessibilityLabel={label}
     >
       {label ? (
-        <Text style={[styles.label, hasError && styles.labelError, disabled && styles.labelDisabled]}>
+        <Text style={[
+          styles.label,
+          hasError && styles.labelError,
+          disabled && styles.labelDisabled
+        ]}>
           {label}
         </Text>
       ) : null}
@@ -154,7 +250,7 @@ function PickerField({
         <Ionicons
           name="calendar-outline"
           size={18}
-          color={disabled ? Colors.textTertiary : Colors.textSecondary}
+          color={disabled ? colors.textTertiary : colors.textSecondary}
         />
       </View>
 
@@ -184,8 +280,13 @@ function ModalShell({
   confirmLabel?: string;
   confirmDisabled?: boolean;
 }) {
+  const styles = useDatePickerStyles();
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}>
       <View style={styles.overlay}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onCancel} />
 
@@ -201,7 +302,11 @@ function ModalShell({
               <Text style={styles.footerBtnText}>Cancel</Text>
             </Pressable>
             <Pressable
-              style={[styles.footerBtn, styles.footerBtnPrimary, confirmDisabled && styles.footerBtnDisabled]}
+              style={[
+                styles.footerBtn,
+                styles.footerBtnPrimary,
+                confirmDisabled && styles.footerBtnDisabled
+              ]}
               disabled={confirmDisabled}
               onPress={onConfirm}
             >
@@ -228,6 +333,8 @@ export function AppDatePicker({
   maximumDate,
   containerStyle,
 }: AppDatePickerProps) {
+  const styles = useDatePickerStyles();
+  const nativePickerThemeProps = useNativePickerThemeProps();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Date>(value ?? startOfToday());
 
@@ -261,18 +368,23 @@ export function AppDatePicker({
           setOpen(false);
         }}
       >
-        <DateTimePicker
-          value={draft}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          minimumDate={minimumDate}
-          maximumDate={maximumDate}
-          onChange={(event, picked) => {
-            if (!picked || !isDatePickerSet(event)) return;
-            setDraft(picked);
-          }}
-          style={styles.picker}
-        />
+        {DateTimePickerNative ? (
+          <DateTimePickerNative
+            value={draft}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            minimumDate={minimumDate}
+            maximumDate={maximumDate}
+            {...nativePickerThemeProps}
+            onChange={(event, picked) => {
+              if (!picked || !isDatePickerSet(event)) return;
+              setDraft(picked);
+            }}
+            style={styles.picker}
+          />
+        ) : (
+          <DatePickerUnavailableNotice />
+        )}
       </ModalShell>
     </>
   );
@@ -292,6 +404,8 @@ export function AppDateTimePicker({
   maximumDate,
   containerStyle,
 }: AppDateTimePickerProps) {
+  const styles = useDatePickerStyles();
+  const nativePickerThemeProps = useNativePickerThemeProps();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Date>(value ?? new Date());
   const [phase, setPhase] = useState<'date' | 'time'>('date');
@@ -347,18 +461,23 @@ export function AppDateTimePicker({
           </Pressable>
         </View>
 
-        <DateTimePicker
-          value={draft}
-          mode={phase}
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          minimumDate={phase === 'date' ? minimumDate : undefined}
-          maximumDate={phase === 'date' ? maximumDate : undefined}
-          onChange={(event, picked) => {
-            if (!picked || !isDatePickerSet(event)) return;
-            setDraft(picked);
-          }}
-          style={styles.picker}
-        />
+        {DateTimePickerNative ? (
+          <DateTimePickerNative
+            value={draft}
+            mode={phase}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            minimumDate={phase === 'date' ? minimumDate : undefined}
+            maximumDate={phase === 'date' ? maximumDate : undefined}
+            {...nativePickerThemeProps}
+            onChange={(event, picked) => {
+              if (!picked || !isDatePickerSet(event)) return;
+              setDraft(picked);
+            }}
+            style={styles.picker}
+          />
+        ) : (
+          <DatePickerUnavailableNotice />
+        )}
       </ModalShell>
     </>
   );
@@ -376,6 +495,8 @@ export function AppDateRangePicker({
   size = 'md',
   containerStyle,
 }: AppDateRangePickerProps) {
+  const styles = useDatePickerStyles();
+  const nativePickerThemeProps = useNativePickerThemeProps();
   const [open, setOpen] = useState(false);
   const [activeField, setActiveField] = useState<'start' | 'end'>('start');
   const [draftStart, setDraftStart] = useState<Date>(value.startDate ?? startOfToday());
@@ -387,7 +508,11 @@ export function AppDateRangePicker({
       setDraftEnd(value.endDate ?? value.startDate ?? startOfToday());
       setActiveField('start');
     }
-  }, [open, value.endDate, value.startDate]);
+  }, [
+    open,
+    value.endDate,
+    value.startDate
+  ]);
 
   const displayText = useMemo(() => {
     if (!value.startDate && !value.endDate) return '';
@@ -444,22 +569,27 @@ export function AppDateRangePicker({
           </Pressable>
         </View>
 
-        <DateTimePicker
-          value={activeField === 'start' ? draftStart : draftEnd}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          minimumDate={activeField === 'end' ? draftStart : undefined}
-          onChange={(event, picked) => {
-            if (!picked || !isDatePickerSet(event)) return;
-            if (activeField === 'start') {
-              setDraftStart(picked);
-              if (draftEnd < picked) setDraftEnd(picked);
-            } else {
-              setDraftEnd(picked);
-            }
-          }}
-          style={styles.picker}
-        />
+        {DateTimePickerNative ? (
+          <DateTimePickerNative
+            value={activeField === 'start' ? draftStart : draftEnd}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            minimumDate={activeField === 'end' ? draftStart : undefined}
+            {...nativePickerThemeProps}
+            onChange={(event, picked) => {
+              if (!picked || !isDatePickerSet(event)) return;
+              if (activeField === 'start') {
+                setDraftStart(picked);
+                if (draftEnd < picked) setDraftEnd(picked);
+              } else {
+                setDraftEnd(picked);
+              }
+            }}
+            style={styles.picker}
+          />
+        ) : (
+          <DatePickerUnavailableNotice />
+        )}
 
         <View style={styles.rangePreview}>
           <Text style={styles.rangePreviewText}>
@@ -471,19 +601,19 @@ export function AppDateRangePicker({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   container: {
     gap: Spacing.xs,
   },
   label: {
     ...Typography.captionMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   labelError: {
-    color: Colors.error,
+    color: colors.error,
   },
   labelDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   field: {
     flexDirection: 'row',
@@ -495,32 +625,32 @@ const styles = StyleSheet.create({
   valueText: {
     flex: 1,
     ...Typography.body,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   placeholder: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   valueDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   supportText: {
     ...Typography.small,
   },
   errorText: {
-    color: Colors.error,
+    color: colors.error,
   },
   hintText: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   overlay: {
     flex: 1,
-    backgroundColor: Colors.overlay,
+    backgroundColor: colors.overlay,
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.xxxl,
   },
   modalCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: Radii.xl,
     overflow: 'hidden',
   },
@@ -529,11 +659,11 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   modalTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   modalBody: {
     paddingHorizontal: Spacing.lg,
@@ -549,33 +679,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.borderLight,
+    borderTopColor: colors.borderLight,
   },
   footerBtn: {
     minWidth: 92,
     height: 40,
     borderRadius: Radii.sm,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
   },
   footerBtnText: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   footerBtnPrimary: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   footerBtnDisabled: {
     opacity: 0.5,
   },
   footerBtnPrimaryText: {
     ...Typography.bodyMedium,
-    color: Colors.textInverse,
+    color: colors.textInverse,
   },
   phaseTabs: {
     flexDirection: 'row',
@@ -589,19 +719,19 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: Radii.sm,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   phaseTabActive: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primaryFaded,
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryFaded,
   },
   phaseTabText: {
     ...Typography.captionMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   phaseTabTextActive: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   rangePreview: {
     marginTop: Spacing.xs,
@@ -610,7 +740,15 @@ const styles = StyleSheet.create({
   },
   rangePreviewText: {
     ...Typography.captionMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  unavailableWrap: {
+    paddingVertical: Spacing.lg,
+  },
+  unavailableText: {
+    ...Typography.caption,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

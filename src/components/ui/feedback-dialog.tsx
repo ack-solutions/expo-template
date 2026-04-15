@@ -1,7 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors, Radii, Spacing, Typography, Shadows } from '@/constants/theme';
+import React, { useMemo } from 'react';
+import {
+ Modal, Pressable, StyleSheet, Text, View 
+} from 'react-native';
+import {
+ AppColors, Radii, Shadows, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import { Button } from './button';
 
 export type FeedbackVariant = 'success' | 'error' | 'info' | 'warning';
@@ -18,13 +23,6 @@ const ICONS: Record<FeedbackVariant, keyof typeof Ionicons.glyphMap> = {
   error: 'close-circle',
   info: 'information-circle',
   warning: 'warning',
-};
-
-const ICON_COLORS: Record<FeedbackVariant, string> = {
-  success: Colors.success,
-  error: Colors.error,
-  info: Colors.primary,
-  warning: Colors.warning,
 };
 
 interface FeedbackDialogProps {
@@ -45,6 +43,17 @@ export function FeedbackDialog({
   confirmLabel = 'OK',
   onDismiss,
 }: FeedbackDialogProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const iconColors: Record<FeedbackVariant, string> = useMemo(
+    () => ({
+      success: colors.success,
+      error: colors.error,
+      info: colors.primary,
+      warning: colors.warning,
+    }),
+    [colors],
+  );
   const resolvedTitle = title ?? TITLES[variant];
 
   return (
@@ -58,46 +67,55 @@ export function FeedbackDialog({
       <Pressable style={styles.overlay} onPress={onDismiss}>
         <Pressable style={[styles.dialog, Shadows.xl]} onPress={() => {}}>
           <View style={styles.iconWrap}>
-            <Ionicons name={ICONS[variant]} size={40} color={ICON_COLORS[variant]} />
+            <Ionicons
+name={ICONS[variant]}
+size={40}
+color={iconColors[variant]} />
           </View>
           <Text style={styles.title}>{resolvedTitle}</Text>
           <Text style={styles.message}>{message}</Text>
-          <Button title={confirmLabel} onPress={onDismiss} variant="primary" size="md" fullWidth />
+          <Button
+title={confirmLabel}
+onPress={onDismiss}
+variant="primary"
+size="md"
+fullWidth />
         </Pressable>
       </Pressable>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: Colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xxl,
-  },
-  dialog: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radii.xl,
-    padding: Spacing.xxl,
-    width: '100%',
-    maxWidth: 340,
-  },
-  iconWrap: {
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  title: {
-    ...Typography.h3,
-    color: Colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  message: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xxl,
-  },
-});
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: Spacing.xxl,
+    },
+    dialog: {
+      backgroundColor: colors.surface,
+      borderRadius: Radii.xl,
+      padding: Spacing.xxl,
+      width: '100%',
+      maxWidth: 340,
+    },
+    iconWrap: {
+      alignItems: 'center',
+      marginBottom: Spacing.md,
+    },
+    title: {
+      ...Typography.h3,
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: Spacing.sm,
+    },
+    message: {
+      ...Typography.body,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: Spacing.xxl,
+    },
+  });

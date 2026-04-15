@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 
 interface SafeScreenProps {
   children: React.ReactNode;
@@ -29,17 +29,19 @@ export function SafeScreen({
   children,
   topSafe = true,
   bottomSafe = true,
-  backgroundColor = Colors.background,
+  backgroundColor,
   style,
 }: SafeScreenProps) {
+  const colors = useAppColors();
   const insets = useSafeAreaInsets();
+  const resolvedBackgroundColor = backgroundColor ?? colors.background;
 
   return (
     <View
       style={[
         styles.container,
         {
-          backgroundColor,
+          backgroundColor: resolvedBackgroundColor,
           paddingTop: topSafe ? insets.top : 0,
           paddingBottom: bottomSafe ? insets.bottom : 0,
         },

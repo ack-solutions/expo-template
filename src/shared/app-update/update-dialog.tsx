@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
-  ActivityIndicator,
   Modal,
-  Pressable,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
+
+import { AppText, Button } from '@/components/ui';
+import {
+  AppColors,
+  Radii,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 
 export type UpdateDialogProps = {
   visible: boolean;
@@ -28,35 +34,43 @@ export function UpdateDialog({
   onUpdateNow,
   loading = false,
 }: UpdateDialogProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onLater}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onLater}>
       <View style={styles.backdrop}>
         <View style={styles.card}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+          <AppText
+variant="h3"
+color="primary"
+style={styles.title}>
+            {title}
+          </AppText>
+          <AppText
+variant="body"
+color="secondary"
+style={styles.message}>
+            {message}
+          </AppText>
           <View style={styles.actions}>
-            <Pressable
-              accessibilityRole="button"
+            <Button
+              title="Later"
               onPress={onLater}
-              style={({ pressed }) => [styles.buttonSecondary, pressed && styles.pressed]}
               disabled={loading}
-            >
-              <Text style={styles.buttonSecondaryLabel}>Later</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
+              variant="ghost"
+            />
+            <Button
+              title="Update now"
               onPress={() => {
                 void onUpdateNow();
               }}
-              style={({ pressed }) => [styles.buttonPrimary, pressed && styles.pressed]}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.buttonPrimaryLabel}>Update now</Text>
-              )}
-            </Pressable>
+              loading={loading}
+            />
           </View>
         </View>
       </View>
@@ -64,55 +78,30 @@ export function UpdateDialog({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    gap: 12,
-  },
-  title: {
-    color: '#111',
-  },
-  message: {
-    color: '#444',
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-    marginTop: 8,
-  },
-  buttonSecondary: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    backgroundColor: '#f0f0f0',
-    minWidth: 96,
-    alignItems: 'center',
-  },
-  buttonSecondaryLabel: {
-    color: '#222',
-  },
-  buttonPrimary: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    backgroundColor: '#2563eb',
-    minWidth: 120,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonPrimaryLabel: {
-    color: '#fff',
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-});
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
+    backdrop: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.xxxl,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: Radii.xl,
+      padding: Spacing.xxl,
+      gap: Spacing.md,
+    },
+    title: {
+      ...Typography.h3,
+    },
+    message: {
+      ...Typography.body,
+    },
+    actions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      gap: Spacing.md,
+      marginTop: Spacing.xs,
+    },
+  });

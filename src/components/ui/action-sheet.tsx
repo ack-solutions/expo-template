@@ -1,5 +1,10 @@
-import { Colors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  AppColors, Radii, Shadows, Spacing, Typography
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import React, {
+  useEffect, useMemo, useRef, useState
+} from 'react';
 import {
   Animated,
   Dimensions,
@@ -37,7 +42,11 @@ interface ActionSheetProps {
 /**
  * Bottom sheet–style menu: backdrop fades in/out; sheet slides. Modal uses no system animation.
  */
-export function ActionSheet({ visible, onClose, title, subtitle, children }: ActionSheetProps) {
+export function ActionSheet({
+ visible, onClose, title, subtitle, children 
+}: ActionSheetProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, Spacing.lg);
   const [renderModal, setRenderModal] = useState(visible);
@@ -117,7 +126,10 @@ export function ActionSheet({ visible, onClose, title, subtitle, children }: Act
           style={[
             styles.sheet,
             Shadows.xl,
-            { paddingBottom: bottomPad, transform: [{ translateY: sheetY }] },
+            {
+ paddingBottom: bottomPad,
+transform: [{ translateY: sheetY }] 
+},
           ]}
           pointerEvents="box-none"
         >
@@ -158,6 +170,8 @@ export function ActionSheetRow({
   variant = 'default',
   edge = 'default',
 }: ActionSheetRowProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isDanger = variant === 'danger';
   const rowStyle: StyleProp<ViewStyle> = [
     styles.row,
@@ -169,7 +183,11 @@ export function ActionSheetRow({
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [rowStyle, pressed && !isDanger && styles.rowPressedDefault, pressed && isDanger && styles.rowPressedDanger]}
+      style={({ pressed }) => [
+rowStyle,
+pressed && !isDanger && styles.rowPressedDefault,
+pressed && isDanger && styles.rowPressedDanger
+]}
       accessibilityRole="button"
       accessibilityLabel={label}
     >
@@ -181,17 +199,18 @@ export function ActionSheetRow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   root: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.overlay,
+    backgroundColor: colors.overlay,
   },
   sheet: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: Radii.xl,
     borderTopRightRadius: Radii.xl,
     paddingTop: Spacing.xs,
@@ -204,19 +223,19 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
     marginBottom: Spacing.md,
   },
   title: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.xs,
     textAlign: 'center',
   },
   subtitle: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.sm,
     textAlign: 'center',
@@ -234,7 +253,7 @@ const styles = StyleSheet.create({
   },
   rowBorderBottom: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   rowBeforeDanger: {
     marginBottom: Spacing.xs,
@@ -243,13 +262,13 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
     paddingTop: Spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.border,
+    borderTopColor: colors.border,
   },
   rowPressedDefault: {
-    backgroundColor: Colors.primaryFaded,
+    backgroundColor: colors.primaryFaded,
   },
   rowPressedDanger: {
-    backgroundColor: Colors.errorFaded,
+    backgroundColor: colors.errorFaded,
   },
   iconCircle: {
     width: 40,
@@ -259,18 +278,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconCircleDefault: {
-    backgroundColor: Colors.primaryFaded,
+    backgroundColor: colors.primaryFaded,
   },
   iconCircleDanger: {
-    backgroundColor: Colors.errorFaded,
+    backgroundColor: colors.errorFaded,
   },
   rowLabel: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     flex: 1,
   },
   rowLabelDanger: {
-    color: Colors.error,
+    color: colors.error,
   },
   cancelBtn: {
     marginTop: Spacing.sm,
@@ -278,12 +297,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     alignItems: 'center',
     borderRadius: Radii.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    backgroundColor: colors.surface,
   },
   cancelBtnPressed: {
-    backgroundColor: Colors.borderLight,
+    backgroundColor: colors.borderLight,
   },
   cancelText: {
     ...Typography.bodyMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
-});
+  });

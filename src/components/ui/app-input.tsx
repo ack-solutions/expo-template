@@ -1,4 +1,7 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import {
+ AppColors, Radii, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import React, { forwardRef, useRef } from 'react';
 import {
   NativeSyntheticEvent,
@@ -53,9 +56,21 @@ interface AppInputProps extends Omit<TextInputProps, 'style'> {
 // ─── Size Config ──────────────────────────────────────────────────────────────
 
 const sizeConfig: Record<InputSize, { fontSize: number; height: number; iconSize: number }> = {
-  sm: { fontSize: 13, height: 40, iconSize: 16 },
-  md: { fontSize: 14, height: 48, iconSize: 18 },
-  lg: { fontSize: 15, height: 56, iconSize: 20 },
+  sm: {
+ fontSize: 13,
+height: 40,
+iconSize: 16 
+},
+  md: {
+ fontSize: 14,
+height: 48,
+iconSize: 18 
+},
+  lg: {
+ fontSize: 15,
+height: 56,
+iconSize: 20 
+},
 };
 
 // ─── Animation config ─────────────────────────────────────────────────────────
@@ -104,6 +119,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     },
     ref,
   ) => {
+    const colors = useAppColors();
+    const styles = createStyles(colors);
     const internalRef = useRef<TextInput>(null);
     const inputRef = (ref as React.RefObject<TextInput>) ?? internalRef;
 
@@ -116,26 +133,26 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
 
     const animBorderStyle = useAnimatedStyle(() => {
       if (hasError) {
-        return { borderColor: Colors.error };
+        return { borderColor: colors.error };
       }
       return {
         borderColor: interpolateColor(
           focusProgress.value,
           [0, 1],
-          [Colors.border, Colors.primary],
+          [colors.border, colors.primary],
         ),
       };
     });
 
     const animLabelStyle = useAnimatedStyle(() => {
       if (hasError) {
-        return { color: Colors.error };
+        return { color: colors.error };
       }
       return {
         color: interpolateColor(
           focusProgress.value,
           [0, 1],
-          [Colors.textSecondary, Colors.primary],
+          [colors.textSecondary, colors.primary],
         ),
       };
     });
@@ -151,10 +168,10 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     }
 
     const fieldBg = disabled
-      ? Colors.borderLight
+      ? colors.borderLight
       : variant === 'filled'
-      ? Colors.primaryFaded
-      : Colors.surface;
+      ? colors.primaryFaded
+      : colors.surface;
 
     return (
       <Pressable
@@ -163,7 +180,11 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
         accessibilityRole="none"
       >
         {label && (
-          <Animated.Text style={[styles.label, animLabelStyle, disabled && styles.labelDisabled]}>
+          <Animated.Text style={[
+styles.label,
+animLabelStyle,
+disabled && styles.labelDisabled
+]}>
             {label}
           </Animated.Text>
         )}
@@ -194,10 +215,10 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
               styles.input,
               {
                 fontSize: cfg.fontSize,
-                color: disabled ? Colors.textTertiary : Colors.textPrimary,
+                color: disabled ? colors.textTertiary : colors.textPrimary,
               },
             ]}
-            placeholderTextColor={Colors.textTertiary}
+            placeholderTextColor={colors.textTertiary}
           />
 
           {rightSlot && (
@@ -219,7 +240,8 @@ AppInput.displayName = 'AppInput';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   container: {
     gap: Spacing.xs,
   },
@@ -227,7 +249,7 @@ const styles = StyleSheet.create({
     ...Typography.captionMedium,
   },
   labelDisabled: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   field: {
     flexDirection: 'row',
@@ -258,9 +280,9 @@ const styles = StyleSheet.create({
     ...Typography.small,
   },
   errorText: {
-    color: Colors.error,
+    color: colors.error,
   },
   hintText: {
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
-});
+  });

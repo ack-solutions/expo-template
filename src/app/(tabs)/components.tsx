@@ -41,7 +41,8 @@ import {
   Toolbar,
   VStack,
 } from '@/components/ui';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -49,12 +50,16 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const colors = useAppColors();
   return (
     <Stack gap="md">
       <AppText
         variant="h3"
         color="primary"
-        style={styles.sectionTitle}
+        style={{
+ ...styles.sectionTitle,
+borderBottomColor: colors.border 
+}}
       >
         {title}
       </AppText>
@@ -66,6 +71,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ComponentsScreen() {
+  const colors = useAppColors();
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
@@ -117,9 +123,15 @@ export default function ComponentsScreen() {
           </AppText>
           <AppCard>
             <HStack gap="sm" align="center">
-              <Ionicons name="checkmark-circle" size={18} color={Colors.success} />
+              <Ionicons
+name="checkmark-circle"
+size={18}
+color={colors.success} />
               <AppText variant="bodyMedium">Verified account</AppText>
-              <Badge label="Pro" variant="primary" size="sm" />
+              <Badge
+label="Pro"
+variant="primary"
+size="sm" />
             </HStack>
           </AppCard>
 
@@ -149,7 +161,10 @@ export default function ComponentsScreen() {
               onChangeText={setInputValue}
               placeholder="Doe"
             />
-            <Button title="Submit" onPress={() => {}} fullWidth />
+            <Button
+title="Submit"
+onPress={() => {}}
+fullWidth />
           </Stack>
         </Section>
 
@@ -185,7 +200,13 @@ export default function ComponentsScreen() {
         <Section title="Buttons">
           <AppText variant="captionMedium" color="secondary">Variants (tap for spring animation)</AppText>
           <VStack gap="sm">
-            {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((v) => (
+            {([
+'primary',
+'secondary',
+'outline',
+'ghost',
+'danger'
+] as const).map((v) => (
               <Button
                 key={v}
                 title={v.charAt(0).toUpperCase() + v.slice(1)}
@@ -197,22 +218,43 @@ export default function ComponentsScreen() {
 
           <AppText variant="captionMedium" color="secondary">Sizes (sm / md / lg)</AppText>
           <VStack gap="sm">
-            <Button title="Small — 40 pt" size="sm" onPress={() => {}} />
-            <Button title="Medium — 48 pt" size="md" onPress={() => {}} />
-            <Button title="Large — 56 pt" size="lg" onPress={() => {}} />
+            <Button
+title="Small — 40 pt"
+size="sm"
+onPress={() => {}} />
+            <Button
+title="Medium — 48 pt"
+size="md"
+onPress={() => {}} />
+            <Button
+title="Large — 56 pt"
+size="lg"
+onPress={() => {}} />
           </VStack>
 
           <AppText variant="captionMedium" color="secondary">States</AppText>
           <HStack gap="sm">
-            <Button title="Loading" loading onPress={() => {}} />
-            <Button title="Disabled" disabled onPress={() => {}} />
+            <Button
+title="Loading"
+loading
+onPress={() => {}} />
+            <Button
+title="Disabled"
+disabled
+onPress={() => {}} />
           </HStack>
           <Button
             title="With icon"
-            icon={<Ionicons name="add" size={17} color={Colors.textInverse} />}
+            icon={<Ionicons
+name="add"
+size={17}
+color={colors.textInverse} />}
             onPress={() => {}}
           />
-          <Button title="Full Width" fullWidth onPress={() => {}} />
+          <Button
+title="Full Width"
+fullWidth
+onPress={() => {}} />
         </Section>
 
         <Divider />
@@ -254,8 +296,14 @@ export default function ComponentsScreen() {
               value={inputValue}
               onChangeText={setInputValue}
               placeholder="Search…"
-              leftSlot={<Ionicons name="search" size={18} color={Colors.textTertiary} />}
-              rightSlot={<Ionicons name="mic-outline" size={18} color={Colors.textTertiary} />}
+              leftSlot={<Ionicons
+name="search"
+size={18}
+color={colors.textTertiary} />}
+              rightSlot={<Ionicons
+name="mic-outline"
+size={18}
+color={colors.textTertiary} />}
             />
             <AppInput
               label="Disabled"
@@ -267,9 +315,24 @@ export default function ComponentsScreen() {
 
           <AppText variant="captionMedium" color="secondary">Sizes</AppText>
           <Stack gap="md">
-            <AppInput label="Small — 40 pt" size="sm" value={inputValue} onChangeText={setInputValue} placeholder="sm" />
-            <AppInput label="Medium — 48 pt" size="md" value={inputValue} onChangeText={setInputValue} placeholder="md" />
-            <AppInput label="Large — 56 pt" size="lg" value={inputValue} onChangeText={setInputValue} placeholder="lg" />
+            <AppInput
+label="Small — 40 pt"
+size="sm"
+value={inputValue}
+onChangeText={setInputValue}
+placeholder="sm" />
+            <AppInput
+label="Medium — 48 pt"
+size="md"
+value={inputValue}
+onChangeText={setInputValue}
+placeholder="md" />
+            <AppInput
+label="Large — 56 pt"
+size="lg"
+value={inputValue}
+onChangeText={setInputValue}
+placeholder="lg" />
           </Stack>
 
           <AppInput
@@ -310,10 +373,26 @@ export default function ComponentsScreen() {
             onChange={(opt) => setSelectValue(opt.value)}
             placeholder="Choose priority"
             options={[
-              { label: 'Low', value: 'low', description: 'Non-urgent, handle when possible' },
-              { label: 'Medium', value: 'medium', description: 'Normal priority' },
-              { label: 'High', value: 'high', description: 'Address as soon as possible' },
-              { label: 'Critical', value: 'critical', description: 'Drop everything' },
+              {
+ label: 'Low',
+value: 'low',
+description: 'Non-urgent, handle when possible' 
+},
+              {
+ label: 'Medium',
+value: 'medium',
+description: 'Normal priority' 
+},
+              {
+ label: 'High',
+value: 'high',
+description: 'Address as soon as possible' 
+},
+              {
+ label: 'Critical',
+value: 'critical',
+description: 'Drop everything' 
+},
             ]}
           />
 
@@ -342,10 +421,22 @@ export default function ComponentsScreen() {
               placeholder="Select category"
               searchable={false}
               options={[
-                { label: 'Product', value: 'product' },
-                { label: 'Service', value: 'service' },
-                { label: 'Billing', value: 'billing' },
-                { label: 'Support', value: 'support' },
+                {
+ label: 'Product',
+value: 'product' 
+},
+                {
+ label: 'Service',
+value: 'service' 
+},
+                {
+ label: 'Billing',
+value: 'billing' 
+},
+                {
+ label: 'Support',
+value: 'support' 
+},
               ]}
             />
             <AppSelect
@@ -370,9 +461,18 @@ export default function ComponentsScreen() {
               onChange={(opt) => setSelectValue(opt.value)}
               placeholder="Choose one"
               options={[
-                { label: 'Option A', value: 'a' },
-                { label: 'Option B', value: 'b' },
-                { label: 'Option C', value: 'c' },
+                {
+ label: 'Option A',
+value: 'a' 
+},
+                {
+ label: 'Option B',
+value: 'b' 
+},
+                {
+ label: 'Option C',
+value: 'c' 
+},
               ]}
             />
             <AppSelect
@@ -381,7 +481,16 @@ export default function ComponentsScreen() {
               value={selectValue}
               onChange={(opt) => setSelectValue(opt.value)}
               placeholder="sm"
-              options={[{ label: 'One', value: '1' }, { label: 'Two', value: '2' }]}
+              options={[
+{
+ label: 'One',
+value: '1' 
+},
+{
+ label: 'Two',
+value: '2' 
+}
+]}
             />
             <AppSelect
               label="Large — 56 pt"
@@ -389,14 +498,28 @@ export default function ComponentsScreen() {
               value={selectValue}
               onChange={(opt) => setSelectValue(opt.value)}
               placeholder="lg"
-              options={[{ label: 'One', value: '1' }, { label: 'Two', value: '2' }]}
+              options={[
+{
+ label: 'One',
+value: '1' 
+},
+{
+ label: 'Two',
+value: '2' 
+}
+]}
             />
             <AppSelect
               label="With error"
               value=""
               onChange={() => {}}
               error="Please select an option"
-              options={[{ label: 'One', value: '1' }]}
+              options={[
+{
+ label: 'One',
+value: '1' 
+}
+]}
             />
             <AppSelect
               label="With hint"
@@ -404,14 +527,28 @@ export default function ComponentsScreen() {
               onChange={(opt) => setSelectValue(opt.value)}
               hint="This setting can be changed later"
               placeholder="Choose one"
-              options={[{ label: 'Option A', value: 'a' }, { label: 'Option B', value: 'b' }]}
+              options={[
+{
+ label: 'Option A',
+value: 'a' 
+},
+{
+ label: 'Option B',
+value: 'b' 
+}
+]}
             />
             <AppSelect
               label="Disabled"
               value="a"
               onChange={() => {}}
               disabled
-              options={[{ label: 'Option A', value: 'a' }]}
+              options={[
+{
+ label: 'Option A',
+value: 'a' 
+}
+]}
             />
           </Stack>
         </Section>
@@ -459,22 +596,49 @@ export default function ComponentsScreen() {
         <Section title="Badge">
           <AppText variant="captionMedium" color="secondary">Variants</AppText>
           <HStack gap="sm" wrap>
-            {(['primary', 'success', 'error', 'warning', 'neutral'] as const).map((v) => (
-              <Badge key={v} label={v} variant={v} />
+            {([
+'primary',
+'success',
+'error',
+'warning',
+'neutral'
+] as const).map((v) => (
+              <Badge
+key={v}
+label={v}
+variant={v} />
             ))}
           </HStack>
 
           <AppText variant="captionMedium" color="secondary">Sizes</AppText>
           <HStack gap="sm" align="center">
-            <Badge label="sm" variant="primary" size="sm" />
-            <Badge label="md" variant="primary" size="md" />
-            <Badge label="lg" variant="primary" size="lg" />
+            <Badge
+label="sm"
+variant="primary"
+size="sm" />
+            <Badge
+label="md"
+variant="primary"
+size="md" />
+            <Badge
+label="lg"
+variant="primary"
+size="lg" />
           </HStack>
 
           <AppText variant="captionMedium" color="secondary">Dot mode</AppText>
           <HStack gap="md" align="center">
-            {(['primary', 'success', 'error', 'warning'] as const).map((v) => (
-              <Badge key={v} label="" variant={v} dot />
+            {([
+'primary',
+'success',
+'error',
+'warning'
+] as const).map((v) => (
+              <Badge
+key={v}
+label=""
+variant={v}
+dot />
             ))}
           </HStack>
         </Section>
@@ -485,22 +649,45 @@ export default function ComponentsScreen() {
         <Section title="Avatar">
           <AppText variant="captionMedium" color="secondary">Sizes with initials</AppText>
           <HStack gap="md" align="center">
-            {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((s) => (
-              <Avatar key={s} name="John Doe" size={s} />
+            {([
+'xs',
+'sm',
+'md',
+'lg',
+'xl'
+] as const).map((s) => (
+              <Avatar
+key={s}
+name="John Doe"
+size={s} />
             ))}
           </HStack>
 
           <AppText variant="captionMedium" color="secondary">Stable colors from name</AppText>
           <HStack gap="sm">
-            {['Alice Baker', 'Bob Chen', 'Carol Davis', 'David Evans'].map((name) => (
-              <Avatar key={name} name={name} size="md" />
+            {[
+'Alice Baker',
+'Bob Chen',
+'Carol Davis',
+'David Evans'
+].map((name) => (
+              <Avatar
+key={name}
+name={name}
+size="md" />
             ))}
           </HStack>
 
           <AppText variant="captionMedium" color="secondary">Rounded shape</AppText>
           <HStack gap="sm">
-            <Avatar name="Support" shape="rounded" size="lg" />
-            <Avatar name="Admin User" shape="rounded" size="lg" />
+            <Avatar
+name="Support"
+shape="rounded"
+size="lg" />
+            <Avatar
+name="Admin User"
+shape="rounded"
+size="lg" />
           </HStack>
         </Section>
 
@@ -519,7 +706,12 @@ export default function ComponentsScreen() {
 
           <AppText variant="captionMedium" color="secondary">Filter chips</AppText>
           <HStack gap="sm" wrap>
-            {(['Design', 'Engineering', 'Product', 'Marketing'] as const).map((label) => (
+            {([
+'Design',
+'Engineering',
+'Product',
+'Marketing'
+] as const).map((label) => (
               <Chip
                 key={label}
                 label={label}
@@ -532,8 +724,14 @@ export default function ComponentsScreen() {
 
           <AppText variant="captionMedium" color="secondary">With remove</AppText>
           <HStack gap="sm" wrap>
-            <Chip label="React Native" variant="filled" onRemove={() => {}} />
-            <Chip label="TypeScript" variant="filled" onRemove={() => {}} />
+            <Chip
+label="React Native"
+variant="filled"
+onRemove={() => {}} />
+            <Chip
+label="TypeScript"
+variant="filled"
+onRemove={() => {}} />
           </HStack>
         </Section>
 
@@ -580,8 +778,16 @@ export default function ComponentsScreen() {
               onPress={() => {}}
               label="Indeterminate state"
             />
-            <AppCheckbox checked={false} onPress={() => {}} label="Disabled" disabled />
-            <AppCheckbox checked onPress={() => {}} label="Disabled checked" disabled />
+            <AppCheckbox
+checked={false}
+onPress={() => {}}
+label="Disabled"
+disabled />
+            <AppCheckbox
+checked
+onPress={() => {}}
+label="Disabled checked"
+disabled />
           </VStack>
         </Section>
 
@@ -596,8 +802,16 @@ export default function ComponentsScreen() {
               label="Notifications"
               description="Receive push notifications"
             />
-            <AppSwitch value={true} onValueChange={() => {}} label="Disabled on" disabled />
-            <AppSwitch value={false} onValueChange={() => {}} label="Disabled off" disabled />
+            <AppSwitch
+value={true}
+onValueChange={() => {}}
+label="Disabled on"
+disabled />
+            <AppSwitch
+value={false}
+onValueChange={() => {}}
+label="Disabled off"
+disabled />
             <AppSwitch
               value={switchOn}
               onValueChange={setSwitchOn}
@@ -615,9 +829,21 @@ export default function ComponentsScreen() {
             value={radioValue}
             onChange={setRadioValue}
             options={[
-              { label: 'Option A', value: 'option_a', description: 'First choice' },
-              { label: 'Option B', value: 'option_b', description: 'Second choice' },
-              { label: 'Option C — disabled', value: 'option_c', disabled: true },
+              {
+ label: 'Option A',
+value: 'option_a',
+description: 'First choice' 
+},
+              {
+ label: 'Option B',
+value: 'option_b',
+description: 'Second choice' 
+},
+              {
+ label: 'Option C — disabled',
+value: 'option_c',
+disabled: true 
+},
             ]}
           />
           <AppText variant="captionMedium" color="secondary">Horizontal layout</AppText>
@@ -626,9 +852,18 @@ export default function ComponentsScreen() {
             onChange={setRadioValue}
             direction="horizontal"
             options={[
-              { label: 'Yes', value: 'option_a' },
-              { label: 'No', value: 'option_b' },
-              { label: 'Maybe', value: 'option_c' },
+              {
+ label: 'Yes',
+value: 'option_a' 
+},
+              {
+ label: 'No',
+value: 'option_b' 
+},
+              {
+ label: 'Maybe',
+value: 'option_c' 
+},
             ]}
           />
         </Section>
@@ -651,7 +886,10 @@ export default function ComponentsScreen() {
             <AppCard shadow="md">
               <CardHeader
                 title="Shadow md"
-                right={<Badge label="New" variant="primary" size="sm" />}
+                right={<Badge
+label="New"
+variant="primary"
+size="sm" />}
               />
               <AppText variant="body" color="secondary">Medium shadow for elevated panels.</AppText>
             </AppCard>
@@ -673,7 +911,10 @@ export default function ComponentsScreen() {
                 onPress={() => {}}
                 showDivider
               />
-              <ListItem title="Another row" accessory="arrow" onPress={() => {}} />
+              <ListItem
+title="Another row"
+accessory="arrow"
+onPress={() => {}} />
             </AppCard>
           </VStack>
         </Section>
@@ -686,15 +927,24 @@ export default function ComponentsScreen() {
             <ListItem
               title="Icon + arrow"
               subtitle="Navigation row"
-              left={<Ionicons name="person-circle-outline" size={22} color={Colors.primary} />}
+              left={<Ionicons
+name="person-circle-outline"
+size={22}
+color={colors.primary} />}
               accessory="arrow"
               onPress={() => {}}
               showDivider
             />
             <ListItem
               title="With badge"
-              left={<Ionicons name="notifications-outline" size={22} color={Colors.primary} />}
-              right={<Badge label="5" variant="error" size="sm" />}
+              left={<Ionicons
+name="notifications-outline"
+size={22}
+color={colors.primary} />}
+              right={<Badge
+label="5"
+variant="error"
+size="sm" />}
               onPress={() => {}}
               showDivider
             />
@@ -707,7 +957,10 @@ export default function ComponentsScreen() {
             />
             <ListItem
               title="Disabled"
-              left={<Ionicons name="lock-closed-outline" size={22} color={Colors.textTertiary} />}
+              left={<Ionicons
+name="lock-closed-outline"
+size={22}
+color={colors.textTertiary} />}
               accessory="arrow"
               disabled
               showDivider
@@ -725,10 +978,22 @@ export default function ComponentsScreen() {
         <Section title="Progress Bar">
           <AppText variant="captionMedium" color="secondary">Variants</AppText>
           <VStack gap="md">
-            <ProgressBar value={70} variant="primary" showLabel />
-            <ProgressBar value={85} variant="success" showLabel />
-            <ProgressBar value={45} variant="warning" showLabel />
-            <ProgressBar value={30} variant="error" showLabel />
+            <ProgressBar
+value={70}
+variant="primary"
+showLabel />
+            <ProgressBar
+value={85}
+variant="success"
+showLabel />
+            <ProgressBar
+value={45}
+variant="warning"
+showLabel />
+            <ProgressBar
+value={30}
+variant="error"
+showLabel />
           </VStack>
 
           <AppText variant="captionMedium" color="secondary">Sizes (sm / md / lg)</AppText>
@@ -738,7 +1003,11 @@ export default function ComponentsScreen() {
             <ProgressBar value={60} size="lg" />
           </VStack>
 
-          <ProgressBar value={100} variant="error" label="Upload failed" showLabel />
+          <ProgressBar
+value={100}
+variant="error"
+label="Upload failed"
+showLabel />
         </Section>
 
         <Divider />
@@ -747,7 +1016,10 @@ export default function ComponentsScreen() {
         <Section title="Skeleton">
           <AppText variant="captionMedium" color="secondary">Blocks</AppText>
           <HStack gap="md" align="center">
-            <Skeleton width={64} height={64} borderRadius={32} />
+            <Skeleton
+width={64}
+height={64}
+borderRadius={32} />
             <VStack gap="sm" flex={1}>
               <Skeleton height={16} width="60%" />
               <Skeleton height={13} />
@@ -771,11 +1043,21 @@ export default function ComponentsScreen() {
         <Section title="Empty State">
           <AppCard>
             <EmptyState
-              icon={<Ionicons name="folder-open-outline" size={48} color={Colors.textTertiary} />}
+              icon={<Ionicons
+name="folder-open-outline"
+size={48}
+color={colors.textTertiary} />}
               title="No items yet"
               description="Create your first item to get started with the list."
-              action={{ label: 'Create item', onPress: () => {} }}
-              secondaryAction={{ label: 'Learn more', onPress: () => {}, variant: 'ghost' }}
+              action={{
+ label: 'Create item',
+onPress: () => {} 
+}}
+              secondaryAction={{
+ label: 'Learn more',
+onPress: () => {},
+variant: 'ghost' 
+}}
             />
           </AppCard>
         </Section>
@@ -833,19 +1115,28 @@ export default function ComponentsScreen() {
         subtitle="Choose an action to perform"
       >
         <ActionSheetRow
-          icon={<Ionicons name="pencil-outline" size={20} color={Colors.primary} />}
+          icon={<Ionicons
+name="pencil-outline"
+size={20}
+color={colors.primary} />}
           label="Edit"
           onPress={() => setActionSheetVisible(false)}
           edge="default"
         />
         <ActionSheetRow
-          icon={<Ionicons name="share-outline" size={20} color={Colors.primary} />}
+          icon={<Ionicons
+name="share-outline"
+size={20}
+color={colors.primary} />}
           label="Share"
           onPress={() => setActionSheetVisible(false)}
           edge="beforeDanger"
         />
         <ActionSheetRow
-          icon={<Ionicons name="trash-outline" size={20} color={Colors.error} />}
+          icon={<Ionicons
+name="trash-outline"
+size={20}
+color={colors.error} />}
           label="Delete"
           onPress={() => setActionSheetVisible(false)}
           variant="danger"
@@ -859,40 +1150,156 @@ export default function ComponentsScreen() {
 // ─── Demo data ────────────────────────────────────────────────────────────────
 
 const TIMEZONE_OPTIONS = [
-  { label: 'UTC', value: 'UTC', description: 'Coordinated Universal Time' },
-  { label: 'America/New_York', value: 'America/New_York', description: 'Eastern Time (ET)' },
-  { label: 'America/Chicago', value: 'America/Chicago', description: 'Central Time (CT)' },
-  { label: 'America/Denver', value: 'America/Denver', description: 'Mountain Time (MT)' },
-  { label: 'America/Los_Angeles', value: 'America/Los_Angeles', description: 'Pacific Time (PT)' },
-  { label: 'America/Anchorage', value: 'America/Anchorage', description: 'Alaska Time' },
-  { label: 'Pacific/Honolulu', value: 'Pacific/Honolulu', description: 'Hawaii Time' },
-  { label: 'Europe/London', value: 'Europe/London', description: 'Greenwich Mean Time (GMT)' },
-  { label: 'Europe/Paris', value: 'Europe/Paris', description: 'Central European Time (CET)' },
-  { label: 'Europe/Berlin', value: 'Europe/Berlin', description: 'Central European Time (CET)' },
-  { label: 'Europe/Helsinki', value: 'Europe/Helsinki', description: 'Eastern European Time (EET)' },
-  { label: 'Europe/Istanbul', value: 'Europe/Istanbul', description: 'Turkey Time (TRT)' },
-  { label: 'Asia/Dubai', value: 'Asia/Dubai', description: 'Gulf Standard Time (GST)' },
-  { label: 'Asia/Karachi', value: 'Asia/Karachi', description: 'Pakistan Standard Time (PKT)' },
-  { label: 'Asia/Kolkata', value: 'Asia/Kolkata', description: 'India Standard Time (IST)' },
-  { label: 'Asia/Dhaka', value: 'Asia/Dhaka', description: 'Bangladesh Standard Time (BST)' },
-  { label: 'Asia/Bangkok', value: 'Asia/Bangkok', description: 'Indochina Time (ICT)' },
-  { label: 'Asia/Singapore', value: 'Asia/Singapore', description: 'Singapore Time (SGT)' },
-  { label: 'Asia/Shanghai', value: 'Asia/Shanghai', description: 'China Standard Time (CST)' },
-  { label: 'Asia/Tokyo', value: 'Asia/Tokyo', description: 'Japan Standard Time (JST)' },
-  { label: 'Asia/Seoul', value: 'Asia/Seoul', description: 'Korea Standard Time (KST)' },
-  { label: 'Australia/Sydney', value: 'Australia/Sydney', description: 'Australian Eastern Time (AET)' },
-  { label: 'Australia/Perth', value: 'Australia/Perth', description: 'Australian Western Time (AWT)' },
-  { label: 'Pacific/Auckland', value: 'Pacific/Auckland', description: 'New Zealand Time (NZT)' },
-  { label: 'America/Sao_Paulo', value: 'America/Sao_Paulo', description: 'Brasilia Time (BRT)' },
-  { label: 'America/Buenos_Aires', value: 'America/Buenos_Aires', description: 'Argentina Time (ART)' },
-  { label: 'Africa/Cairo', value: 'Africa/Cairo', description: 'Eastern European Time (EET)' },
-  { label: 'Africa/Lagos', value: 'Africa/Lagos', description: 'West Africa Time (WAT)' },
-  { label: 'Africa/Nairobi', value: 'Africa/Nairobi', description: 'East Africa Time (EAT)' },
+  {
+ label: 'UTC',
+value: 'UTC',
+description: 'Coordinated Universal Time' 
+},
+  {
+ label: 'America/New_York',
+value: 'America/New_York',
+description: 'Eastern Time (ET)' 
+},
+  {
+ label: 'America/Chicago',
+value: 'America/Chicago',
+description: 'Central Time (CT)' 
+},
+  {
+ label: 'America/Denver',
+value: 'America/Denver',
+description: 'Mountain Time (MT)' 
+},
+  {
+ label: 'America/Los_Angeles',
+value: 'America/Los_Angeles',
+description: 'Pacific Time (PT)' 
+},
+  {
+ label: 'America/Anchorage',
+value: 'America/Anchorage',
+description: 'Alaska Time' 
+},
+  {
+ label: 'Pacific/Honolulu',
+value: 'Pacific/Honolulu',
+description: 'Hawaii Time' 
+},
+  {
+ label: 'Europe/London',
+value: 'Europe/London',
+description: 'Greenwich Mean Time (GMT)' 
+},
+  {
+ label: 'Europe/Paris',
+value: 'Europe/Paris',
+description: 'Central European Time (CET)' 
+},
+  {
+ label: 'Europe/Berlin',
+value: 'Europe/Berlin',
+description: 'Central European Time (CET)' 
+},
+  {
+ label: 'Europe/Helsinki',
+value: 'Europe/Helsinki',
+description: 'Eastern European Time (EET)' 
+},
+  {
+ label: 'Europe/Istanbul',
+value: 'Europe/Istanbul',
+description: 'Turkey Time (TRT)' 
+},
+  {
+ label: 'Asia/Dubai',
+value: 'Asia/Dubai',
+description: 'Gulf Standard Time (GST)' 
+},
+  {
+ label: 'Asia/Karachi',
+value: 'Asia/Karachi',
+description: 'Pakistan Standard Time (PKT)' 
+},
+  {
+ label: 'Asia/Kolkata',
+value: 'Asia/Kolkata',
+description: 'India Standard Time (IST)' 
+},
+  {
+ label: 'Asia/Dhaka',
+value: 'Asia/Dhaka',
+description: 'Bangladesh Standard Time (BST)' 
+},
+  {
+ label: 'Asia/Bangkok',
+value: 'Asia/Bangkok',
+description: 'Indochina Time (ICT)' 
+},
+  {
+ label: 'Asia/Singapore',
+value: 'Asia/Singapore',
+description: 'Singapore Time (SGT)' 
+},
+  {
+ label: 'Asia/Shanghai',
+value: 'Asia/Shanghai',
+description: 'China Standard Time (CST)' 
+},
+  {
+ label: 'Asia/Tokyo',
+value: 'Asia/Tokyo',
+description: 'Japan Standard Time (JST)' 
+},
+  {
+ label: 'Asia/Seoul',
+value: 'Asia/Seoul',
+description: 'Korea Standard Time (KST)' 
+},
+  {
+ label: 'Australia/Sydney',
+value: 'Australia/Sydney',
+description: 'Australian Eastern Time (AET)' 
+},
+  {
+ label: 'Australia/Perth',
+value: 'Australia/Perth',
+description: 'Australian Western Time (AWT)' 
+},
+  {
+ label: 'Pacific/Auckland',
+value: 'Pacific/Auckland',
+description: 'New Zealand Time (NZT)' 
+},
+  {
+ label: 'America/Sao_Paulo',
+value: 'America/Sao_Paulo',
+description: 'Brasilia Time (BRT)' 
+},
+  {
+ label: 'America/Buenos_Aires',
+value: 'America/Buenos_Aires',
+description: 'Argentina Time (ART)' 
+},
+  {
+ label: 'Africa/Cairo',
+value: 'Africa/Cairo',
+description: 'Eastern European Time (EET)' 
+},
+  {
+ label: 'Africa/Lagos',
+value: 'Africa/Lagos',
+description: 'West Africa Time (WAT)' 
+},
+  {
+ label: 'Africa/Nairobi',
+value: 'Africa/Nairobi',
+description: 'East Africa Time (EAT)' 
+},
 ];
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = () => StyleSheet.create({
   scroll: {
     flex: 1,
   },
@@ -904,9 +1311,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     paddingBottom: Spacing.xs,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   bottomPad: {
     height: Spacing.huge,
   },
 });
+
+const styles = createStyles();

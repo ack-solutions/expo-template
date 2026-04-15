@@ -1,7 +1,12 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import {
+ AppColors, Radii, Spacing, Typography 
+} from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { forwardRef } from 'react';
-import { Pressable, StyleSheet, TextInput, TextInputProps, ViewStyle } from 'react-native';
+import React, { forwardRef, useMemo } from 'react';
+import {
+ Pressable, StyleSheet, TextInput, TextInputProps, ViewStyle 
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -42,7 +47,11 @@ const TIMING = { duration: 200 };
  * />
  */
 export const SearchBar = forwardRef<TextInput, SearchBarProps>(
-  ({ onClear, style, onFocus, onBlur, value, ...textInputProps }, ref) => {
+  ({
+ onClear, style, onFocus, onBlur, value, ...textInputProps 
+}, ref) => {
+    const colors = useAppColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     const hasValue = Boolean(value && String(value).length > 0);
 
     // 0 = idle, 1 = focused
@@ -52,12 +61,12 @@ export const SearchBar = forwardRef<TextInput, SearchBarProps>(
       backgroundColor: interpolateColor(
         focusProgress.value,
         [0, 1],
-        [Colors.borderLight, Colors.surface],
+        [colors.borderLight, colors.surface],
       ),
       borderColor: interpolateColor(
         focusProgress.value,
         [0, 1],
-        ['transparent', Colors.primary],
+        ['transparent', colors.primary],
       ),
     }));
 
@@ -76,9 +85,16 @@ export const SearchBar = forwardRef<TextInput, SearchBarProps>(
     }
 
     return (
-      <Animated.View style={[styles.container, animContainerStyle, style]}>
+      <Animated.View style={[
+styles.container,
+animContainerStyle,
+style
+]}>
         <Animated.View style={[styles.iconWrap, animIconStyle]}>
-          <Ionicons name="search" size={18} color={Colors.primary} />
+          <Ionicons
+name="search"
+size={18}
+color={colors.primary} />
         </Animated.View>
 
         <TextInput
@@ -86,7 +102,7 @@ export const SearchBar = forwardRef<TextInput, SearchBarProps>(
           value={value}
           {...textInputProps}
           style={styles.input}
-          placeholderTextColor={Colors.textTertiary}
+          placeholderTextColor={colors.textTertiary}
           returnKeyType="search"
           clearButtonMode="never"
           onFocus={handleFocus}
@@ -96,12 +112,20 @@ export const SearchBar = forwardRef<TextInput, SearchBarProps>(
         {hasValue && onClear && (
           <Pressable
             onPress={onClear}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{
+ top: 10,
+bottom: 10,
+left: 10,
+right: 10 
+}}
             style={styles.clearBtn}
             accessibilityRole="button"
             accessibilityLabel="Clear search"
           >
-            <Ionicons name="close-circle" size={18} color={Colors.textTertiary} />
+            <Ionicons
+name="close-circle"
+size={18}
+color={colors.textTertiary} />
           </Pressable>
         )}
       </Animated.View>
@@ -113,7 +137,8 @@ SearchBar.displayName = 'SearchBar';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -130,7 +155,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     ...Typography.body,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     paddingVertical: 0,
   },
   clearBtn: {
@@ -138,4 +163,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+  });

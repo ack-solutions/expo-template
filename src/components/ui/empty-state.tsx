@@ -1,6 +1,9 @@
-import { Colors, Spacing, Typography } from '@/constants/theme';
-import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { AppColors, Spacing, Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import React, { useMemo } from 'react';
+import {
+ StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 import { Button } from './button';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -55,6 +58,9 @@ export function EmptyState({
   secondaryAction,
   style,
 }: EmptyStateProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={[styles.container, style]}>
       {icon && <View style={styles.iconWrap}>{icon}</View>}
@@ -89,36 +95,35 @@ export function EmptyState({
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xxxl,
-    paddingVertical: Spacing.huge,
-  },
-  iconWrap: {
-    marginBottom: Spacing.xxl,
-    opacity: 0.7,
-  },
-  title: {
-    ...Typography.h3,
-    color: Colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  description: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xxl,
-    lineHeight: 22,
-  },
-  actions: {
-    gap: Spacing.sm,
-    alignItems: 'center',
-    width: '100%',
-  },
-});
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: Spacing.xxxl,
+      paddingVertical: Spacing.huge,
+    },
+    iconWrap: {
+      marginBottom: Spacing.xxl,
+      opacity: 0.7,
+    },
+    title: {
+      ...Typography.h3,
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: Spacing.sm,
+    },
+    description: {
+      ...Typography.body,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: Spacing.xxl,
+      lineHeight: 22,
+    },
+    actions: {
+      gap: Spacing.sm,
+      alignItems: 'center',
+      width: '100%',
+    },
+  });

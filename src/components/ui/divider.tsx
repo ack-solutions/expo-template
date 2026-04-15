@@ -1,6 +1,9 @@
-import { Colors, Spacing, Typography } from '@/constants/theme';
-import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Spacing, Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
+import React, { useMemo } from 'react';
+import {
+ StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -36,15 +39,19 @@ interface DividerProps {
 export function Divider({
   orientation = 'horizontal',
   label,
-  color = Colors.border,
+  color,
   style,
 }: DividerProps) {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const resolvedColor = color ?? colors.border;
+
   if (orientation === 'vertical') {
     return (
       <View
         style={[
           styles.vertical,
-          { backgroundColor: color },
+          { backgroundColor: resolvedColor },
           style,
         ]}
       />
@@ -54,9 +61,21 @@ export function Divider({
   if (label) {
     return (
       <View style={[styles.labelRow, style]}>
-        <View style={[styles.line, { backgroundColor: color, flex: 1 }]} />
+        <View style={[
+styles.line,
+{
+ backgroundColor: resolvedColor,
+flex: 1 
+}
+]} />
         <Text style={styles.labelText}>{label}</Text>
-        <View style={[styles.line, { backgroundColor: color, flex: 1 }]} />
+        <View style={[
+styles.line,
+{
+ backgroundColor: resolvedColor,
+flex: 1 
+}
+]} />
       </View>
     );
   }
@@ -65,14 +84,15 @@ export function Divider({
     <View
       style={[
         styles.horizontal,
-        { backgroundColor: color },
+        { backgroundColor: resolvedColor },
         style,
       ]}
     />
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof useAppColors>) =>
+  StyleSheet.create({
   horizontal: {
     height: StyleSheet.hairlineWidth,
     width: '100%',
@@ -92,6 +112,6 @@ const styles = StyleSheet.create({
   },
   labelText: {
     ...Typography.captionMedium,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
-});
+  });

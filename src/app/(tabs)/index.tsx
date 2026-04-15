@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, SafeScreen, Toolbar } from '@/components/ui';
-import { Colors, Spacing } from '@/constants/theme';
+import { AppColors, Spacing } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import { TemplateCard } from '@/modules/template/components/template-card';
 import { useRouter } from 'expo-router';
 
 export default function HomeTemplateScreen() {
+  const colors = useAppColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const router = useRouter();
 
   return (
@@ -18,8 +21,14 @@ export default function HomeTemplateScreen() {
           description="Project-specific feature code has been removed. Keep this structure and build your next app on top of it."
         >
           <View style={styles.actions}>
-            <Button title="Open Data" onPress={() => router.push('/(tabs)/history')} variant="secondary" />
-            <Button title="Open Settings" onPress={() => router.push('/(tabs)/settings')} variant="outline" />
+            <Button
+title="Open Data"
+onPress={() => router.push('/(tabs)/history')}
+variant="secondary" />
+            <Button
+title="Open Settings"
+onPress={() => router.push('/(tabs)/settings')}
+variant="outline" />
           </View>
         </TemplateCard>
       </View>
@@ -27,11 +36,11 @@ export default function HomeTemplateScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   container: {
     flex: 1,
     padding: Spacing.lg,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   actions: {
     gap: Spacing.sm,

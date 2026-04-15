@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.ackplus.expo_templat",
+      "package": "com.ackplus.expo_template",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -50,8 +50,7 @@
       ],
       "expo-notifications",
       "@sentry/react-native",
-      "expo-sqlite",
-      "@react-native-community/datetimepicker"
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,

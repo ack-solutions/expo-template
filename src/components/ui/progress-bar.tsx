@@ -1,4 +1,5 @@
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { Radii, Spacing, Typography } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
@@ -26,13 +27,6 @@ interface ProgressBarProps {
 }
 
 // ─── Style Maps ───────────────────────────────────────────────────────────────
-
-const variantColor: Record<ProgressBarVariant, string> = {
-  primary: Colors.primary,
-  success: Colors.success,
-  warning: Colors.warning,
-  error: Colors.error,
-};
 
 const sizeHeight: Record<ProgressBarSize, number> = {
   sm: 4,
@@ -64,6 +58,13 @@ export function ProgressBar({
   animated = true,
   style,
 }: ProgressBarProps) {
+  const colors = useAppColors();
+  const variantColor: Record<ProgressBarVariant, string> = {
+    primary: colors.primary,
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.error,
+  };
   const clampedValue = Math.min(100, Math.max(0, value));
   const widthAnim = useRef(new Animated.Value(clampedValue)).current;
   const barHeight = sizeHeight[size];
@@ -88,6 +89,7 @@ export function ProgressBar({
       <View
         style={[
           styles.track,
+          { backgroundColor: colors.borderLight },
           { height: barHeight, borderRadius: barHeight / 2 },
         ]}
       >
@@ -123,7 +125,6 @@ const styles = StyleSheet.create({
   },
   track: {
     flex: 1,
-    backgroundColor: Colors.borderLight,
     overflow: 'hidden',
   },
   fill: {

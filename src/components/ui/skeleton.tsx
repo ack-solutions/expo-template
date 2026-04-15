@@ -1,6 +1,9 @@
-import { Colors, Radii } from '@/constants/theme';
+import { Radii } from '@/constants/theme';
+import { useAppColors } from '@/hooks/use-app-colors';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+ Animated, StyleSheet, View, ViewStyle 
+} from 'react-native';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -66,14 +69,23 @@ function usePulse() {
  * <Skeleton height={20} />                                  // Title line
  * <Skeleton height={14} width="70%" />                      // Partial line
  */
-export function Skeleton({ width = '100%', height = 16, borderRadius = Radii.sm, style }: SkeletonProps) {
+export function Skeleton({
+ width = '100%', height = 16, borderRadius = Radii.sm, style 
+}: SkeletonProps) {
+  const colors = useAppColors();
   const opacity = usePulse();
 
   return (
     <Animated.View
       style={[
         styles.block,
-        { width: width as ViewStyle['width'], height, borderRadius, opacity },
+        {
+ width: width as ViewStyle['width'],
+height,
+borderRadius,
+opacity,
+backgroundColor: colors.borderLight 
+},
         style,
       ]}
     />
@@ -88,7 +100,10 @@ export function Skeleton({ width = '100%', height = 16, borderRadius = Radii.sm,
  * @example
  * <SkeletonText lines={4} />
  */
-export function SkeletonText({ lines = 3, lineHeight = 14, gap = 8, shortenLast = true }: SkeletonTextProps) {
+export function SkeletonText({
+ lines = 3, lineHeight = 14, gap = 8, shortenLast = true 
+}: SkeletonTextProps) {
+  const colors = useAppColors();
   const opacity = usePulse();
 
   return (
@@ -106,6 +121,7 @@ export function SkeletonText({ lines = 3, lineHeight = 14, gap = 8, shortenLast 
                 height: lineHeight,
                 borderRadius: Radii.sm,
                 opacity,
+                backgroundColor: colors.borderLight,
               },
             ]}
           />
@@ -126,7 +142,10 @@ export function SkeletonText({ lines = 3, lineHeight = 14, gap = 8, shortenLast 
 export function SkeletonCard() {
   return (
     <View style={styles.card}>
-      <Skeleton width={40} height={40} borderRadius={20} />
+      <Skeleton
+width={40}
+height={40}
+borderRadius={20} />
       <View style={styles.cardText}>
         <Skeleton height={14} width="60%" />
         <Skeleton height={12} width="90%" />
@@ -138,9 +157,7 @@ export function SkeletonCard() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  block: {
-    backgroundColor: Colors.borderLight,
-  },
+  block: {},
   card: {
     flexDirection: 'row',
     alignItems: 'center',
