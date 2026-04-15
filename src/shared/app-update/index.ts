@@ -52,28 +52,12 @@
  * 4. Wrap your root component with `AppUpdateProvider`.
  */
 
-export type {
-  AppUpdateConfig,
-  AppUpdateConfigLoader,
-  AppUpdateContextValue,
-  PlatformUpdateRules,
-  UpdateDecision,
-  UpdateEvaluation,
-  UpdateInfo,
-} from './types';
+export * from './app-update-provider';
+export * from './app-update.service';
+export * from './config';
+export * from './force-update-screen';
+export * from './types';
+export * from './update-dialog';
+export * from './use-app-update';
+export * from './version-utils';
 
-export { APP_UPDATE_CONFIG, loadLocalAppUpdateConfig } from './config';
-export { evaluateAppUpdate } from './app-update.service';
-export { compareSemver, parseSemver, semverEqual } from './version-utils';
-export type { ParsedSemver } from './version-utils';
-
-export { AppUpdateProvider } from './app-update-provider';
-export type { AppUpdateProviderProps } from './app-update-provider';
-
-export { useAppUpdate, AppUpdateContext } from './use-app-update';
-
-export { UpdateDialog } from './update-dialog';
-export type { UpdateDialogProps } from './update-dialog';
-
-export { ForceUpdateScreen } from './force-update-screen';
-export type { ForceUpdateScreenProps } from './force-update-screen';

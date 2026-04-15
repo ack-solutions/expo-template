@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.expo-template",
+      "package": "com.ackplus.expo_templat",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -59,14 +59,14 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "22c8be33-796d-45f0-855f-a94061dcd3cf"
+        "projectId": "d207430d-59ca-49da-8b32-2bf6831c4b84"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/22c8be33-796d-45f0-855f-a94061dcd3cf"
+      "url": "https://u.expo.dev/d207430d-59ca-49da-8b32-2bf6831c4b84"
     }
   }
 }
