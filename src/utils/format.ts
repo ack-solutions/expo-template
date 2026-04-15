@@ -17,7 +17,11 @@ export class FormatUtils {
    */
   static date(date: Date | string | number, locale = 'en-US'): string {
     const d = new Date(date);
-    return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
+    return d.toLocaleDateString(locale, {
+ day: 'numeric',
+month: 'short',
+year: 'numeric' 
+});
   }
 
   /**
@@ -41,7 +45,10 @@ export class FormatUtils {
    */
   static time(date: Date | string | number, locale = 'en-US'): string {
     const d = new Date(date);
-    return d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleTimeString(locale, {
+ hour: '2-digit',
+minute: '2-digit' 
+});
   }
 
   /**

@@ -1,7 +1,9 @@
 import { Radii, Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+ Animated, StyleSheet, Text, View, ViewStyle 
+} from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -58,7 +60,7 @@ export function ProgressBar({
   animated = true,
   style,
 }: ProgressBarProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const variantColor: Record<ProgressBarVariant, string> = {
     primary: colors.primary,
     success: colors.success,
@@ -80,7 +82,11 @@ export function ProgressBar({
     } else {
       widthAnim.setValue(clampedValue);
     }
-  }, [clampedValue, animated, widthAnim]);
+  }, [
+clampedValue,
+animated,
+widthAnim
+]);
 
   const displayLabel = label ?? `${Math.round(clampedValue)}%`;
 
@@ -90,7 +96,10 @@ export function ProgressBar({
         style={[
           styles.track,
           { backgroundColor: colors.borderLight },
-          { height: barHeight, borderRadius: barHeight / 2 },
+          {
+ height: barHeight,
+borderRadius: barHeight / 2 
+},
         ]}
       >
         <Animated.View

@@ -1,8 +1,8 @@
 import {
  AppColors, Radii, Shadows, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
-import React, { useMemo } from 'react';
+import { useThemedStyle } from '@/theme/use-themed-styles';
+import React from 'react';
 import {
   PressableProps,
   StyleProp,
@@ -45,8 +45,7 @@ interface AppCardProps {
 export function AppCard({
  children, style, shadow = 'none', noPadding = false 
 }: AppCardProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const shadowStyle = shadow === 'none' ? undefined : Shadows[shadow];
   return (
     <View style={[
@@ -86,8 +85,7 @@ export function AppPressableCard({
   noPadding = false,
   ...pressableProps
 }: AppPressableCardProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({
@@ -144,8 +142,7 @@ interface CardHeaderProps {
 export function CardHeader({
  title, subtitle, right, style 
 }: CardHeaderProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   return (
     <View style={[styles.header, style]}>
       <View style={styles.headerLeft}>

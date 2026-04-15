@@ -1,9 +1,9 @@
 import {
   AppColors, Radii, Shadows, Spacing, Typography
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import React, {
-  useEffect, useMemo, useRef, useState
+  useEffect, useRef, useState
 } from 'react';
 import {
   Animated,
@@ -43,10 +43,9 @@ interface ActionSheetProps {
  * Bottom sheet–style menu: backdrop fades in/out; sheet slides. Modal uses no system animation.
  */
 export function ActionSheet({
- visible, onClose, title, subtitle, children 
+  visible, onClose, title, subtitle, children
 }: ActionSheetProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, Spacing.lg);
   const [renderModal, setRenderModal] = useState(visible);
@@ -127,9 +126,9 @@ export function ActionSheet({
             styles.sheet,
             Shadows.xl,
             {
- paddingBottom: bottomPad,
-transform: [{ translateY: sheetY }] 
-},
+              paddingBottom: bottomPad,
+              transform: [{ translateY: sheetY }]
+            },
           ]}
           pointerEvents="box-none"
         >
@@ -170,8 +169,7 @@ export function ActionSheetRow({
   variant = 'default',
   edge = 'default',
 }: ActionSheetRowProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const isDanger = variant === 'danger';
   const rowStyle: StyleProp<ViewStyle> = [
     styles.row,
@@ -184,10 +182,10 @@ export function ActionSheetRow({
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
-rowStyle,
-pressed && !isDanger && styles.rowPressedDefault,
-pressed && isDanger && styles.rowPressedDanger
-]}
+        rowStyle,
+        pressed && !isDanger && styles.rowPressedDefault,
+        pressed && isDanger && styles.rowPressedDanger
+      ]}
       accessibilityRole="button"
       accessibilityLabel={label}
     >
@@ -201,111 +199,111 @@ pressed && isDanger && styles.rowPressedDanger
 
 const createStyles = (colors: AppColors) =>
   StyleSheet.create({
-  root: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.overlay,
-  },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: Radii.xl,
-    borderTopRightRadius: Radii.xl,
-    paddingTop: Spacing.xs,
-    maxWidth: 520,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  handle: {
-    alignSelf: 'center',
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.border,
-    marginBottom: Spacing.md,
-  },
-  title: {
-    ...Typography.h3,
-    color: colors.textPrimary,
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.xs,
-    textAlign: 'center',
-  },
-  subtitle: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.sm,
-    textAlign: 'center',
-  },
-  rows: {
-    paddingHorizontal: 0,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    minHeight: 52,
-  },
-  rowBorderBottom: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.borderLight,
-  },
-  rowBeforeDanger: {
-    marginBottom: Spacing.xs,
-  },
-  rowDanger: {
-    marginTop: Spacing.xs,
-    paddingTop: Spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
-  },
-  rowPressedDefault: {
-    backgroundColor: colors.primaryFaded,
-  },
-  rowPressedDanger: {
-    backgroundColor: colors.errorFaded,
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconCircleDefault: {
-    backgroundColor: colors.primaryFaded,
-  },
-  iconCircleDanger: {
-    backgroundColor: colors.errorFaded,
-  },
-  rowLabel: {
-    ...Typography.bodyMedium,
-    color: colors.textPrimary,
-    flex: 1,
-  },
-  rowLabelDanger: {
-    color: colors.error,
-  },
-  cancelBtn: {
-    marginTop: Spacing.sm,
-    marginHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    borderRadius: Radii.md,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    backgroundColor: colors.surface,
-  },
-  cancelBtnPressed: {
-    backgroundColor: colors.borderLight,
-  },
-  cancelText: {
-    ...Typography.bodyMedium,
-    color: colors.textSecondary,
-  },
+    root: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: colors.overlay,
+    },
+    sheet: {
+      backgroundColor: colors.surface,
+      borderTopLeftRadius: Radii.xl,
+      borderTopRightRadius: Radii.xl,
+      paddingTop: Spacing.xs,
+      maxWidth: 520,
+      width: '100%',
+      alignSelf: 'center',
+    },
+    handle: {
+      alignSelf: 'center',
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.border,
+      marginBottom: Spacing.md,
+    },
+    title: {
+      ...Typography.h3,
+      color: colors.textPrimary,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.xs,
+      textAlign: 'center',
+    },
+    subtitle: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.sm,
+      textAlign: 'center',
+    },
+    rows: {
+      paddingHorizontal: 0,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.md,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      minHeight: 52,
+    },
+    rowBorderBottom: {
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: colors.borderLight,
+    },
+    rowBeforeDanger: {
+      marginBottom: Spacing.xs,
+    },
+    rowDanger: {
+      marginTop: Spacing.xs,
+      paddingTop: Spacing.md,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+    },
+    rowPressedDefault: {
+      backgroundColor: colors.primaryFaded,
+    },
+    rowPressedDanger: {
+      backgroundColor: colors.errorFaded,
+    },
+    iconCircle: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconCircleDefault: {
+      backgroundColor: colors.primaryFaded,
+    },
+    iconCircleDanger: {
+      backgroundColor: colors.errorFaded,
+    },
+    rowLabel: {
+      ...Typography.bodyMedium,
+      color: colors.textPrimary,
+      flex: 1,
+    },
+    rowLabelDanger: {
+      color: colors.error,
+    },
+    cancelBtn: {
+      marginTop: Spacing.sm,
+      marginHorizontal: Spacing.lg,
+      paddingVertical: Spacing.md,
+      alignItems: 'center',
+      borderRadius: Radii.md,
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+      backgroundColor: colors.surface,
+    },
+    cancelBtnPressed: {
+      backgroundColor: colors.borderLight,
+    },
+    cancelText: {
+      ...Typography.bodyMedium,
+      color: colors.textSecondary,
+    },
   });

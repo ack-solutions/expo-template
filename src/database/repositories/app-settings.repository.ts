@@ -16,7 +16,10 @@ export class AppSettingsRepository {
     if (id) {
       await db
         .update(appSettings)
-        .set({ value, updatedAt: nowIso })
+        .set({
+ value,
+updatedAt: nowIso 
+})
         .where(eq(appSettings.id, id));
       return;
     }

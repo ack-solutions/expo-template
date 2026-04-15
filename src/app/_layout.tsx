@@ -12,8 +12,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { getThemeColors } from '@/constants/theme';
 import { DatabaseProvider } from '@/database';
-import { AppThemeProvider, useAppTheme } from '@/hooks/use-app-theme';
 import { AppUpdateProvider } from '@/shared/app-update';
+import { AppThemeProvider, useAppTheme } from '@/theme/use-app-theme';
 
 export const unstable_settings = {
   anchor: '(tabs)',

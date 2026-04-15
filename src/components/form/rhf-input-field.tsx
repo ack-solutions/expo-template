@@ -1,6 +1,8 @@
 import { AppInput, type InputSize, type InputVariant } from '@/components/ui';
 import React from 'react';
-import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form';
+import {
+ Control, Controller, FieldPath, FieldValues 
+} from 'react-hook-form';
 import { ViewStyle } from 'react-native';
 
 export type RHFInputFieldProps<

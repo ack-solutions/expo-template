@@ -4,8 +4,8 @@ import {
   Spacing,
   Typography,
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
@@ -132,8 +132,7 @@ function isDatePickerSet(event: DateTimePickerEvent): boolean {
 }
 
 function useNativePickerThemeProps() {
-  const colors = useAppColors();
-  const { resolvedColorScheme } = useAppTheme();
+  const { colors, resolvedColorScheme } = useAppTheme();
 
   return useMemo(() => {
     if (Platform.OS === 'ios') {
@@ -153,8 +152,7 @@ resolvedColorScheme
 }
 
 function useDatePickerStyles() {
-  const colors = useAppColors();
-  return useMemo(() => createStyles(colors), [colors]);
+  return useThemedStyle((theme) => createStyles(theme.colors));
 }
 
 function DatePickerUnavailableNotice() {
@@ -191,7 +189,7 @@ function PickerField({
   onPress: () => void;
   containerStyle?: ViewStyle;
 }) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const styles = useDatePickerStyles();
   const hasError = Boolean(error);
   const cfg = sizeConfig[size];

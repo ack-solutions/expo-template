@@ -1,11 +1,17 @@
 import * as Application from 'expo-application';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
+import React, {
+ useCallback, useEffect, useMemo, useState 
+} from 'react';
+import {
+ Linking, Platform, StyleSheet, View 
+} from 'react-native';
 
 import { evaluateAppUpdate } from './app-update.service';
 import { loadLocalAppUpdateConfig } from './config';
 import { runEasOtaCheck } from './eas-ota';
-import type { AppUpdateConfigLoader, AppUpdateContextValue, AppUpdateOtaState, UpdateInfo } from './types';
+import type {
+ AppUpdateConfigLoader, AppUpdateContextValue, AppUpdateOtaState, UpdateInfo 
+} from './types';
 import { UPDATE_STRATEGY } from './update-strategy';
 import { UpdateDialog } from './update-dialog';
 import { AppUpdateContext } from './use-app-update';
@@ -88,24 +94,48 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
 
     async function boot() {
       if (UPDATE_STRATEGY.easOta.enabled) {
-        setOta({ status: 'checking', skipReason: null, error: null });
+        setOta({
+ status: 'checking',
+skipReason: null,
+error: null 
+});
         const result = await runEasOtaCheck(UPDATE_STRATEGY.easOta);
         if (cancelled) return;
 
         if (result.kind === 'skipped') {
-          setOta({ status: 'skipped', skipReason: result.reason, error: null });
+          setOta({
+ status: 'skipped',
+skipReason: result.reason,
+error: null 
+});
         } else if (result.kind === 'error') {
-          setOta({ status: 'error', skipReason: null, error: result.message });
+          setOta({
+ status: 'error',
+skipReason: null,
+error: result.message 
+});
         } else if (result.kind === 'up_to_date') {
-          setOta({ status: 'up_to_date', skipReason: null, error: null });
+          setOta({
+ status: 'up_to_date',
+skipReason: null,
+error: null 
+});
         } else if (result.kind === 'downloaded') {
-          setOta({ status: 'downloaded', skipReason: null, error: null });
+          setOta({
+ status: 'downloaded',
+skipReason: null,
+error: null 
+});
           if (result.reloaded) {
             return;
           }
         }
       } else {
-        setOta({ status: 'skipped', skipReason: 'disabled_in_config', error: null });
+        setOta({
+ status: 'skipped',
+skipReason: 'disabled_in_config',
+error: null 
+});
       }
 
       if (UPDATE_STRATEGY.storeVersionPrompt.enabled) {
@@ -149,20 +179,44 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
 
   const recheck = useCallback(async () => {
     if (UPDATE_STRATEGY.easOta.enabled) {
-      setOta({ status: 'checking', skipReason: null, error: null });
+      setOta({
+ status: 'checking',
+skipReason: null,
+error: null 
+});
       const result = await runEasOtaCheck(UPDATE_STRATEGY.easOta);
       if (result.kind === 'skipped') {
-        setOta({ status: 'skipped', skipReason: result.reason, error: null });
+        setOta({
+ status: 'skipped',
+skipReason: result.reason,
+error: null 
+});
       } else if (result.kind === 'error') {
-        setOta({ status: 'error', skipReason: null, error: result.message });
+        setOta({
+ status: 'error',
+skipReason: null,
+error: result.message 
+});
       } else if (result.kind === 'up_to_date') {
-        setOta({ status: 'up_to_date', skipReason: null, error: null });
+        setOta({
+ status: 'up_to_date',
+skipReason: null,
+error: null 
+});
       } else if (result.kind === 'downloaded') {
-        setOta({ status: 'downloaded', skipReason: null, error: null });
+        setOta({
+ status: 'downloaded',
+skipReason: null,
+error: null 
+});
         if (result.reloaded) return;
       }
     } else {
-      setOta({ status: 'skipped', skipReason: 'disabled_in_config', error: null });
+      setOta({
+ status: 'skipped',
+skipReason: 'disabled_in_config',
+error: null 
+});
     }
 
     if (UPDATE_STRATEGY.storeVersionPrompt.enabled) {
@@ -184,7 +238,17 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
       recheck,
       ota,
     }),
-    [isChecking, lastError, updateInfo, isForceUpdate, isSoftUpdate, isOpeningStore, openStore, recheck, ota],
+    [
+isChecking,
+lastError,
+updateInfo,
+isForceUpdate,
+isSoftUpdate,
+isOpeningStore,
+openStore,
+recheck,
+ota
+],
   );
 
   const showSoftDialog = isSoftUpdate && updateInfo != null && !softDismissed;

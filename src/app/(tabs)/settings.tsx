@@ -1,8 +1,10 @@
 import {
-  AppCard, AppSwitch, AppText, Button, ConfirmDialog, FeedbackDialog, ListItem, SafeScreen, Toolbar
+  AppCard, AppSwitch, AppText, Button, ConfirmDialog, Container, FeedbackDialog, ListItem, SafeScreen, Toolbar
 } from '@/components/ui';
 import { AppSettingsService } from '@/database';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { AppTheme } from '@/theme/types';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import { useScreenActive } from '@/hooks/use-screen-active';
 import { useToast } from '@/hooks/use-toast';
 import { AppSettings, ThemeMode } from '@/types';
@@ -16,7 +18,6 @@ import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   Platform,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -27,31 +28,42 @@ const THEME_MODE_OPTIONS: {
   description: string;
   icon: 'phone-portrait-outline' | 'sunny-outline' | 'moon-outline';
 }[] = [
-  {
-    value: 'system',
-    title: 'System default',
-    description: 'Follow your device appearance setting automatically.',
-    icon: 'phone-portrait-outline',
-  },
-  {
-    value: 'light',
-    title: 'Light',
-    description: 'Always use light colors.',
-    icon: 'sunny-outline',
-  },
-  {
-    value: 'dark',
-    title: 'Dark',
-    description: 'Always use dark colors.',
-    icon: 'moon-outline',
-  },
-];
+    {
+      value: 'system',
+      title: 'System default',
+      description: 'Follow your device appearance setting automatically.',
+      icon: 'phone-portrait-outline',
+    },
+    {
+      value: 'light',
+      title: 'Light',
+      description: 'Always use light colors.',
+      icon: 'sunny-outline',
+    },
+    {
+      value: 'dark',
+      title: 'Dark',
+      description: 'Always use dark colors.',
+      icon: 'moon-outline',
+    },
+  ];
 
 export default function SettingsScreen() {
   const theme = useAppTheme();
   const { colors, setThemeMode } = theme;
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useThemedStyle(createStyles);
   const tabBarHeight = useBottomTabBarHeight();
+  const contentContainerStyle = useMemo(
+    () => ({
+      ...styles.content,
+      paddingBottom: tabBarHeight + theme.spacing.xl,
+    }),
+    [
+      styles.content,
+      tabBarHeight,
+      theme.spacing.xl,
+    ],
+  );
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [showClearAll, setShowClearAll] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -182,13 +194,10 @@ export default function SettingsScreen() {
   return (
     <SafeScreen topSafe={false} bottomSafe={false}>
       <Toolbar title="Settings" />
-      <ScrollView
+      <Container
+        scrollable
         style={styles.container}
-        contentContainerStyle={{
-          ...styles.content,
-          paddingBottom: tabBarHeight + theme.spacing.xl,
-        }}
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={contentContainerStyle}
       >
         {/* ─── Appearance ─────────────────────────────────────── */}
         <AppCard style={styles.section}>
@@ -275,7 +284,7 @@ export default function SettingsScreen() {
               variant="secondary"
               size="md"
               loading={exporting}
-              icon={<Ionicons
+              startIcon={<Ionicons
                 name="download-outline"
                 size={16}
                 color={colors.primary} />}
@@ -286,7 +295,7 @@ export default function SettingsScreen() {
               onPress={handleImport}
               variant="outline"
               size="md"
-              icon={<Ionicons
+              startIcon={<Ionicons
                 name="push-outline"
                 size={16}
                 color={colors.primary} />}
@@ -394,13 +403,13 @@ export default function SettingsScreen() {
           onConfirm={handleClearAll}
           onCancel={() => setShowClearAll(false)}
         />
-      </ScrollView>
+      </Container>
       <FeedbackDialog {...toast} onDismiss={hideToast} />
     </SafeScreen>
   );
 }
 
-const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.create({
+const createStyles = (theme: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,

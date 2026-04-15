@@ -1,14 +1,13 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { SafeScreen, Toolbar } from '@/components/ui';
 import { AppColors, Spacing } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import { TemplateCard } from '@/modules/template/components/template-card';
 
 export default function WorkspaceTemplateScreen() {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   return (
     <SafeScreen topSafe={false} bottomSafe={false}>
       <Toolbar title="Workspace" />

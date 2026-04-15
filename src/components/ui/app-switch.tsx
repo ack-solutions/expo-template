@@ -1,5 +1,5 @@
 import { Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import React from 'react';
 import {
   Platform,
@@ -54,7 +54,7 @@ export function AppSwitch({
   switchSide = 'right',
   style,
 }: AppSwitchProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const switchEl = (
     <Switch
       value={value}

@@ -1,7 +1,8 @@
 import {
  AppColors, Radii, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import React, { forwardRef, useRef } from 'react';
 import {
   NativeSyntheticEvent,
@@ -119,8 +120,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     },
     ref,
   ) => {
-    const colors = useAppColors();
-    const styles = createStyles(colors);
+    const { colors } = useAppTheme();
+    const styles = useThemedStyle((theme) => createStyles(theme.colors));
     const internalRef = useRef<TextInput>(null);
     const inputRef = (ref as React.RefObject<TextInput>) ?? internalRef;
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Modal,
   View,
@@ -9,7 +9,7 @@ import {
 import {
  AppColors, Radii, Shadows, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import { Button } from './button';
 
 interface ConfirmDialogProps {
@@ -33,8 +33,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
 
   return (
     <Modal

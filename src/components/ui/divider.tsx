@@ -1,6 +1,8 @@
 import { Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
-import React, { useMemo } from 'react';
+import { AppThemeColors } from '@/theme/types';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
+import React from 'react';
 import {
  StyleSheet, Text, View, ViewStyle 
 } from 'react-native';
@@ -42,8 +44,8 @@ export function Divider({
   color,
   style,
 }: DividerProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const resolvedColor = color ?? colors.border;
 
   if (orientation === 'vertical') {
@@ -91,7 +93,7 @@ flex: 1
   );
 }
 
-const createStyles = (colors: ReturnType<typeof useAppColors>) =>
+const createStyles = (colors: AppThemeColors) =>
   StyleSheet.create({
   horizontal: {
     height: StyleSheet.hairlineWidth,

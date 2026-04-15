@@ -1,5 +1,5 @@
 import { Radii, Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import React, { useMemo } from 'react';
 import {
  StyleSheet, Text, View, ViewStyle 
@@ -72,7 +72,7 @@ export function Badge({
   dot = false,
   style,
 }: BadgeProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const variantBg: Record<BadgeVariant, string> = useMemo(
     () => ({
       primary: colors.primaryFaded12,

@@ -1,5 +1,5 @@
 import { Radii } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import { Image } from 'expo-image';
 import React from 'react';
 import {
@@ -85,7 +85,7 @@ function getColorFromName(name: string): string {
 export function Avatar({
  source, name = '', size = 'md', shape = 'circle', style 
 }: AvatarProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const dimension = sizeMap[size];
   const fontSize = fontSizes[size];
   const borderRadius = shape === 'circle' ? dimension / 2 : Radii.md;

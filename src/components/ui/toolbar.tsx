@@ -1,10 +1,11 @@
 import {
  AppColors, Radii, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
  Platform, StyleSheet, Text, TouchableOpacity, View, ViewStyle 
 } from 'react-native';
@@ -32,6 +33,13 @@ export interface ToolbarProps {
    */
   safeAreaTop?: boolean;
   backgroundColor?: string;
+  /** Optional custom container component (e.g. ScrollView). Default: View */
+  containerComponent?: React.ElementType;
+  /** Props passed to the custom container component. */
+  containerProps?: Record<string, unknown>;
+  /** Preferred style prop for the root container. */
+  containerStyle?: ViewStyle;
+  /** @deprecated Use containerStyle instead. */
   style?: ViewStyle;
 }
 
@@ -58,14 +66,24 @@ export function Toolbar({
   right,
   safeAreaTop = true,
   backgroundColor,
+  containerComponent: ContainerComponent = View,
+  containerProps,
+  containerStyle,
   style,
 }: ToolbarProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const hasTitleCluster = Boolean(titleStart || subtitle);
   const resolvedBackgroundColor = backgroundColor ?? colors.background;
+  const typedContainerProps = (containerProps ?? {}) as {
+    style?: unknown;
+  };
+  const {
+    style: containerComponentStyle,
+    ...restContainerProps
+  } = typedContainerProps;
 
   const handleBack = () => {
     if (onBack) {
@@ -98,13 +116,16 @@ right: 10
   ) : null;
 
   return (
-    <View
+    <ContainerComponent
+      {...restContainerProps}
       style={[
+        containerComponentStyle,
         styles.root,
         {
           paddingTop: safeAreaTop ? insets.top : 0,
           backgroundColor: resolvedBackgroundColor,
         },
+        containerStyle,
         style,
       ]}
     >
@@ -133,7 +154,7 @@ right: 10
 
         <View style={styles.right}>{right}</View>
       </View>
-    </View>
+    </ContainerComponent>
   );
 }
 

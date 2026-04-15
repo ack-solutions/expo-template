@@ -1,9 +1,10 @@
 import {
  AppColors, Radii, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import {
  Pressable, StyleSheet, Text, View, ViewStyle 
 } from 'react-native';
@@ -68,8 +69,8 @@ export function AppCheckbox({
   indeterminate = false,
   style,
 }: AppCheckboxProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const isActive = checked || indeterminate;
 
   // 0 = unchecked, 1 = checked

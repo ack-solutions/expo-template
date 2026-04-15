@@ -1,9 +1,10 @@
 import {
  AppColors, Radii, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef } from 'react';
 import {
  Pressable, StyleSheet, TextInput, TextInputProps, ViewStyle 
 } from 'react-native';
@@ -50,8 +51,8 @@ export const SearchBar = forwardRef<TextInput, SearchBarProps>(
   ({
  onClear, style, onFocus, onBlur, value, ...textInputProps 
 }, ref) => {
-    const colors = useAppColors();
-    const styles = useMemo(() => createStyles(colors), [colors]);
+    const { colors } = useAppTheme();
+    const styles = useThemedStyle((theme) => createStyles(theme.colors));
     const hasValue = Boolean(value && String(value).length > 0);
 
     // 0 = idle, 1 = focused

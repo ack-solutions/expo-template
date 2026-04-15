@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppCard, AppText } from '@/components/ui';
 import { AppColors, Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 
 type TemplateCardProps = {
   title: string;
@@ -14,8 +14,7 @@ type TemplateCardProps = {
 export function TemplateCard({
   title, description, children
 }: TemplateCardProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   return (
     <AppCard>
       <AppText variant="h3" style={styles.title}>

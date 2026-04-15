@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -11,7 +11,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 
 export type ForceUpdateScreenProps = {
   title: string;
@@ -34,8 +34,7 @@ export function ForceUpdateScreen({
   retryLoading = false,
 }: ForceUpdateScreenProps) {
   const insets = useSafeAreaInsets();
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
 
   return (
     <View
@@ -49,15 +48,15 @@ export function ForceUpdateScreen({
     >
       <View style={styles.inner}>
         <AppText
-variant="h2"
-color="primary"
-style={styles.title}>
+          variant="h2"
+          color="primary"
+          style={styles.title}>
           {title}
         </AppText>
         <AppText
-variant="body"
-color="secondary"
-style={styles.message}>
+          variant="body"
+          color="secondary"
+          style={styles.message}>
           {message}
         </AppText>
         <Button

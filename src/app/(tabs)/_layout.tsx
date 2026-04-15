@@ -1,5 +1,5 @@
 import { Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import React from 'react';
@@ -15,7 +15,7 @@ const TAB_BAR_CONTENT_HEIGHT = Platform.select({
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
 
   return (
     <Tabs

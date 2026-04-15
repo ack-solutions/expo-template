@@ -50,8 +50,15 @@ export function useToast() {
   );
 
   const hideToast = useCallback(() => {
-    setToast((prev) => ({ ...prev, visible: false }));
+    setToast((prev) => ({
+ ...prev,
+visible: false 
+}));
   }, []);
 
-  return { toast, showToast, hideToast };
+  return {
+ toast,
+showToast,
+hideToast 
+};
 }

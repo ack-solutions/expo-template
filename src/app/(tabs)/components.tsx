@@ -42,7 +42,7 @@ import {
   VStack,
 } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -50,7 +50,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   return (
     <Stack gap="md">
       <AppText
@@ -71,7 +71,7 @@ borderBottomColor: colors.border
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ComponentsScreen() {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [selectValue, setSelectValue] = useState('');
@@ -245,10 +245,53 @@ onPress={() => {}} />
           </HStack>
           <Button
             title="With icon"
-            icon={<Ionicons
-name="add"
-size={17}
-color={colors.textInverse} />}
+            startIcon={
+              <Ionicons
+                name="add"
+                size={17}
+                color={colors.textInverse}
+              />
+            }
+            onPress={() => {}}
+          />
+          <Button
+            title="Start icon"
+            startIcon={
+              <Ionicons
+                name="download-outline"
+                size={18}
+                color={colors.textInverse}
+              />
+            }
+            onPress={() => {}}
+          />
+          <Button
+            title="End icon"
+            endIcon={
+              <Ionicons
+                name="arrow-forward"
+                size={18}
+                color={colors.textInverse}
+              />
+            }
+            onPress={() => {}}
+          />
+          <Button
+            title="Both side icons"
+            startIcon={
+              <Ionicons
+                name="sparkles-outline"
+                size={18}
+                color={colors.textInverse}
+              />
+            }
+            endIcon={
+              <Ionicons
+                name="chevron-forward"
+                size={18}
+                color={colors.textInverse}
+              />
+            }
             onPress={() => {}}
           />
           <Button

@@ -1,5 +1,5 @@
 import { Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 
@@ -69,7 +69,7 @@ export function AppText({
   numberOfLines,
   nowrap = false,
 }: AppTextProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const colorMap: Record<TextColor, string> = {
     primary: colors.textPrimary,
     secondary: colors.textSecondary,

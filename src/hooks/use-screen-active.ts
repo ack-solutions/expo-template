@@ -20,6 +20,10 @@ export function useScreenActive() {
 
   const isActive = () => isMountedRef.current && isFocusedRef.current;
 
-  return { isMountedRef, isFocusedRef, isActive };
+  return {
+ isMountedRef,
+isFocusedRef,
+isActive 
+};
 }
 

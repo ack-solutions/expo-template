@@ -6,7 +6,8 @@ import {
 import {
  AppColors, Radii, Shadows, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import { Button } from './button';
 
 export type FeedbackVariant = 'success' | 'error' | 'info' | 'warning';
@@ -43,8 +44,8 @@ export function FeedbackDialog({
   confirmLabel = 'OK',
   onDismiss,
 }: FeedbackDialogProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const iconColors: Record<FeedbackVariant, string> = useMemo(
     () => ({
       success: colors.success,

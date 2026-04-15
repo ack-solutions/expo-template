@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Modal,
   StyleSheet,
@@ -12,7 +12,7 @@ import {
   Spacing,
   Typography,
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 
 export type UpdateDialogProps = {
   visible: boolean;
@@ -34,8 +34,7 @@ export function UpdateDialog({
   onUpdateNow,
   loading = false,
 }: UpdateDialogProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
 
   return (
     <Modal

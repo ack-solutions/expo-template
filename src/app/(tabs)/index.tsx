@@ -1,15 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, SafeScreen, Toolbar } from '@/components/ui';
 import { AppColors, Spacing } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import { TemplateCard } from '@/modules/template/components/template-card';
 import { useRouter } from 'expo-router';
 
 export default function HomeTemplateScreen() {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const router = useRouter();
 
   return (

@@ -3,7 +3,7 @@ import {
   Shadows,
   Spacing, Typography
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import React from 'react';
 import {
   ActivityIndicator, Pressable, StyleSheet,
@@ -33,7 +33,9 @@ interface ButtonProps {
   size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
-  icon?: React.ReactNode;
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+  iconSize?: number;
   style?: ViewStyle;
   textStyle?: TextStyle;
   fullWidth?: boolean;
@@ -104,7 +106,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
  * <Button title="Loading…" loading onPress={() => {}} />
  * <Button
  *   title="Add item"
- *   icon={<Ionicons name="add" size={16} color="#fff" />}
+ *   startIcon={<Ionicons name="add" size={16} color="#fff" />}
  *   onPress={handleAdd}
  *   fullWidth
  * />
@@ -116,12 +118,14 @@ export function Button({
   size = 'md',
   disabled = false,
   loading = false,
-  icon,
+  startIcon,
+  endIcon,
+  iconSize,
   style,
   textStyle,
   fullWidth = false,
 }: ButtonProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const isDisabled = disabled || loading;
   const variantStyles: Record<ButtonVariant, ViewStyle> = {
     primary: { backgroundColor: colors.primary },
@@ -164,6 +168,24 @@ export function Button({
   const spinnerColor =
     variant === 'primary' || variant === 'danger' ? colors.textInverse : colors.primary;
 
+  function resolveIcon(node: React.ReactNode) {
+    if (!node) return null;
+    if (!iconSize || !React.isValidElement(node)) return node;
+
+    return React.cloneElement(node as React.ReactElement<{ size?: number }>, {
+      size: iconSize,
+    });
+  }
+
+  const leadingIcon = resolveIcon(startIcon);
+  const trailingIcon = resolveIcon(endIcon);
+  const mergedTextStyle: TextStyle = {
+    ...styles.text,
+    ...variantTextStyles[variant],
+    ...sizeTextStyles[size],
+    ...(textStyle ?? {}),
+  };
+
   return (
     <AnimatedPressable
       onPress={onPress}
@@ -190,18 +212,14 @@ export function Button({
         <ActivityIndicator size="small" color={spinnerColor} />
       ) : (
         <>
-          {icon}
+          {leadingIcon ? <Animated.View style={styles.iconSlot}>{leadingIcon}</Animated.View> : null}
           <AppText
             variant="bodySemibold"
-            style={[
-              styles.text,
-              variantTextStyles[variant],
-              sizeTextStyles[size],
-              textStyle,
-            ]}
+            style={mergedTextStyle}
           >
             {title}
           </AppText>
+          {trailingIcon ? <Animated.View style={styles.iconSlot}>{trailingIcon}</Animated.View> : null}
         </>
       )}
     </AnimatedPressable>
@@ -220,6 +238,10 @@ const styles = StyleSheet.create({
   },
   text: {
     ...Typography.bodySemibold,
+  },
+  iconSlot: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fullWidth: {
     width: '100%',

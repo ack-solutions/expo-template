@@ -1,6 +1,8 @@
 import { Spacing } from '@/constants/theme';
 import React from 'react';
-import { FlexAlignType, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+ FlexAlignType, StyleSheet, View, ViewStyle 
+} from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -93,10 +95,16 @@ function buildStyle(props: StackProps): ViewStyle {
     flexWrap: wrap ? 'wrap' : 'nowrap',
     ...(flex !== undefined ? { flex } : {}),
     ...(resolvedPadH !== undefined
-      ? { paddingLeft: resolvedPadH, paddingRight: resolvedPadH }
+      ? {
+ paddingLeft: resolvedPadH,
+paddingRight: resolvedPadH 
+}
       : {}),
     ...(resolvedPadV !== undefined
-      ? { paddingTop: resolvedPadV, paddingBottom: resolvedPadV }
+      ? {
+ paddingTop: resolvedPadV,
+paddingBottom: resolvedPadV 
+}
       : {}),
   };
 }
@@ -138,9 +146,17 @@ function buildStyle(props: StackProps): ViewStyle {
  *   <Button title="Edit" variant="ghost" size="sm" onPress={…} />
  * </HStack>
  */
-export function Stack({ children, style, ...props }: StackProps) {
+export function Stack({
+ children, style, ...props 
+}: StackProps) {
   return (
-    <View style={[buildStyle({ ...props, direction: props.direction ?? 'column' }), style]}>
+    <View style={[
+buildStyle({
+ ...props,
+direction: props.direction ?? 'column' 
+}),
+style
+]}>
       {children}
     </View>
   );
@@ -157,9 +173,17 @@ export function Stack({ children, style, ...props }: StackProps) {
  *   <AppText variant="body" color="secondary">Description</AppText>
  * </VStack>
  */
-export function VStack({ children, style, ...props }: Omit<StackProps, 'direction'>) {
+export function VStack({
+ children, style, ...props 
+}: Omit<StackProps, 'direction'>) {
   return (
-    <View style={[buildStyle({ ...props, direction: 'column' }), style]}>
+    <View style={[
+buildStyle({
+ ...props,
+direction: 'column' 
+}),
+style
+]}>
       {children}
     </View>
   );
@@ -181,9 +205,18 @@ export function VStack({ children, style, ...props }: Omit<StackProps, 'directio
  *   <Button title="Save" variant="primary" flex={1} onPress={onSave} />
  * </HStack>
  */
-export function HStack({ children, style, align = 'flex-start', ...props }: Omit<StackProps, 'direction'>) {
+export function HStack({
+ children, style, align = 'flex-start', ...props 
+}: Omit<StackProps, 'direction'>) {
   return (
-    <View style={[buildStyle({ ...props, direction: 'row', align }), style]}>
+    <View style={[
+buildStyle({
+ ...props,
+direction: 'row',
+align 
+}),
+style
+]}>
       {children}
     </View>
   );

@@ -1,6 +1,6 @@
 import { AppColors, Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
-import React, { useMemo } from 'react';
+import { useThemedStyle } from '@/theme/use-themed-styles';
+import React from 'react';
 import {
  StyleSheet, Text, View, ViewStyle 
 } from 'react-native';
@@ -58,8 +58,7 @@ export function EmptyState({
   secondaryAction,
   style,
 }: EmptyStateProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
 
   return (
     <View style={[styles.container, style]}>

@@ -1,4 +1,3 @@
-import { AppSettingsService } from '@/database/services/app-settings.service';
 import {
   Radii,
   Shadows,
@@ -6,26 +5,17 @@ import {
   Typography,
   getThemeColors,
 } from '@/constants/theme';
+import { AppSettingsService } from '@/database/services/app-settings.service';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { ThemeMode } from '@/types';
+import {
+  AppTheme,
+  ThemeMode,
+} from '@/theme/types';
 import React, {
   PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState
 } from 'react';
 
-type ResolvedScheme = 'light' | 'dark';
-
-interface AppThemeContextValue {
-  themeMode: ThemeMode;
-  resolvedColorScheme: ResolvedScheme;
-  setThemeMode: (mode: ThemeMode) => void;
-  colors: ReturnType<typeof getThemeColors>;
-  spacing: typeof Spacing;
-  typography: typeof Typography;
-  radii: typeof Radii;
-  shadows: typeof Shadows;
-}
-
-const AppThemeContext = createContext<AppThemeContextValue | undefined>(undefined);
+const AppThemeContext = createContext<AppTheme | undefined>(undefined);
 
 export function AppThemeProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useColorScheme();
@@ -53,7 +43,7 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
     setThemeModeState(mode);
   }, []);
 
-  const resolvedColorScheme: ResolvedScheme = useMemo(() => {
+  const resolvedColorScheme = useMemo(() => {
     if (themeMode === 'system') {
       return systemColorScheme === 'dark' ? 'dark' : 'light';
     }
@@ -90,3 +80,4 @@ export function useAppTheme() {
   }
   return context;
 }
+

@@ -1,5 +1,5 @@
 import { Radii, Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import {
@@ -121,7 +121,7 @@ export function Chip({
   disabled = false,
   style,
 }: ChipProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

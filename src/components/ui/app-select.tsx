@@ -1,7 +1,8 @@
 import {
  AppColors, Radii, Shadows, Spacing, Typography 
 } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, {
  useCallback, useEffect, useMemo, useState 
@@ -159,8 +160,8 @@ function OptionRow({
   selected: boolean;
   onPress: (o: SelectOption) => void;
 }) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
 
   return (
     <Pressable
@@ -230,8 +231,8 @@ function SelectBody({
   query,
   onQueryChange,
 }: SelectBodyProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
 
   const filteredOptions = useMemo(() => {
     if (!query.trim()) return options;
@@ -347,8 +348,7 @@ function SelectSheet({
   searchable,
   searchPlaceholder,
 }: PickerProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, Spacing.lg);
 
@@ -462,8 +462,7 @@ function SelectDialog({
   searchable,
   searchPlaceholder,
 }: PickerProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const insets = useSafeAreaInsets();
   const [rendered, setRendered] = useState(visible);
   const [query, setQuery] = useState('');
@@ -632,8 +631,8 @@ export function AppSelect({
   mode = 'sheet',
   containerStyle,
 }: AppSelectProps) {
-  const colors = useAppColors();
-  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle((theme) => createStyles(theme.colors));
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const hasError = Boolean(error);

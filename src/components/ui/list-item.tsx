@@ -1,5 +1,5 @@
 import { Spacing, Typography } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import {
@@ -70,7 +70,7 @@ export function ListItem({
   disabled = false,
   style,
 }: ListItemProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const content = (
     <View
       style={[

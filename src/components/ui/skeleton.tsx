@@ -1,5 +1,5 @@
 import { Radii } from '@/constants/theme';
-import { useAppColors } from '@/hooks/use-app-colors';
+import { useAppTheme } from '@/theme/use-app-theme';
 import React, { useEffect, useRef } from 'react';
 import {
  Animated, StyleSheet, View, ViewStyle 
@@ -72,7 +72,7 @@ function usePulse() {
 export function Skeleton({
  width = '100%', height = 16, borderRadius = Radii.sm, style 
 }: SkeletonProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const opacity = usePulse();
 
   return (
@@ -103,7 +103,7 @@ backgroundColor: colors.borderLight
 export function SkeletonText({
  lines = 3, lineHeight = 14, gap = 8, shortenLast = true 
 }: SkeletonTextProps) {
-  const colors = useAppColors();
+  const { colors } = useAppTheme();
   const opacity = usePulse();
 
   return (
