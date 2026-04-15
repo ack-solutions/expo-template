@@ -58,6 +58,7 @@ export function AppUpdateProvider({ children, loadConfig }: AppUpdateProviderPro
 
     try {
       const currentVersion = Application.nativeApplicationVersion ?? null;
+      console.log('currentVersion', currentVersion);
       const evaluation = await evaluateAppUpdate({
         currentVersion,
         platform: nativePlatform,

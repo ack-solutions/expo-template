@@ -2,6 +2,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 
+/**
+ * Generates Expo template icons (PNG) from inline SVG.
+ * Theme aligns with src/constants/theme.ts (primary indigo / blue gradient).
+ *
+ * Run: npm run generate:assets
+ */
+
 const ROOT = process.cwd();
 const OUT_DIR = path.join(ROOT, 'assets', 'images');
 
@@ -14,40 +21,23 @@ const COLORS = {
   white: '#FFFFFF',
 };
 
-function svgIconMark({ fill = `url(#g)`, coin = COLORS.amber, stroke = 'none' } = {}) {
-  // A simple calculator tile + rising chart + coin dot.
-  // Designed to read well at small sizes.
+/** Stacked “screens” — reads as a starter / boilerplate template at any size. */
+function svgTemplateMark({ fill = 'rgba(255,255,255,0.2)', coin = COLORS.amber, stroke = 'none' } = {}) {
   return `
     <g>
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="${COLORS.indigo}"/>
-          <stop offset="1" stop-color="${COLORS.purple}"/>
-        </linearGradient>
-      </defs>
+      <!-- three stacked rounded cards (back → front) -->
+      <rect x="232" y="528" width="560" height="340" rx="72" ry="72" fill="rgba(255,255,255,0.12)" stroke="${stroke}" stroke-width="0"/>
+      <rect x="232" y="388" width="560" height="340" rx="72" ry="72" fill="rgba(255,255,255,0.16)"/>
+      <rect x="232" y="248" width="560" height="340" rx="72" ry="72" fill="${fill}"/>
 
-      <!-- calculator body -->
-      <rect x="250" y="230" rx="120" ry="120" width="524" height="564" fill="${fill}" stroke="${stroke}" stroke-width="0"/>
+      <!-- “content lines” on front card -->
+      <rect x="312" y="328" width="280" height="36" rx="18" ry="18" fill="rgba(255,255,255,0.22)"/>
+      <rect x="312" y="392" width="400" height="28" rx="14" ry="14" fill="rgba(255,255,255,0.14)"/>
+      <rect x="312" y="440" width="340" height="28" rx="14" ry="14" fill="rgba(255,255,255,0.14)"/>
 
-      <!-- top display -->
-      <rect x="310" y="290" rx="56" ry="56" width="404" height="150" fill="rgba(255,255,255,0.18)"/>
-
-      <!-- buttons (3x3) -->
-      ${[0, 1, 2].map((r) =>
-        [0, 1, 2].map((c) => {
-          const x = 320 + c * 140;
-          const y = 470 + r * 120;
-          return `<rect x="${x}" y="${y}" rx="44" ry="44" width="112" height="92" fill="rgba(255,255,255,0.16)"/>`;
-        }).join('\n')
-      ).join('\n')}
-
-      <!-- chart line -->
-      <path d="M360 600 L455 540 L545 575 L650 470" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M360 600 L455 540 L545 575 L650 470" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
-
-      <!-- coin dot -->
-      <circle cx="692" cy="446" r="46" fill="${coin}"/>
-      <circle cx="692" cy="446" r="20" fill="rgba(255,255,255,0.35)"/>
+      <!-- accent -->
+      <circle cx="712" cy="318" r="42" fill="${coin}"/>
+      <circle cx="712" cy="318" r="18" fill="rgba(255,255,255,0.35)"/>
     </g>
   `;
 }
@@ -70,9 +60,7 @@ function svgAppIcon() {
     <circle cx="900" cy="860" r="340" fill="rgba(0,0,0,0.08)"/>
 
     <g filter="url(#soft)">
-      <g transform="translate(0,0)">
-        ${svgIconMark({ fill: 'rgba(255,255,255,0.14)', coin: COLORS.amber })}
-      </g>
+      ${svgTemplateMark({ fill: 'rgba(255,255,255,0.14)', coin: COLORS.amber })}
     </g>
   </svg>`;
 }
@@ -90,7 +78,7 @@ function svgSplashMark() {
       </filter>
     </defs>
     <g filter="url(#soft)">
-      ${svgIconMark({ fill: 'url(#g)', coin: COLORS.amber })}
+      ${svgTemplateMark({ fill: 'url(#g)', coin: COLORS.amber })}
     </g>
   </svg>`;
 }
@@ -107,9 +95,8 @@ function svgAdaptiveForeground() {
         <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="rgba(0,0,0,0.18)"/>
       </filter>
     </defs>
-    <!-- keep generous margins for adaptive mask -->
-    <g transform="translate(0,0)" filter="url(#soft)">
-      ${svgIconMark({ fill: 'url(#g)', coin: COLORS.amber })}
+    <g filter="url(#soft)">
+      ${svgTemplateMark({ fill: 'url(#g)', coin: COLORS.amber })}
     </g>
   </svg>`;
 }
@@ -142,7 +129,7 @@ function svgAdaptiveBackground() {
 function svgMonochrome() {
   return `
   <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-    ${svgIconMark({ fill: COLORS.ink, coin: COLORS.ink })}
+    ${svgTemplateMark({ fill: COLORS.ink, coin: COLORS.ink })}
   </svg>`;
 }
 
@@ -156,11 +143,12 @@ function svgFavicon() {
       </linearGradient>
     </defs>
     <rect width="256" height="256" rx="60" ry="60" fill="url(#bg)"/>
-    <!-- simple mark optimized for tiny sizes -->
-    <rect x="56" y="54" rx="28" ry="28" width="144" height="148" fill="rgba(255,255,255,0.14)"/>
-    <rect x="72" y="72" rx="18" ry="18" width="112" height="44" fill="rgba(255,255,255,0.18)"/>
-    <path d="M80 158 L112 138 L146 150 L180 118" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="184" cy="114" r="16" fill="${COLORS.amber}"/>
+    <rect x="48" y="132" width="160" height="88" rx="22" ry="22" fill="rgba(255,255,255,0.12)"/>
+    <rect x="48" y="88" width="160" height="88" rx="22" ry="22" fill="rgba(255,255,255,0.16)"/>
+    <rect x="48" y="44" width="160" height="88" rx="22" ry="22" fill="rgba(255,255,255,0.22)"/>
+    <rect x="68" y="64" width="72" height="14" rx="7" fill="rgba(255,255,255,0.22)"/>
+    <rect x="68" y="86" width="100" height="10" rx="5" fill="rgba(255,255,255,0.14)"/>
+    <circle cx="176" cy="58" r="14" fill="${COLORS.amber}"/>
   </svg>`;
 }
 
@@ -198,4 +186,3 @@ main().catch((err) => {
   console.error(err);
   process.exitCode = 1;
 });
-
