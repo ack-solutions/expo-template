@@ -1,13 +1,11 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useMemo } from 'react';
-import {
- Modal, Pressable, StyleSheet, Text, View 
-} from 'react-native';
-import {
- AppColors, Radii, Shadows, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import React, { useMemo } from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+
+import { AppText } from './app-text';
 import { Button } from './button';
 
 export type FeedbackVariant = 'success' | 'error' | 'info' | 'warning';
@@ -73,8 +71,8 @@ name={ICONS[variant]}
 size={40}
 color={iconColors[variant]} />
           </View>
-          <Text style={styles.title}>{resolvedTitle}</Text>
-          <Text style={styles.message}>{message}</Text>
+          <AppText style={styles.title}>{resolvedTitle}</AppText>
+          <AppText style={styles.message}>{message}</AppText>
           <Button
 title={confirmLabel}
 onPress={onDismiss}

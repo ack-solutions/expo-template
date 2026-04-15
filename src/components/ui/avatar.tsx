@@ -2,9 +2,9 @@ import { Radii } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { Image } from 'expo-image';
 import React from 'react';
-import {
- StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -119,16 +119,9 @@ containerStyle,
 style
 ]}>
       <View style={styles.initialsContainer}>
-        <Text style={[
-styles.initialsText,
-{
- color: colors.textInverse,
-fontSize,
-lineHeight: dimension 
-}
-]}>
+        <AppText style={[styles.initialsText, { color: colors.textInverse, fontSize, lineHeight: dimension }]}>
           {initials}
-        </Text>
+        </AppText>
       </View>
     </View>
   );

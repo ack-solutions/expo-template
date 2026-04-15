@@ -9,8 +9,10 @@ import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Modal, Platform, Pressable, StyleSheet, Text, View, ViewStyle
+  Modal, Platform, Pressable, StyleSheet, View, ViewStyle
 } from 'react-native';
+
+import { AppText } from './app-text';
 
 type DateTimePickerEvent = {
   type: 'set' | 'dismissed' | 'neutralButtonPressed';
@@ -159,9 +161,9 @@ function DatePickerUnavailableNotice() {
   const styles = useDatePickerStyles();
   return (
     <View style={styles.unavailableWrap}>
-      <Text style={styles.unavailableText}>
+      <AppText style={styles.unavailableText}>
         Date picker is not available in this build. Install native dependencies and rebuild the app.
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -213,13 +215,13 @@ function PickerField({
       accessibilityLabel={label}
     >
       {label ? (
-        <Text style={[
+        <AppText style={[
           styles.label,
           hasError && styles.labelError,
           disabled && styles.labelDisabled
         ]}>
           {label}
-        </Text>
+        </AppText>
       ) : null}
 
       <View
@@ -234,7 +236,7 @@ function PickerField({
           },
         ]}
       >
-        <Text
+        <AppText
           style={[
             styles.valueText,
             { fontSize: cfg.fontSize },
@@ -244,7 +246,7 @@ function PickerField({
           numberOfLines={1}
         >
           {valueText || placeholder}
-        </Text>
+        </AppText>
         <Ionicons
           name="calendar-outline"
           size={18}
@@ -253,9 +255,9 @@ function PickerField({
       </View>
 
       {(hasError || hint) && (
-        <Text style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
+        <AppText style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
           {hasError ? error : hint}
-        </Text>
+        </AppText>
       )}
     </Pressable>
   );
@@ -290,14 +292,14 @@ function ModalShell({
 
         <View style={styles.modalCard}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{title}</Text>
+            <AppText style={styles.modalTitle}>{title}</AppText>
           </View>
 
           <View style={styles.modalBody}>{children}</View>
 
           <View style={styles.modalFooter}>
             <Pressable style={styles.footerBtn} onPress={onCancel}>
-              <Text style={styles.footerBtnText}>Cancel</Text>
+              <AppText style={styles.footerBtnText}>Cancel</AppText>
             </Pressable>
             <Pressable
               style={[
@@ -308,7 +310,7 @@ function ModalShell({
               disabled={confirmDisabled}
               onPress={onConfirm}
             >
-              <Text style={styles.footerBtnPrimaryText}>{confirmLabel}</Text>
+              <AppText style={styles.footerBtnPrimaryText}>{confirmLabel}</AppText>
             </Pressable>
           </View>
         </View>
@@ -449,13 +451,13 @@ export function AppDateTimePicker({
             style={[styles.phaseTab, phase === 'date' && styles.phaseTabActive]}
             onPress={() => setPhase('date')}
           >
-            <Text style={[styles.phaseTabText, phase === 'date' && styles.phaseTabTextActive]}>Date</Text>
+            <AppText style={[styles.phaseTabText, phase === 'date' && styles.phaseTabTextActive]}>Date</AppText>
           </Pressable>
           <Pressable
             style={[styles.phaseTab, phase === 'time' && styles.phaseTabActive]}
             onPress={() => setPhase('time')}
           >
-            <Text style={[styles.phaseTabText, phase === 'time' && styles.phaseTabTextActive]}>Time</Text>
+            <AppText style={[styles.phaseTabText, phase === 'time' && styles.phaseTabTextActive]}>Time</AppText>
           </Pressable>
         </View>
 
@@ -553,17 +555,17 @@ export function AppDateRangePicker({
             style={[styles.phaseTab, activeField === 'start' && styles.phaseTabActive]}
             onPress={() => setActiveField('start')}
           >
-            <Text style={[styles.phaseTabText, activeField === 'start' && styles.phaseTabTextActive]}>
+            <AppText style={[styles.phaseTabText, activeField === 'start' && styles.phaseTabTextActive]}>
               Start
-            </Text>
+            </AppText>
           </Pressable>
           <Pressable
             style={[styles.phaseTab, activeField === 'end' && styles.phaseTabActive]}
             onPress={() => setActiveField('end')}
           >
-            <Text style={[styles.phaseTabText, activeField === 'end' && styles.phaseTabTextActive]}>
+            <AppText style={[styles.phaseTabText, activeField === 'end' && styles.phaseTabTextActive]}>
               End
-            </Text>
+            </AppText>
           </Pressable>
         </View>
 
@@ -590,9 +592,9 @@ export function AppDateRangePicker({
         )}
 
         <View style={styles.rangePreview}>
-          <Text style={styles.rangePreviewText}>
+          <AppText style={styles.rangePreviewText}>
             {formatDate(draftStart)} - {formatDate(draftEnd)}
-          </Text>
+          </AppText>
         </View>
       </ModalShell>
     </>

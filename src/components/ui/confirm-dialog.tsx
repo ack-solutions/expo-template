@@ -1,15 +1,9 @@
-import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
-import {
- AppColors, Radii, Shadows, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
+import React from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+
+import { AppText } from './app-text';
 import { Button } from './button';
 
 interface ConfirmDialogProps {
@@ -45,8 +39,8 @@ export function ConfirmDialog({
     >
       <Pressable style={styles.overlay} onPress={onCancel}>
         <Pressable style={[styles.dialog, Shadows.xl]} onPress={() => {}}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+          <AppText style={styles.title}>{title}</AppText>
+          <AppText style={styles.message}>{message}</AppText>
           <View style={styles.actions}>
             <Button
 title={cancelLabel}

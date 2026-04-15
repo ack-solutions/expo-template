@@ -1,15 +1,19 @@
-import { Radii, Spacing, Typography } from '@/constants/theme';
+import {
+  AppColors, Radii, Spacing, Typography
+} from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import {
- Pressable, StyleSheet, Text, View, ViewStyle 
+  Pressable, StyleSheet, View, ViewStyle
 } from 'react-native';
+
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -39,9 +43,9 @@ interface ChipProps {
 // ─── Animation config ─────────────────────────────────────────────────────────
 
 const SPRING = {
- damping: 20,
-stiffness: 300,
-mass: 0.5 
+  damping: 20,
+  stiffness: 300,
+  mass: 0.5
 };
 
 // ─── Style Helpers ────────────────────────────────────────────────────────────
@@ -50,7 +54,7 @@ function resolveContainerStyle(
   variant: ChipVariant,
   selected: boolean,
   size: ChipSize,
-  colors: ReturnType<typeof useAppColors>,
+  colors: AppColors,
 ): ViewStyle {
   const paddingH = size === 'sm' ? Spacing.sm : Spacing.md;
   const paddingV = size === 'sm' ? Spacing.xxs + 2 : Spacing.xs + 1;
@@ -68,9 +72,9 @@ function resolveContainerStyle(
 
   if (variant === 'filled') {
     return {
- ...base,
-backgroundColor: selected ? colors.primary : colors.primaryFaded 
-};
+      ...base,
+      backgroundColor: selected ? colors.primary : colors.primaryFaded
+    };
   }
   if (variant === 'outlined') {
     return {
@@ -82,15 +86,15 @@ backgroundColor: selected ? colors.primary : colors.primaryFaded
   }
   // ghost
   return {
- ...base,
-backgroundColor: selected ? colors.primaryFaded : 'transparent' 
-};
+    ...base,
+    backgroundColor: selected ? colors.primaryFaded : 'transparent'
+  };
 }
 
 function resolveTextColor(
   variant: ChipVariant,
   selected: boolean,
-  colors: ReturnType<typeof useAppColors>,
+  colors: AppColors,
 ): string {
   if (variant === 'filled') return selected ? colors.textInverse : colors.primary;
   return selected ? colors.primary : colors.textSecondary;
@@ -135,34 +139,35 @@ export function Chip({
   const innerContent = (
     <>
       {leftIcon && <View style={styles.iconSlot}>{leftIcon}</View>}
-      <Text
-style={[
-textStyle,
-{
- color: textColor,
-fontWeight: '500' 
-}
-]}
-numberOfLines={1}>
+      <AppText
+        style={[
+          textStyle,
+          {
+            color: textColor,
+            fontWeight: '500'
+          }
+        ]}
+        numberOfLines={1}
+      >
         {label}
-      </Text>
+      </AppText>
       {onRemove && (
         <Pressable
           onPress={onRemove}
           hitSlop={{
- top: 8,
-bottom: 8,
-left: 8,
-right: 8 
-}}
+            top: 8,
+            bottom: 8,
+            left: 8,
+            right: 8
+          }}
           disabled={disabled}
           accessibilityRole="button"
           accessibilityLabel={`Remove ${label}`}
         >
           <Ionicons
-name="close"
-size={iconSize}
-color={textColor} />
+            name="close"
+            size={iconSize}
+            color={textColor} />
         </Pressable>
       )}
     </>
@@ -177,16 +182,16 @@ color={textColor} />
         disabled={disabled}
         accessibilityRole="button"
         accessibilityState={{
- selected,
-disabled 
-}}
+          selected,
+          disabled
+        }}
         style={disabled && styles.disabled}
       >
         <AnimatedView style={[
-containerStyle,
-animStyle,
-style
-]}>
+          containerStyle,
+          animStyle,
+          style
+        ]}>
           {innerContent}
         </AnimatedView>
       </Pressable>
@@ -195,10 +200,10 @@ style
 
   return (
     <AnimatedView style={[
-containerStyle,
-disabled && styles.disabled,
-style
-]}>
+      containerStyle,
+      disabled && styles.disabled,
+      style
+    ]}>
       {innerContent}
     </AnimatedView>
   );

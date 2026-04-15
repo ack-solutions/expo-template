@@ -3,9 +3,9 @@ import { AppThemeColors } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
-import {
- StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -70,7 +70,7 @@ styles.line,
 flex: 1 
 }
 ]} />
-        <Text style={styles.labelText}>{label}</Text>
+        <AppText style={styles.labelText}>{label}</AppText>
         <View style={[
 styles.line,
 {

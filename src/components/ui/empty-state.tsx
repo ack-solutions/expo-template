@@ -1,9 +1,9 @@
 import { AppColors, Spacing, Typography } from '@/constants/theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
-import {
- StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 import { Button } from './button';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -64,10 +64,10 @@ export function EmptyState({
     <View style={[styles.container, style]}>
       {icon && <View style={styles.iconWrap}>{icon}</View>}
 
-      <Text style={styles.title}>{title}</Text>
+      <AppText style={styles.title}>{title}</AppText>
 
       {description && (
-        <Text style={styles.description}>{description}</Text>
+        <AppText style={styles.description}>{description}</AppText>
       )}
 
       {(action || secondaryAction) && (

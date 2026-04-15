@@ -1,7 +1,7 @@
 import { Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import React from 'react';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -39,7 +39,7 @@ interface AppTextProps {
   /** Text alignment. Default: 'left' */
   align?: 'left' | 'center' | 'right';
   children: React.ReactNode;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
   numberOfLines?: number;
   /** Whether text should not wrap. Default: false */
   nowrap?: boolean;

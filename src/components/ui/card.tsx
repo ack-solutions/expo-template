@@ -1,17 +1,16 @@
-import {
- AppColors, Radii, Shadows, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
 import {
+  Pressable,
   PressableProps,
   StyleProp,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
-  Pressable,
 } from 'react-native';
+
+import { AppText } from './app-text';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -146,8 +145,8 @@ export function CardHeader({
   return (
     <View style={[styles.header, style]}>
       <View style={styles.headerLeft}>
-        <Text style={styles.headerTitle}>{title}</Text>
-        {subtitle && <Text style={styles.headerSubtitle}>{subtitle}</Text>}
+        <AppText style={styles.headerTitle}>{title}</AppText>
+        {subtitle && <AppText style={styles.headerSubtitle}>{subtitle}</AppText>}
       </View>
       {right && <View>{right}</View>}
     </View>

@@ -1,9 +1,9 @@
 import { Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import React, { useEffect, useRef } from 'react';
-import {
- Animated, StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -118,7 +118,7 @@ borderRadius: barHeight / 2
       </View>
 
       {showLabel && (
-        <Text style={[styles.label, { color: fillColor }]}>{displayLabel}</Text>
+        <AppText style={[styles.label, { color: fillColor }]}>{displayLabel}</AppText>
       )}
     </View>
   );

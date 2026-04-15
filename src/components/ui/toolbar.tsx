@@ -1,15 +1,13 @@
-import {
- AppColors, Radii, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import {
- Platform, StyleSheet, Text, TouchableOpacity, View, ViewStyle 
-} from 'react-native';
+import { Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AppText } from './app-text';
 
 export interface ToolbarProps {
   /** Screen title */
@@ -96,23 +94,19 @@ export function Toolbar({
   const leftContent = left ? (
     <View style={styles.leftInner}>{left}</View>
   ) : showBack ? (
-    <TouchableOpacity
-      style={styles.backBtn}
+    <Pressable
+      style={({ pressed }) => [styles.backBtn, pressed && styles.backBtnPressed]}
       onPress={handleBack}
-      activeOpacity={0.6}
-      hitSlop={{
- top: 10,
-bottom: 10,
-left: 10,
-right: 10 
-}}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      accessibilityRole="button"
+      accessibilityLabel="Go back"
     >
       <Ionicons
         name={Platform.OS === 'ios' ? 'chevron-back' : 'arrow-back'}
         size={22}
         color={colors.primary}
       />
-    </TouchableOpacity>
+    </Pressable>
   ) : null;
 
   return (
@@ -136,20 +130,20 @@ right: 10
           <View style={styles.centerCluster}>
             {titleStart ? <View style={styles.titleStart}>{titleStart}</View> : null}
             <View style={styles.titleBlock}>
-              <Text style={[styles.titleBase, styles.titleClustered]} numberOfLines={1}>
+              <AppText style={[styles.titleBase, styles.titleClustered]} numberOfLines={1}>
                 {title}
-              </Text>
+              </AppText>
               {subtitle ? (
-                <Text style={styles.subtitle} numberOfLines={1}>
+                <AppText style={styles.subtitle} numberOfLines={1}>
                   {subtitle}
-                </Text>
+                </AppText>
               ) : null}
             </View>
           </View>
         ) : (
-          <Text style={[styles.titleBase, styles.titleCentered]} numberOfLines={1}>
+          <AppText style={[styles.titleBase, styles.titleCentered]} numberOfLines={1}>
             {title}
-          </Text>
+          </AppText>
         )}
 
         <View style={styles.right}>{right}</View>
@@ -191,6 +185,9 @@ const createStyles = (colors: AppColors) =>
       borderRadius: Radii.sm,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    backBtnPressed: {
+      opacity: 0.6,
     },
     centerCluster: {
       flex: 1,

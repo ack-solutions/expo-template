@@ -16,7 +16,6 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
@@ -28,6 +27,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppText } from './app-text';
 import { SearchBar } from './search-bar';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -179,16 +179,16 @@ disabled: option.disabled
 }}
     >
       <View style={styles.optionText}>
-        <Text
+        <AppText
           style={[styles.optionLabel, selected && styles.optionLabelSelected]}
           numberOfLines={1}
         >
           {option.label}
-        </Text>
+        </AppText>
         {option.description && (
-          <Text style={styles.optionDescription} numberOfLines={2}>
+          <AppText style={styles.optionDescription} numberOfLines={2}>
             {option.description}
-          </Text>
+          </AppText>
         )}
       </View>
 
@@ -257,9 +257,9 @@ function SelectBody({
 
       {/* Header */}
       <View style={styles.pickerHeader}>
-        <Text style={styles.pickerTitle} numberOfLines={1}>
+        <AppText style={styles.pickerTitle} numberOfLines={1}>
           {title}
-        </Text>
+        </AppText>
         <Pressable
           onPress={onClose}
           hitSlop={{
@@ -307,8 +307,8 @@ color={colors.textSecondary} />
               color={colors.textTertiary}
               style={styles.emptyIcon}
             />
-            <Text style={styles.emptyTitle}>No results</Text>
-            <Text style={styles.emptyDesc}>Nothing matched &ldquo;{query}&rdquo;</Text>
+            <AppText style={styles.emptyTitle}>No results</AppText>
+            <AppText style={styles.emptyDesc}>Nothing matched &ldquo;{query}&rdquo;</AppText>
           </View>
         }
         renderItem={({ item }) => (
@@ -685,7 +685,7 @@ expanded: pickerOpen
       >
         {/* Label */}
         {label && (
-          <Text
+          <AppText
             style={[
               styles.label,
               pickerOpen && !hasError && styles.labelOpen,
@@ -694,7 +694,7 @@ expanded: pickerOpen
             ]}
           >
             {label}
-          </Text>
+          </AppText>
         )}
 
         {/* Trigger field */}
@@ -710,7 +710,7 @@ expanded: pickerOpen
             },
           ]}
         >
-          <Text
+          <AppText
             style={[
               styles.valueText,
               { fontSize: cfg.fontSize },
@@ -720,7 +720,7 @@ expanded: pickerOpen
             numberOfLines={1}
           >
             {selectedOption ? selectedOption.label : placeholder}
-          </Text>
+          </AppText>
 
           <Ionicons
             name={pickerOpen ? 'chevron-up' : 'chevron-down'}
@@ -732,9 +732,9 @@ expanded: pickerOpen
 
         {/* Support text */}
         {(hasError || hint) && (
-          <Text style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
+          <AppText style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
             {hasError ? error : hint}
-          </Text>
+          </AppText>
         )}
       </Pressable>
 

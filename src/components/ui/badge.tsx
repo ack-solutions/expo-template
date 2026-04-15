@@ -1,9 +1,9 @@
 import { Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import React, { useMemo } from 'react';
-import {
- StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -124,9 +124,9 @@ export function Badge({
         style,
       ]}
     >
-      <Text style={[sizeFontStyle[size], { color: variantText[variant] }]} numberOfLines={1}>
+      <AppText style={[sizeFontStyle[size], { color: variantText[variant] }]} numberOfLines={1}>
         {label}
-      </Text>
+      </AppText>
     </View>
   );
 }

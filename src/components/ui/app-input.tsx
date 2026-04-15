@@ -1,6 +1,4 @@
-import {
- AppColors, Radii, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React, { forwardRef, useRef } from 'react';
@@ -8,13 +6,14 @@ import {
   NativeSyntheticEvent,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   TextInputFocusEventData,
   TextInputProps,
   View,
   ViewStyle,
 } from 'react-native';
+
+import { AppText } from './app-text';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -228,9 +227,9 @@ disabled && styles.labelDisabled
         </Animated.View>
 
         {(hasError || hint) && (
-          <Text style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
+          <AppText style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
             {hasError ? error : hint}
-          </Text>
+          </AppText>
         )}
       </Pressable>
     );

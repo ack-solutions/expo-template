@@ -1,10 +1,6 @@
-import {
-  AppColors, Radii, Shadows, Spacing, Typography
-} from '@/constants/theme';
+import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
-import React, {
-  useEffect, useRef, useState
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -14,10 +10,11 @@ import {
   Pressable,
   StyleProp,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
+
+import { AppText } from './app-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const WINDOW_H = Dimensions.get('window').height;
@@ -133,11 +130,11 @@ export function ActionSheet({
           pointerEvents="box-none"
         >
           <View style={styles.handle} />
-          <Text style={styles.title}>{title}</Text>
+          <AppText style={styles.title}>{title}</AppText>
           {subtitle ? (
-            <Text style={styles.subtitle} numberOfLines={2}>
+            <AppText style={styles.subtitle} numberOfLines={2}>
               {subtitle}
-            </Text>
+            </AppText>
           ) : null}
           <View style={styles.rows}>{children}</View>
           <Pressable
@@ -146,7 +143,7 @@ export function ActionSheet({
             accessibilityRole="button"
             accessibilityLabel="Cancel"
           >
-            <Text style={styles.cancelText}>Cancel</Text>
+            <AppText style={styles.cancelText}>Cancel</AppText>
           </Pressable>
         </Animated.View>
       </View>
@@ -192,7 +189,7 @@ export function ActionSheetRow({
       <View style={[styles.iconCircle, isDanger ? styles.iconCircleDanger : styles.iconCircleDefault]}>
         {icon}
       </View>
-      <Text style={[styles.rowLabel, isDanger && styles.rowLabelDanger]}>{label}</Text>
+      <AppText style={[styles.rowLabel, isDanger && styles.rowLabelDanger]}>{label}</AppText>
     </Pressable>
   );
 }

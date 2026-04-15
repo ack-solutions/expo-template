@@ -1,11 +1,9 @@
-import {
-AppColors, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Spacing, Typography } from '@/constants/theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
-import {
- Pressable, StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -61,9 +59,9 @@ disabled
       </View>
 
       <View style={styles.textBlock}>
-        <Text style={[styles.label, disabled && styles.textDisabled]}>{label}</Text>
+        <AppText style={[styles.label, disabled && styles.textDisabled]}>{label}</AppText>
         {description && (
-          <Text style={[styles.description, disabled && styles.textDisabled]}>{description}</Text>
+          <AppText style={[styles.description, disabled && styles.textDisabled]}>{description}</AppText>
         )}
       </View>
     </Pressable>

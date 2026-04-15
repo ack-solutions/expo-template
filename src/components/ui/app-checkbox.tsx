@@ -1,13 +1,11 @@
-import {
- AppColors, Radii, Spacing, Typography 
-} from '@/constants/theme';
+import { AppColors, Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect } from 'react';
-import {
- Pressable, StyleSheet, Text, View, ViewStyle 
-} from 'react-native';
+import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+
+import { AppText } from './app-text';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -147,10 +145,10 @@ disabled
         {(label || description) && (
           <View style={styles.textBlock}>
             {label && (
-              <Text style={[styles.label, disabled && styles.textDisabled]}>{label}</Text>
+              <AppText style={[styles.label, disabled && styles.textDisabled]}>{label}</AppText>
             )}
             {description && (
-              <Text style={[styles.description, disabled && styles.textDisabled]}>{description}</Text>
+              <AppText style={[styles.description, disabled && styles.textDisabled]}>{description}</AppText>
             )}
           </View>
         )}
