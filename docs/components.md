@@ -16,7 +16,7 @@ A live visual reference for every component is available on the **UI Kit** tab i
 
 | Principle | Rule |
 |-----------|------|
-| Variant-driven | Every component exposes a `variant` prop for visual styles |
+| Variant + color separation | `variant` = visual style (contained/outlined/soft/ghost); `color` = semantic meaning (primary/danger/success…). Never mix them in a single prop. |
 | Token-only styling | Colors, spacing, radii come exclusively from `src/constants/theme.ts` |
 | No hardcoded strings | Labels and placeholder text always come from props |
 | Composable | Components accept `children`, slot props (`left`, `right`), and `style` overrides |
@@ -85,6 +85,12 @@ All interactive components meet the **44 pt minimum touch target** guideline.
 | `SearchBar` | 48 pt |
 | `AppCheckbox` row | 44 pt min |
 | `AppSwitch` row | 44 pt min |
+| `AppSelect sm` | 40 pt |
+| `AppSelect md` | 48 pt (default) |
+| `AppSelect lg` | 56 pt |
+| `AppDatePicker sm` | 40 pt |
+| `AppDatePicker md` | 48 pt (default) |
+| `AppDatePicker lg` | 56 pt |
 | `ListItem` row | 52 pt min |
 | `Chip sm` | 32 pt |
 | `Chip md` | 36 pt |
@@ -100,6 +106,7 @@ All interactive components meet the **44 pt minimum touch target** guideline.
 | [Button](#button) | `button.tsx` | Actions |
 | [AppInput](#appinput) | `app-input.tsx` | Forms |
 | [AppSelect](#appselect) | `app-select.tsx` | Forms |
+| [AppDatePicker / AppDateTimePicker / AppDateRangePicker](#appdatepicker--appdatetimepicker--appdaterangepicker) | `app-date-picker.tsx` | Forms |
 | [SearchBar](#searchbar) | `search-bar.tsx` | Forms |
 | [AppCheckbox](#appcheckbox) | `app-checkbox.tsx` | Forms |
 | [AppSwitch](#appswitch) | `app-switch.tsx` | Forms |
@@ -110,9 +117,9 @@ All interactive components meet the **44 pt minimum touch target** guideline.
 | [Divider](#divider) | `divider.tsx` | Layout |
 | [AppCard / AppPressableCard / CardHeader](#cards) | `card.tsx` | Layout |
 | [ListItem](#listitem) | `list-item.tsx` | Layout |
+| [Container](#container) | `container.tsx` | Screen |
 | [SafeScreen](#safescreen) | `safe-screen.tsx` | Screen |
 | [Toolbar](#toolbar) | `toolbar.tsx` | Screen |
-| [ScreenHeader](#screenheader) | `screen-header.tsx` | Screen |
 | [ProgressBar](#progressbar) | `progress-bar.tsx` | Feedback |
 | [Skeleton / SkeletonText / SkeletonCard](#skeleton) | `skeleton.tsx` | Feedback |
 | [EmptyState](#emptystate) | `empty-state.tsx` | Feedback |
@@ -160,7 +167,7 @@ Layout primitives for consistent, token-based spacing. Replace ad-hoc `gap`, `fl
 // Label + value row
 <HStack justify="space-between" align="center">
   <AppText variant="body" color="secondary">Status</AppText>
-  <Badge label="Active" variant="success" />
+  <Badge label="Active" color="success" />
 </HStack>
 
 // Icon + text inline
@@ -177,7 +184,7 @@ Layout primitives for consistent, token-based spacing. Replace ad-hoc `gap`, `fl
 // Two-button row
 <HStack gap="sm">
   <Button title="Cancel" variant="ghost" onPress={onCancel} style={{ flex: 1 }} />
-  <Button title="Save" variant="primary" onPress={onSave} style={{ flex: 1 }} />
+  <Button title="Save" variant="contained" onPress={onSave} style={{ flex: 1 }} />
 </HStack>
 
 // Wrapping chip row
@@ -200,7 +207,7 @@ Variant-based typography component. Always use this instead of raw `<Text>` to g
 | `color` | `TextColor` | `'primary'` | Semantic color token |
 | `align` | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment |
 | `children` | `ReactNode` | — | Text content |
-| `style` | `TextStyle` | — | Style override |
+| `style` | `StyleProp<TextStyle>` | — | Style override (accepts arrays and conditional styles) |
 | `numberOfLines` | `number` | — | Line clamp |
 | `nowrap` | `boolean` | `false` | Prevent wrapping |
 
@@ -225,7 +232,7 @@ Variant-based typography component. Always use this instead of raw `<Text>` to g
 
 ## Button
 
-Primary action component with five visual variants and three sizes.
+Primary action component. `variant` controls the visual style; `color` controls the semantic meaning. Icon `size` and `color` are injected automatically — no need to pass them.
 
 ### Props
 
@@ -233,42 +240,84 @@ Primary action component with five visual variants and three sizes.
 |------|------|---------|-------------|
 | `title` | `string` | — | Button label |
 | `onPress` | `() => void` | — | Tap handler |
-| `variant` | `ButtonVariant` | `'primary'` | Visual style |
+| `variant` | `ButtonVariant` | `'contained'` | Visual style |
+| `color` | `ButtonColor` | `'primary'` | Semantic color |
 | `size` | `ButtonSize` | `'md'` | Size |
 | `disabled` | `boolean` | `false` | Disables interaction |
 | `loading` | `boolean` | `false` | Shows spinner, disables interaction |
-| `icon` | `ReactNode` | — | Icon rendered before the label |
+| `startIcon` | `ReactNode` | — | Icon before the label (size + color auto-injected) |
+| `endIcon` | `ReactNode` | — | Icon after the label (size + color auto-injected) |
 | `fullWidth` | `boolean` | `false` | Stretches to container width |
 | `style` | `ViewStyle` | — | Container style override |
 | `textStyle` | `TextStyle` | — | Label style override |
 
 ### Variants (`ButtonVariant`)
 
-| Variant | Use case |
-|---------|----------|
-| `primary` | Main CTA — one per section |
-| `secondary` | Muted accent CTA |
-| `outline` | Bordered, no fill |
-| `ghost` | Text-only, no border |
+| Variant | Description |
+|---------|-------------|
+| `contained` | Solid filled background — main CTA |
+| `outlined` | Transparent background with border |
+| `soft` | Faded/tinted background, no border |
+| `ghost` | Fully transparent, no border — text only |
+
+### Colors (`ButtonColor`)
+
+| Color | Use case |
+|-------|----------|
+| `primary` | Brand action (default) |
+| `secondary` | Neutral secondary action |
 | `danger` | Destructive actions (delete, remove) |
+| `success` | Confirmation or positive action |
+| `warning` | Caution or irreversible action |
+| `neutral` | Low-emphasis action |
 
 ### Sizes (`ButtonSize`)
 
-`sm` · `md` · `lg`
+| Size | Min height | Use case |
+|------|------------|----------|
+| `sm` | 40 pt | Toolbars, table rows |
+| `md` | 48 pt (default) | Standard buttons |
+| `lg` | 56 pt | Prominent CTAs |
+
+### Icon auto-sizing
+
+Icons passed via `startIcon` / `endIcon` automatically receive `size` and `color` props via `React.cloneElement`. Pass the icon node without any props:
+
+```tsx
+startIcon={<Ionicons name="add" />}   // size and color injected automatically
+```
+
+Icon sizes: `sm=14 · md=16 · lg=18`
 
 ### Example
 
 ```tsx
-<Button title="Save" onPress={handleSave} variant="primary" />
-<Button title="Cancel" onPress={handleCancel} variant="ghost" />
-<Button title="Delete" onPress={handleDelete} variant="danger" />
-<Button title="Loading…" loading onPress={() => {}} />
+// Main CTA
+<Button title="Save" onPress={handleSave} />
+
+// Destructive
+<Button title="Delete" onPress={handleDelete} variant="contained" color="danger" />
+
+// Soft secondary
+<Button title="Cancel" onPress={handleCancel} variant="soft" />
+
+// Outlined
+<Button title="Learn more" onPress={handleMore} variant="outlined" />
+
+// Ghost
+<Button title="Skip" onPress={handleSkip} variant="ghost" />
+
+// With icons — size and color are auto-injected
 <Button
   title="Add item"
-  icon={<Ionicons name="add" size={16} color="#fff" />}
+  startIcon={<Ionicons name="add" />}
+  endIcon={<Ionicons name="chevron-forward" />}
   onPress={handleAdd}
   fullWidth
 />
+
+// Loading state
+<Button title="Saving…" loading onPress={() => {}} />
 ```
 
 ---
@@ -329,7 +378,7 @@ const form = useForm<FormValues>({
 <AppInput
   label="Amount"
   variant="filled"
-  leftSlot={<Text>$</Text>}
+  leftSlot={<AppText variant="body" color="tertiary">$</AppText>}
   rightSlot={<Ionicons name="calculator-outline" size={18} color={Colors.textTertiary} />}
   keyboardType="decimal-pad"
   value={amount}
@@ -341,9 +390,10 @@ const form = useForm<FormValues>({
 
 ## AppSelect
 
-Styled select field that opens a searchable bottom sheet. The trigger is visually identical to `AppInput` (same label, error, hint, variant, size system).
+Styled select field that opens a searchable picker. The trigger is visually identical to `AppInput` (same label, error, hint, variant, size system).
 
-- Sheet slides up with a Reanimated spring; backdrop fades in.
+- `mode="sheet"` (default) — slides up from the bottom with a Reanimated spring; backdrop fades in.
+- `mode="dialog"` — centered modal with scale + fade animation (useful for tablets or short option lists).
 - `searchable` shows a `SearchBar` inside the sheet for filtering options.
   Auto-enabled when `options.length > 5`.
 - Empty-state is shown when the search query returns no results.
@@ -364,6 +414,7 @@ Styled select field that opens a searchable bottom sheet. The trigger is visuall
 | `variant` | `SelectVariant` | `'outlined'` | Visual style of the trigger |
 | `size` | `SelectSize` | `'md'` | Height of the trigger (40 / 48 / 56 pt) |
 | `disabled` | `boolean` | `false` | Prevents opening the sheet |
+| `mode` | `'sheet' \| 'dialog'` | `'sheet'` | Presentation style — bottom sheet or centered dialog |
 | `searchable` | `boolean` | auto (`options.length > 5`) | Show search bar in the sheet |
 | `sheetTitle` | `string` | falls back to `label` | Title shown at the top of the sheet |
 | `searchPlaceholder` | `string` | `'Search…'` | Placeholder for the search bar |
@@ -429,6 +480,88 @@ const form = useForm<FormValues>({
   value={status}
   onChange={(opt) => setStatus(opt.value)}
   options={statusOptions}
+/>
+```
+
+---
+
+## AppDatePicker / AppDateTimePicker / AppDateRangePicker
+
+Themed date picker fields backed by [`react-native-ui-datepicker`](https://github.com/farhoudshapouran/react-native-ui-datepicker) — a pure-JS calendar with full light/dark theme support. No native rebuild required.
+
+- Trigger field is visually identical to `AppInput` (same label, error, hint, variant, size system).
+- Tapping the field opens a bottom sheet with a calendar grid.
+- All calendar colors are driven by the app's design tokens (`colors.primary`, `colors.textPrimary`, etc.) via `useAppTheme()`.
+- Automatically adapts to light and dark mode.
+- Sheet slides up with a Reanimated spring; backdrop fades in.
+
+### AppDatePicker — single date
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `Date \| null` | — | Controlled selected date |
+| `onChange` | `(value: Date) => void` | — | Called when the user confirms a date |
+| `label` | `string` | — | Label above the trigger |
+| `placeholder` | `string` | `'Select date'` | Shown when no date is selected |
+| `error` | `string` | — | Error message (puts field in error state) |
+| `hint` | `string` | — | Helper text below field |
+| `variant` | `PickerVariant` | `'outlined'` | Visual style of the trigger (`'outlined'` \| `'filled'`) |
+| `size` | `PickerSize` | `'md'` | Height of the trigger (`'sm'` \| `'md'` \| `'lg'`) |
+| `disabled` | `boolean` | `false` | Prevents opening the picker |
+| `minimumDate` | `Date` | — | Earliest selectable date |
+| `maximumDate` | `Date` | — | Latest selectable date |
+| `containerStyle` | `ViewStyle` | — | Outer container style override |
+
+### AppDateTimePicker — date + time
+
+Same props as `AppDatePicker`. Shows a calendar and a time-wheel picker in the same sheet.
+
+### AppDateRangePicker — date range
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `{ startDate: Date \| null; endDate: Date \| null }` | — | Controlled range |
+| `onChange` | `(value: DateRangeValue) => void` | — | Called when the user confirms a range |
+| _…same as AppDatePicker_ | | | (without `minimumDate` / `maximumDate`) |
+
+### Example
+
+```tsx
+// Single date
+const [date, setDate] = useState<Date | null>(null);
+
+<AppDatePicker
+  label="Start Date"
+  value={date}
+  onChange={setDate}
+  placeholder="Select a date"
+  minimumDate={new Date()}
+/>
+
+// Date + time
+<AppDateTimePicker
+  label="Appointment"
+  value={datetime}
+  onChange={setDatetime}
+  error={errors.datetime?.message}
+/>
+
+// Date range
+const [range, setRange] = useState({ startDate: null, endDate: null });
+
+<AppDateRangePicker
+  label="Booking Period"
+  value={range}
+  onChange={setRange}
+  hint="Select check-in and check-out dates"
+/>
+
+// With React Hook Form + Zod
+<AppDatePicker
+  label="Due Date"
+  value={form.watch('dueDate')}
+  onChange={(date) => form.setValue('dueDate', date, { shouldValidate: true })}
+  error={form.formState.errors.dueDate?.message}
 />
 ```
 
@@ -567,29 +700,46 @@ const [plan, setPlan] = useState('monthly');
 
 ## Badge
 
-Compact status indicator. Supports text labels or dot-only indicators.
+Compact status indicator. `variant` controls visual style; `color` controls semantic meaning.
 
 ### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `label` | `string` | — | Display text |
-| `variant` | `BadgeVariant` | `'neutral'` | Color style |
+| `variant` | `BadgeVariant` | `'soft'` | Visual style |
+| `color` | `BadgeColor` | `'neutral'` | Semantic color |
 | `size` | `BadgeSize` | `'md'` | Size |
 | `dot` | `boolean` | `false` | Render as a small colored dot (no text) |
 | `style` | `ViewStyle` | — | Container style override |
 
 ### Variants (`BadgeVariant`)
 
+| Variant | Description |
+|---------|-------------|
+| `soft` | Faded background, colored text (default) |
+| `filled` | Solid background, inverse text |
+| `outlined` | Transparent background, colored border + text |
+
+### Colors (`BadgeColor`)
+
 `primary` · `success` · `error` · `warning` · `neutral`
 
 ### Example
 
 ```tsx
-<Badge label="Active" variant="success" />
-<Badge label="3 new" variant="error" size="sm" />
-<Badge label="Pending" variant="warning" />
-<Badge label="" variant="error" dot />          // notification dot
+// Soft (default)
+<Badge label="Active" color="success" />
+<Badge label="3 new" color="error" size="sm" />
+
+// Filled
+<Badge label="Beta" variant="filled" color="primary" />
+
+// Outlined
+<Badge label="Pending" variant="outlined" color="warning" />
+
+// Notification dot
+<Badge label="" color="error" dot />
 ```
 
 ---
@@ -630,7 +780,7 @@ Displays a user image or derives initials from a name. Initials get a stable col
 
 ## Chip
 
-Compact label used for filter selection, tags, or categorisation.
+Compact label used for filter selection, tags, or categorisation. `variant` controls visual style; `color` controls semantic meaning.
 
 ### Props
 
@@ -638,6 +788,7 @@ Compact label used for filter selection, tags, or categorisation.
 |------|------|---------|-------------|
 | `label` | `string` | — | Display text |
 | `variant` | `ChipVariant` | `'outlined'` | Visual style |
+| `color` | `ChipColor` | `'primary'` | Semantic color |
 | `size` | `ChipSize` | `'md'` | Size |
 | `selected` | `boolean` | `false` | Highlighted selection state |
 | `onPress` | `() => void` | — | Makes the chip tappable |
@@ -648,7 +799,15 @@ Compact label used for filter selection, tags, or categorisation.
 
 ### Variants (`ChipVariant`)
 
-`filled` · `outlined` · `ghost`
+| Variant | Description |
+|---------|-------------|
+| `outlined` | Transparent background with border (default) |
+| `filled` | Solid/faded background, no border |
+| `ghost` | Fully transparent, no border |
+
+### Colors (`ChipColor`)
+
+`primary` · `success` · `error` · `warning` · `neutral`
 
 ### Example
 
@@ -656,6 +815,12 @@ Compact label used for filter selection, tags, or categorisation.
 // Filter chip
 const [active, setActive] = useState(false);
 <Chip label="Design" selected={active} onPress={() => setActive(!active)} />
+
+// Status chip (no interaction)
+<Chip label="Active" variant="filled" color="success" />
+
+// Danger chip
+<Chip label="Overdue" variant="filled" color="error" />
 
 // Removable tag
 <Chip label="React Native" variant="filled" onRemove={() => removeTag('react-native')} />
@@ -684,9 +849,9 @@ Thin visual separator between sections or items.
 
 // Vertical divider inside a row
 <View style={{ flexDirection: 'row', height: 24, alignItems: 'center' }}>
-  <Text>Left</Text>
+  <AppText variant="body">Left</AppText>
   <Divider orientation="vertical" />
-  <Text>Right</Text>
+  <AppText variant="body">Right</AppText>
 </View>
 ```
 
@@ -769,21 +934,41 @@ Standard list row for settings, navigation, and data lists.
 | `left` | `ReactNode` | — | Leading slot (icon, avatar, etc.) |
 | `right` | `ReactNode` | — | Trailing slot (badge, custom node). Overrides `accessory` |
 | `accessory` | `'arrow' \| 'none'` | `'none'` | Built-in trailing accessory |
+| `color` | `ListItemColor` | `'default'` | Semantic color applied to the title |
 | `onPress` | `() => void` | — | Makes the row tappable |
 | `showDivider` | `boolean` | `false` | Bottom hairline divider |
 | `disabled` | `boolean` | `false` | Prevents interaction, dims content |
 | `style` | `ViewStyle` | — | Container style override |
 
+### Colors (`ListItemColor`)
+
+| Color | Use case |
+|-------|----------|
+| `default` | Normal navigation or info row |
+| `danger` | Destructive action (delete, remove) |
+| `success` | Confirmation or positive state |
+| `warning` | Caution or irreversible action |
+
 ### Example
 
 ```tsx
+// Navigation row
 <ListItem
   title="Account"
   subtitle="Manage your profile"
-  left={<Ionicons name="person-circle-outline" size={22} color={Colors.primary} />}
+  left={<Ionicons name="person-circle-outline" size={22} color={colors.primary} />}
   accessory="arrow"
   onPress={() => router.push('/account')}
   showDivider
+/>
+
+// Destructive row
+<ListItem
+  title="Delete account"
+  color="danger"
+  left={<Ionicons name="trash-outline" size={22} color={colors.error} />}
+  accessory="arrow"
+  onPress={handleDelete}
 />
 
 // Static info row
@@ -837,56 +1022,105 @@ Top app bar with title, optional back button, left slot, and right actions.
 | `right` | `ReactNode` | — | Right-side actions |
 | `safeAreaTop` | `boolean` | `true` | Apply top safe area inset |
 | `backgroundColor` | `string` | `Colors.background` | Background color |
-| `style` | `ViewStyle` | — | Container style override |
+| `containerStyle` | `ViewStyle` | — | Container style override |
 
 ### Example
 
 ```tsx
+<Toolbar title="Profile" showBack />
+
+// With right actions
 <Toolbar
-  title="Profile"
+  title="Settings"
   showBack
   right={
-    <TouchableOpacity onPress={openMenu}>
+    <Pressable onPress={openMenu} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
       <Ionicons name="ellipsis-vertical" size={22} color={Colors.textPrimary} />
-    </TouchableOpacity>
+    </Pressable>
   }
+/>
+
+// With subtitle and leading avatar
+<Toolbar
+  title="Jane Doe"
+  subtitle="Administrator"
+  titleStart={<Avatar name="Jane Doe" size="sm" />}
+  right={<Button title="Edit" variant="ghost" size="sm" onPress={handleEdit} />}
 />
 ```
 
 ---
 
-## ScreenHeader
+### Inset ownership
 
-Identical to `Toolbar` but with `safeAreaTop={false}` pre-set. Use when the parent `SafeScreen` owns the top inset.
+- Use default `Toolbar` (`safeAreaTop={true}`) when the bar should include top inset.
+- Use `Toolbar safeAreaTop={false}` when parent `SafeScreen` already handles top inset.
+
+---
+
+## Container
+
+Flexible full-screen content wrapper. Defaults to a `View` with `flex: 1` and `backgroundColor: colors.background`. Pass `scrollable` to swap the wrapper to a `ScrollView`.
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Screen content |
+| `scrollable` | `boolean` | `false` | Use `ScrollView` instead of `View` |
+| `component` | `React.ElementType` | — | Custom wrapper (overrides `scrollable`) |
+| `style` | `StyleProp<ViewStyle>` | — | Wrapper style |
+| `contentContainerStyle` | `StyleProp<ViewStyle>` | — | ScrollView `contentContainerStyle` (when scrollable) |
+| `componentProps` | `object` | — | Extra props forwarded to the wrapper component |
+
+### Example
+
+```tsx
+// Static full-screen layout
+<SafeScreen>
+  <Container>
+    <AppText variant="h2">Hello</AppText>
+  </Container>
+</SafeScreen>
+
+// Scrollable content area
+<SafeScreen topSafe={false} bottomSafe={false}>
+  <Toolbar title="Profile" />
+  <Container scrollable contentContainerStyle={{ padding: Spacing.xl, gap: Spacing.lg }}>
+    <ProfileCard />
+    <ActivityList />
+  </Container>
+</SafeScreen>
+```
 
 ---
 
 ## ProgressBar
 
-Animated linear progress indicator.
+Animated linear progress indicator. Use `color` for semantic meaning.
 
 ### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `value` | `number` | — | Progress 0–100 |
-| `variant` | `ProgressBarVariant` | `'primary'` | Fill color variant |
+| `color` | `ProgressBarColor` | `'primary'` | Semantic fill color |
 | `size` | `ProgressBarSize` | `'md'` | Bar height |
-| `showLabel` | `boolean` | `false` | Show percentage label |
+| `showLabel` | `boolean` | `false` | Show percentage label at end |
 | `label` | `string` | — | Custom label text (overrides percentage) |
 | `animated` | `boolean` | `true` | Animate the fill on value change |
 | `style` | `ViewStyle` | — | Container style override |
 
-### Variants (`ProgressBarVariant`)
+### Colors (`ProgressBarColor`)
 
 `primary` · `success` · `warning` · `error`
 
 ### Example
 
 ```tsx
-<ProgressBar value={uploadPercent} variant="primary" showLabel />
-<ProgressBar value={(step / total) * 100} variant="success" size="sm" />
-<ProgressBar value={100} variant="error" label="Upload failed" showLabel />
+<ProgressBar value={uploadPercent} color="primary" showLabel />
+<ProgressBar value={(step / total) * 100} color="success" size="sm" />
+<ProgressBar value={100} color="error" label="Upload failed" showLabel />
 ```
 
 ---
@@ -955,7 +1189,7 @@ Guides the user when a list or section has no content.
 
 ## ConfirmDialog
 
-Modal that prompts the user to confirm or cancel an action.
+Modal that prompts the user to confirm or cancel an action. `color` controls the semantic meaning of the confirm button.
 
 ### Props
 
@@ -966,21 +1200,37 @@ Modal that prompts the user to confirm or cancel an action.
 | `message` | `string` | — | Explanatory message |
 | `confirmLabel` | `string` | `'Confirm'` | Confirm button label |
 | `cancelLabel` | `string` | `'Cancel'` | Cancel button label |
-| `variant` | `'danger' \| 'primary'` | `'danger'` | Confirm button style |
+| `color` | `ConfirmDialogColor` | `'danger'` | Semantic color of the confirm button |
 | `onConfirm` | `() => void` | — | Confirm callback |
 | `onCancel` | `() => void` | — | Cancel / dismiss callback |
+
+### Colors (`ConfirmDialogColor`)
+
+`primary` · `danger` · `success` · `warning`
 
 ### Example
 
 ```tsx
+// Destructive confirmation
 <ConfirmDialog
   visible={deleteVisible}
   title="Delete item"
   message="This action cannot be undone."
   confirmLabel="Delete"
-  variant="danger"
+  color="danger"
   onConfirm={handleDelete}
   onCancel={() => setDeleteVisible(false)}
+/>
+
+// Positive confirmation
+<ConfirmDialog
+  visible={publishVisible}
+  title="Publish post?"
+  message="This will make the post visible to all users."
+  confirmLabel="Publish"
+  color="success"
+  onConfirm={handlePublish}
+  onCancel={() => setPublishVisible(false)}
 />
 ```
 
@@ -988,29 +1238,45 @@ Modal that prompts the user to confirm or cancel an action.
 
 ## FeedbackDialog
 
-Single-action modal for success, error, info, or warning messages.
+Single-action modal for success, error, info, or warning feedback messages. `color` controls the icon and semantic meaning.
 
 ### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `visible` | `boolean` | — | Controls visibility |
-| `variant` | `FeedbackVariant` | `'info'` | Color and icon style |
-| `title` | `string` | — | Dialog title (auto-derived from variant if omitted) |
+| `color` | `FeedbackColor` | `'info'` | Semantic color — drives icon and title |
+| `title` | `string` | — | Dialog title (auto-derived from `color` if omitted) |
 | `message` | `string` | — | Message body |
 | `confirmLabel` | `string` | `'OK'` | Dismiss button label |
 | `onDismiss` | `() => void` | — | Dismiss callback |
 
-### Variants (`FeedbackVariant`)
+### Colors (`FeedbackColor`)
 
-`success` · `error` · `info` · `warning`
+| Color | Auto title | Icon |
+|-------|-----------|------|
+| `success` | "Success" | checkmark-circle |
+| `error` | "Error" | close-circle |
+| `info` | "Notice" | information-circle |
+| `warning` | "Attention" | warning |
+
+### useToast hook
+
+```tsx
+const { toast, showToast, hideToast } = useToast();
+
+showToast('Your data was saved.', 'success');
+showToast('Something went wrong.', 'error');
+
+<FeedbackDialog {...toast} onDismiss={hideToast} />
+```
 
 ### Example
 
 ```tsx
 <FeedbackDialog
   visible={successVisible}
-  variant="success"
+  color="success"
   title="Payment complete"
   message="Your payment has been processed successfully."
   onDismiss={() => setSuccessVisible(false)}
@@ -1040,7 +1306,7 @@ Bottom sheet–style action menu with animated slide-in/out.
 | `icon` | `ReactNode` | — | Leading icon |
 | `label` | `string` | — | Row label |
 | `onPress` | `() => void` | — | Tap handler |
-| `variant` | `'default' \| 'danger'` | `'default'` | Color style |
+| `color` | `ActionSheetRowColor` | `'default'` | Semantic color (`'default'` or `'danger'`) |
 | `edge` | `ActionSheetRowEdge` | `'default'` | Border treatment |
 
 ### `ActionSheetRowEdge`
@@ -1075,7 +1341,7 @@ Bottom sheet–style action menu with animated slide-in/out.
     icon={<Ionicons name="trash-outline" size={20} color={Colors.error} />}
     label="Delete"
     onPress={handleDelete}
-    variant="danger"
+    color="danger"
     edge="danger"
   />
 </ActionSheet>
@@ -1098,28 +1364,35 @@ Follow this checklist when adding a component to the library:
 
 ### Template
 
+Follow the **variant + color separation** principle: `variant` = visual style, `color` = semantic meaning. Never encode semantic meaning inside `variant`.
+
 ```tsx
-import { Colors, Radii, Spacing, Typography } from '@/constants/theme';
+import { Radii, Spacing } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
+import { useAppTheme } from '@/theme/use-app-theme';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
+import { AppText } from './app-text';
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type MyVariant = 'default' | 'accent';
+/** Visual style of the component. */
+export type MyVariant = 'filled' | 'outlined' | 'soft';
+
+/** Semantic color of the component. */
+export type MyColor = 'primary' | 'success' | 'danger' | 'warning' | 'neutral';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface MyComponentProps {
+  /** Visual style. Default: 'filled' */
   variant?: MyVariant;
+  /** Semantic color. Default: 'primary' */
+  color?: MyColor;
   style?: ViewStyle;
 }
-
-// ─── Style Maps ───────────────────────────────────────────────────────────────
-
-const variantBg: Record<MyVariant, string> = {
-  default: Colors.surface,
-  accent: Colors.primaryFaded,
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -1127,22 +1400,51 @@ const variantBg: Record<MyVariant, string> = {
  * MyComponent — brief description.
  *
  * @example
- * <MyComponent variant="accent" />
+ * <MyComponent variant="soft" color="success" />
  */
-export function MyComponent({ variant = 'default', style }: MyComponentProps) {
+export function MyComponent({ variant = 'filled', color = 'primary', style }: MyComponentProps) {
+  const { colors } = useAppTheme();
+  const styles = useThemedStyle(createStyles);
+
+  // 2-D style map: variant × color
+  const bgMap: Record<MyVariant, Record<MyColor, string>> = {
+    filled: {
+      primary: colors.primary,
+      success: colors.success,
+      danger: colors.error,
+      warning: colors.warning,
+      neutral: colors.borderLight,
+    },
+    soft: {
+      primary: colors.primaryFaded,
+      success: colors.successFaded,
+      danger: colors.errorFaded,
+      warning: colors.warningFaded,
+      neutral: colors.borderLight,
+    },
+    outlined: {
+      primary: 'transparent',
+      success: 'transparent',
+      danger: 'transparent',
+      warning: 'transparent',
+      neutral: 'transparent',
+    },
+  };
+
   return (
-    <View style={[styles.container, { backgroundColor: variantBg[variant] }, style]}>
-      {/* … */}
+    <View style={[styles.container, { backgroundColor: bgMap[variant][color] }, style]}>
+      <AppText variant="body">{/* … */}</AppText>
     </View>
   );
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: Radii.md,
-    padding: Spacing.lg,
-  },
-});
+const createStyles = ({ colors }: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      borderRadius: Radii.md,
+      padding: Spacing.lg,
+    },
+  });
 ```

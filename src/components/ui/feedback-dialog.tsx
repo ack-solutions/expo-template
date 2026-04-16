@@ -1,23 +1,32 @@
-import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
+import {
+ Radii, Shadows, Spacing, Typography
+} from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useMemo } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import {
+ Modal, Pressable, StyleSheet, View
+} from 'react-native';
 
 import { AppText } from './app-text';
 import { Button } from './button';
 
-export type FeedbackVariant = 'success' | 'error' | 'info' | 'warning';
+/** Semantic color of the feedback dialog. */
+export type FeedbackColor = 'success' | 'error' | 'info' | 'warning';
 
-const TITLES: Record<FeedbackVariant, string> = {
+/** @deprecated Use FeedbackColor instead. */
+export type FeedbackVariant = FeedbackColor;
+
+const DEFAULT_TITLES: Record<FeedbackColor, string> = {
   success: 'Success',
   error: 'Error',
   info: 'Notice',
   warning: 'Attention',
 };
 
-const ICONS: Record<FeedbackVariant, keyof typeof Ionicons.glyphMap> = {
+const ICONS: Record<FeedbackColor, keyof typeof Ionicons.glyphMap> = {
   success: 'checkmark-circle',
   error: 'close-circle',
   info: 'information-circle',
@@ -28,23 +37,35 @@ interface FeedbackDialogProps {
   visible: boolean;
   title?: string;
   message: string;
-  variant?: FeedbackVariant;
+  /** Semantic color. Default: 'info' */
+  color?: FeedbackColor;
   confirmLabel?: string;
   onDismiss: () => void;
 }
 
-/** Single-action modal for short feedback (replaces transient toasts). */
+/**
+ * FeedbackDialog — single-action modal for short user-facing feedback.
+ *
+ * @example
+ * <FeedbackDialog
+ *   visible={showFeedback}
+ *   color="success"
+ *   message="Your changes were saved."
+ *   onDismiss={() => setShowFeedback(false)}
+ * />
+ */
 export function FeedbackDialog({
   visible,
   title,
   message,
-  variant = 'info',
+  color = 'info',
   confirmLabel = 'OK',
   onDismiss,
 }: FeedbackDialogProps) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
-  const iconColors: Record<FeedbackVariant, string> = useMemo(
+  const styles = useThemedStyle(createStyles);
+
+  const iconColors: Record<FeedbackColor, string> = useMemo(
     () => ({
       success: colors.success,
       error: colors.error,
@@ -53,7 +74,8 @@ export function FeedbackDialog({
     }),
     [colors],
   );
-  const resolvedTitle = title ?? TITLES[variant];
+
+  const resolvedTitle = title ?? DEFAULT_TITLES[color];
 
   return (
     <Modal
@@ -67,25 +89,25 @@ export function FeedbackDialog({
         <Pressable style={[styles.dialog, Shadows.xl]} onPress={() => {}}>
           <View style={styles.iconWrap}>
             <Ionicons
-name={ICONS[variant]}
+name={ICONS[color]}
 size={40}
-color={iconColors[variant]} />
+color={iconColors[color]} />
           </View>
           <AppText style={styles.title}>{resolvedTitle}</AppText>
           <AppText style={styles.message}>{message}</AppText>
           <Button
-title={confirmLabel}
-onPress={onDismiss}
-variant="primary"
-size="md"
-fullWidth />
+            title={confirmLabel}
+            onPress={onDismiss}
+            size="md"
+            fullWidth
+          />
         </Pressable>
       </Pressable>
     </Modal>
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     overlay: {
       flex: 1,

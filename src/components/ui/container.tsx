@@ -1,4 +1,5 @@
-import { useAppTheme } from '@/theme/use-app-theme';
+import { AppTheme } from '@/theme/types';
+import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
 import {
   ScrollView,
@@ -48,8 +49,7 @@ export function Container({
   contentContainerStyle,
   componentProps,
 }: ContainerProps) {
-  const { colors } = useAppTheme();
-  const styles = createStyles(colors.background);
+  const styles = useThemedStyle(createStyles);
 
   const ResolvedComponent: React.ElementType = component ?? (scrollable ? ScrollView : View);
   const props = (componentProps ?? {}) as ContainerLikeProps;
@@ -93,10 +93,10 @@ export function Container({
   );
 }
 
-const createStyles = (backgroundColor: string) => StyleSheet.create({
+const createStyles = ({ colors }: AppTheme) => StyleSheet.create({
   base: {
     flex: 1,
-    backgroundColor,
+    backgroundColor: colors.background,
   },
 });
 

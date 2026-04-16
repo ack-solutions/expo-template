@@ -7,12 +7,11 @@ import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type BadgeVariant =
-  | 'primary'
-  | 'success'
-  | 'error'
-  | 'warning'
-  | 'neutral';
+/** Visual style of the badge. */
+export type BadgeVariant = 'filled' | 'soft' | 'outlined';
+
+/** Semantic color of the badge. */
+export type BadgeColor = 'primary' | 'success' | 'error' | 'warning' | 'neutral';
 
 export type BadgeSize = 'sm' | 'md' | 'lg';
 
@@ -20,11 +19,13 @@ export type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
   label: string;
-  /** Visual style. Default: 'neutral' */
+  /** Visual style. Default: 'soft' */
   variant?: BadgeVariant;
+  /** Semantic color. Default: 'neutral' */
+  color?: BadgeColor;
   /** Size. Default: 'md' */
   size?: BadgeSize;
-  /** Show pill (dot) instead of text label. Default: false */
+  /** Show a colored dot instead of a text label. Default: false */
   dot?: boolean;
   style?: ViewStyle;
 }
@@ -60,31 +61,25 @@ const dotSize: Record<BadgeSize, number> = {
 /**
  * Badge — compact status indicator.
  *
+ * `variant` controls the visual style; `color` controls the semantic meaning.
+ *
  * @example
- * <Badge label="Active" variant="success" />
- * <Badge label="3" variant="error" size="sm" />
- * <Badge label="" variant="warning" dot />
+ * <Badge label="Active" color="success" />
+ * <Badge label="3" color="error" size="sm" variant="filled" />
+ * <Badge label="Beta" color="primary" variant="outlined" />
+ * <Badge label="" color="warning" dot />
  */
 export function Badge({
   label,
-  variant = 'neutral',
+  variant = 'soft',
+  color = 'neutral',
   size = 'md',
   dot = false,
   style,
 }: BadgeProps) {
   const { colors } = useAppTheme();
-  const variantBg: Record<BadgeVariant, string> = useMemo(
-    () => ({
-      primary: colors.primaryFaded12,
-      success: colors.successFaded,
-      error: colors.errorFaded,
-      warning: colors.warningFaded,
-      neutral: colors.borderLight,
-    }),
-    [colors],
-  );
 
-  const variantText: Record<BadgeVariant, string> = useMemo(
+  const solidColor: Record<BadgeColor, string> = useMemo(
     () => ({
       primary: colors.primary,
       success: colors.success,
@@ -95,6 +90,30 @@ export function Badge({
     [colors],
   );
 
+  const fadedColor: Record<BadgeColor, string> = useMemo(
+    () => ({
+      primary: colors.primaryFaded,
+      success: colors.successFaded,
+      error: colors.errorFaded,
+      warning: colors.warningFaded,
+      neutral: colors.borderLight,
+    }),
+    [colors],
+  );
+
+  const resolvedSolid = solidColor[color];
+  const resolvedFaded = fadedColor[color];
+
+  const bgColor =
+    variant === 'filled' ? resolvedSolid
+    : variant === 'soft' ? resolvedFaded
+    : 'transparent';
+
+  const textColor =
+    variant === 'filled' ? colors.textInverse : resolvedSolid;
+
+  const borderColor = variant === 'outlined' ? resolvedSolid : undefined;
+
   if (dot) {
     return (
       <View
@@ -104,7 +123,7 @@ export function Badge({
             width: dotSize[size],
             height: dotSize[size],
             borderRadius: dotSize[size] / 2,
-            backgroundColor: variantText[variant],
+            backgroundColor: resolvedSolid,
           },
           style,
         ]}
@@ -117,14 +136,20 @@ export function Badge({
       style={[
         styles.container,
         {
-          backgroundColor: variantBg[variant],
+          backgroundColor: bgColor,
           paddingHorizontal: sizePaddingH[size],
           paddingVertical: sizePaddingV[size],
+          ...(borderColor
+            ? {
+                borderWidth: 1,
+                borderColor,
+              }
+            : {}),
         },
         style,
       ]}
     >
-      <AppText style={[sizeFontStyle[size], { color: variantText[variant] }]} numberOfLines={1}>
+      <AppText style={[sizeFontStyle[size], { color: textColor }]} numberOfLines={1}>
         {label}
       </AppText>
     </View>

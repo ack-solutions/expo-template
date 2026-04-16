@@ -1,54 +1,34 @@
 import {
-  AppColors,
-  Radii,
-  Spacing,
-  Typography,
+ Radii, Shadows, Spacing, Typography 
 } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Modal, Platform, Pressable, StyleSheet, View, ViewStyle
+  Keyboard,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  ViewStyle,
 } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import DateTimePicker, { useDefaultStyles } from 'react-native-ui-datepicker';
 
 import { AppText } from './app-text';
+import { Button } from './button';
 
-type DateTimePickerEvent = {
-  type: 'set' | 'dismissed' | 'neutralButtonPressed';
-};
-
-const DateTimePickerNative: React.ComponentType<{
-  value: Date;
-  mode: 'date' | 'time';
-  display?: 'default' | 'spinner';
-  minimumDate?: Date;
-  maximumDate?: Date;
-  onChange: (event: DateTimePickerEvent, date?: Date) => void;
-  style?: ViewStyle;
-  themeVariant?: 'light' | 'dark';
-  accentColor?: string;
-  textColor?: string;
-}> | null = (() => {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const mod = require('@react-native-community/datetimepicker');
-    return (mod.default ?? mod) as React.ComponentType<{
-      value: Date;
-      mode: 'date' | 'time';
-      display?: 'default' | 'spinner';
-      minimumDate?: Date;
-      maximumDate?: Date;
-      onChange: (event: DateTimePickerEvent, date?: Date) => void;
-      style?: ViewStyle;
-      themeVariant?: 'light' | 'dark';
-      accentColor?: string;
-      textColor?: string;
-    }>;
-  } catch {
-    return null;
-  }
-})();
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type PickerVariant = 'outlined' | 'filled';
 type PickerSize = 'sm' | 'md' | 'lg';
@@ -86,87 +66,163 @@ export type AppDateRangePickerProps = Omit<BasePickerProps, 'minimumDate' | 'max
   onChange: (value: DateRangeValue) => void;
 };
 
+// ─── Size config ──────────────────────────────────────────────────────────────
+
 const sizeConfig: Record<PickerSize, { height: number; fontSize: number }> = {
   sm: {
-    height: 40,
-    fontSize: 13
-  },
+ height: 40,
+fontSize: 13 
+},
   md: {
-    height: 48,
-    fontSize: 14
-  },
+ height: 48,
+fontSize: 14 
+},
   lg: {
-    height: 56,
-    fontSize: 15
-  },
+ height: 56,
+fontSize: 15 
+},
 };
 
-function toDateOnly(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
+// ─── Animation constants ──────────────────────────────────────────────────────
 
-function startOfToday(): Date {
-  return toDateOnly(new Date());
-}
+const SPRING_SHEET = {
+ damping: 20,
+stiffness: 300,
+mass: 0.8 
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(value: Date | null): string {
   if (!value) return '';
-  return new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-  }).format(value);
+  return dayjs(value).format('MMM DD, YYYY');
 }
 
 function formatDateTime(value: Date | null): string {
   if (!value) return '';
-  return new Intl.DateTimeFormat(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(value);
+  return dayjs(value).format('MMM DD, YYYY hh:mm A');
 }
 
-function isDatePickerSet(event: DateTimePickerEvent): boolean {
-  return event.type === 'set' || Platform.OS === 'ios';
+// ─── Hooks ────────────────────────────────────────────────────────────────────
+
+function usePickerStyles() {
+  return useThemedStyle(createStyles);
 }
 
-function useNativePickerThemeProps() {
+/**
+ * Builds fully themed calendar styles that match the app's design tokens.
+ * Overrides all color-related defaults from react-native-ui-datepicker.
+ */
+function usePickerCalendarStyles() {
   const { colors, resolvedColorScheme } = useAppTheme();
+  const defaultStyles = useDefaultStyles(resolvedColorScheme);
 
-  return useMemo(() => {
-    if (Platform.OS === 'ios') {
-      return {
-        themeVariant: resolvedColorScheme,
-        accentColor: colors.primary,
-        textColor: colors.textPrimary,
-      };
-    }
-
-    return {};
-  }, [
-colors.primary,
-colors.textPrimary,
-resolvedColorScheme
-]);
-}
-
-function useDatePickerStyles() {
-  return useThemedStyle((theme) => createStyles(theme.colors));
-}
-
-function DatePickerUnavailableNotice() {
-  const styles = useDatePickerStyles();
-  return (
-    <View style={styles.unavailableWrap}>
-      <AppText style={styles.unavailableText}>
-        Date picker is not available in this build. Install native dependencies and rebuild the app.
-      </AppText>
-    </View>
+  return useMemo(
+    () => ({
+      ...defaultStyles,
+      // Day grid
+      day: {
+ ...defaultStyles.day,
+borderRadius: Radii.sm 
+},
+      day_label: {
+ ...defaultStyles.day_label,
+color: colors.textPrimary 
+},
+      // Header selectors
+      month_selector_label: {
+        ...defaultStyles.month_selector_label,
+        color: colors.textPrimary,
+        fontWeight: '600' as const,
+      },
+      year_selector_label: {
+        ...defaultStyles.year_selector_label,
+        color: colors.textPrimary,
+        fontWeight: '600' as const,
+      },
+      time_selector_label: {
+        ...defaultStyles.time_selector_label,
+        color: colors.textPrimary,
+        fontWeight: '600' as const,
+      },
+      // Weekday labels
+      weekday_label: {
+ ...defaultStyles.weekday_label,
+color: colors.textSecondary 
+},
+      // Month / year grids
+      month: {
+ ...defaultStyles.month,
+borderColor: colors.border 
+},
+      month_label: {
+ ...defaultStyles.month_label,
+color: colors.textPrimary 
+},
+      year: {
+ ...defaultStyles.year,
+borderColor: colors.border 
+},
+      year_label: {
+ ...defaultStyles.year_label,
+color: colors.textPrimary 
+},
+      // Range fill (between start and end)
+      range_fill: { backgroundColor: colors.primaryFaded },
+      // Time picker
+      time_label: {
+ ...defaultStyles.time_label,
+color: colors.textPrimary 
+},
+      time_selected_indicator: {
+ ...defaultStyles.time_selected_indicator,
+backgroundColor: colors.primaryFaded 
+},
+      // Single / range selection
+      selected: { backgroundColor: colors.primary },
+      selected_label: { color: colors.textInverse },
+      range_start_label: { color: colors.textInverse },
+      range_end_label: { color: colors.textInverse },
+      range_middle: { backgroundColor: 'transparent' as const },
+      range_middle_label: { color: colors.textPrimary },
+      // Today
+      today: {
+ ...defaultStyles.today,
+backgroundColor: colors.primaryFaded 
+},
+      today_label: {
+ color: colors.primary,
+fontWeight: '600' as const 
+},
+      // Outside current month / disabled
+      outside_label: { color: colors.textTertiary },
+      disabled_label: {
+ color: colors.textTertiary,
+opacity: 0.5 
+},
+      // Selected month / year cells
+      selected_month: {
+ backgroundColor: colors.primary,
+borderColor: colors.primary 
+},
+      selected_month_label: { color: colors.textInverse },
+      selected_year: {
+ backgroundColor: colors.primary,
+borderColor: colors.primary 
+},
+      selected_year_label: { color: colors.textInverse },
+      active_year: {
+ ...defaultStyles.active_year,
+backgroundColor: colors.primaryFaded,
+borderColor: colors.primaryFaded 
+},
+      active_year_label: { color: colors.primary },
+    }),
+    [colors, defaultStyles],
   );
 }
+
+// ─── PickerField (trigger) ────────────────────────────────────────────────────
 
 function PickerField({
   label,
@@ -192,13 +248,11 @@ function PickerField({
   containerStyle?: ViewStyle;
 }) {
   const { colors } = useAppTheme();
-  const styles = useDatePickerStyles();
+  const styles = usePickerStyles();
   const hasError = Boolean(error);
   const cfg = sizeConfig[size];
 
-  let borderColor: string = colors.border;
-  if (hasError) borderColor = colors.error;
-
+  const borderColor = hasError ? colors.error : colors.border;
   const fieldBg = disabled
     ? colors.borderLight
     : variant === 'filled'
@@ -215,11 +269,13 @@ function PickerField({
       accessibilityLabel={label}
     >
       {label ? (
-        <AppText style={[
-          styles.label,
-          hasError && styles.labelError,
-          disabled && styles.labelDisabled
-        ]}>
+        <AppText
+          style={[
+            styles.label,
+            hasError && styles.labelError,
+            disabled && styles.labelDisabled,
+          ]}
+        >
           {label}
         </AppText>
       ) : null}
@@ -255,7 +311,9 @@ function PickerField({
       </View>
 
       {(hasError || hint) && (
-        <AppText style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}>
+        <AppText
+          style={[styles.supportText, hasError ? styles.errorText : styles.hintText]}
+        >
           {hasError ? error : hint}
         </AppText>
       )}
@@ -263,62 +321,162 @@ function PickerField({
   );
 }
 
-function ModalShell({
-  visible,
-  title,
-  children,
-  onCancel,
-  onConfirm,
-  confirmLabel = 'Done',
-  confirmDisabled = false,
-}: {
+// ─── PickerSheet (bottom sheet) ───────────────────────────────────────────────
+
+interface PickerSheetProps {
   visible: boolean;
   title: string;
-  children: React.ReactNode;
-  onCancel: () => void;
+  onClose: () => void;
   onConfirm: () => void;
   confirmLabel?: string;
   confirmDisabled?: boolean;
-}) {
-  const styles = useDatePickerStyles();
+  children: React.ReactNode;
+}
+
+function PickerSheet({
+  visible,
+  title,
+  onClose,
+  onConfirm,
+  confirmLabel = 'Done',
+  confirmDisabled = false,
+  children,
+}: PickerSheetProps) {
+  const styles = usePickerStyles();
+  const { colors } = useAppTheme();
+  const insets = useSafeAreaInsets();
+  const bottomPad = Math.max(insets.bottom, Spacing.lg);
+
+  const [rendered, setRendered] = useState(visible);
+  const backdropOpacity = useSharedValue(0);
+  const translateY = useSharedValue(600);
+
+  useEffect(() => {
+    if (visible) setRendered(true);
+  }, [visible]);
+
+  useEffect(() => {
+    if (!rendered) return;
+
+    if (visible) {
+      backdropOpacity.value = withTiming(1, { duration: 220 });
+      translateY.value = withSpring(0, SPRING_SHEET);
+    } else {
+      Keyboard.dismiss();
+      backdropOpacity.value = withTiming(0, { duration: 200 });
+      translateY.value = withTiming(600, { duration: 260 }, (finished) => {
+        if (finished) setRendered(false);
+      });
+    }
+  }, [
+backdropOpacity,
+rendered,
+translateY,
+visible
+]);
+
+  const animBackdrop = useAnimatedStyle(() => ({ opacity: backdropOpacity.value }));
+  const animSheet = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  if (!rendered) return null;
+
   return (
     <Modal
-      visible={visible}
+      visible={rendered}
       transparent
-      animationType="fade"
-      onRequestClose={onCancel}>
-      <View style={styles.overlay}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onCancel} />
+      animationType="none"
+      onRequestClose={onClose}
+      statusBarTranslucent={Platform.OS === 'android'}
+    >
+      <View style={styles.sheetOverlay} pointerEvents="box-none">
+        {/* Backdrop — visual only */}
+        <Animated.View
+          style={[
+StyleSheet.absoluteFill,
+styles.backdrop,
+animBackdrop
+]}
+          pointerEvents="none"
+        />
+        {/* Dismiss area */}
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 
-        <View style={styles.modalCard}>
-          <View style={styles.modalHeader}>
-            <AppText style={styles.modalTitle}>{title}</AppText>
-          </View>
+        {/* Sheet */}
+        <Animated.View
+          style={[
+styles.sheet,
+{ paddingBottom: bottomPad },
+Shadows.xl,
+animSheet
+]}
+        >
+          {/* Handle bar */}
+          <View style={styles.handle} />
 
-          <View style={styles.modalBody}>{children}</View>
-
-          <View style={styles.modalFooter}>
-            <Pressable style={styles.footerBtn} onPress={onCancel}>
-              <AppText style={styles.footerBtnText}>Cancel</AppText>
-            </Pressable>
+          {/* Header */}
+          <View style={styles.pickerHeader}>
+            <AppText style={styles.pickerTitle}>{title}</AppText>
             <Pressable
-              style={[
-                styles.footerBtn,
-                styles.footerBtnPrimary,
-                confirmDisabled && styles.footerBtnDisabled
-              ]}
-              disabled={confirmDisabled}
-              onPress={onConfirm}
+              onPress={onClose}
+              style={styles.closeBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+              hitSlop={{
+ top: 8,
+bottom: 8,
+left: 8,
+right: 8 
+}}
             >
-              <AppText style={styles.footerBtnPrimaryText}>{confirmLabel}</AppText>
+              <Ionicons
+name="close"
+size={20}
+color={colors.textSecondary} />
             </Pressable>
           </View>
-        </View>
+
+          {/* Calendar content */}
+          <View style={styles.sheetBody}>{children}</View>
+
+          {/* Footer actions */}
+          <View style={styles.sheetFooter}>
+            <Button
+              title="Cancel"
+              variant="ghost"
+              size="md"
+              onPress={onClose}
+              style={styles.footerBtn}
+            />
+            <Button
+              title={confirmLabel}
+              variant="contained"
+              size="md"
+              onPress={onConfirm}
+              disabled={confirmDisabled}
+              style={styles.footerBtn}
+            />
+          </View>
+        </Animated.View>
       </View>
     </Modal>
   );
 }
 
+// ─── AppDatePicker ─────────────────────────────────────────────────────────────
+
+/**
+ * Date field with a themed calendar sheet.
+ *
+ * @example
+ * <AppDatePicker
+ *   label="Start Date"
+ *   value={date}
+ *   onChange={setDate}
+ *   placeholder="Select a date"
+ * />
+ */
 export function AppDatePicker({
   value,
   onChange,
@@ -333,15 +491,12 @@ export function AppDatePicker({
   maximumDate,
   containerStyle,
 }: AppDatePickerProps) {
-  const styles = useDatePickerStyles();
-  const nativePickerThemeProps = useNativePickerThemeProps();
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState<Date>(value ?? startOfToday());
+  const [draft, setDraft] = useState<Date | null>(value);
+  const calendarStyles = usePickerCalendarStyles();
 
   useEffect(() => {
-    if (open) {
-      setDraft(value ?? startOfToday());
-    }
+    if (open) setDraft(value);
   }, [open, value]);
 
   return (
@@ -359,37 +514,43 @@ export function AppDatePicker({
         containerStyle={containerStyle}
       />
 
-      <ModalShell
+      <PickerSheet
         visible={open}
         title={label ?? 'Select date'}
-        onCancel={() => setOpen(false)}
+        onClose={() => setOpen(false)}
         onConfirm={() => {
-          onChange(toDateOnly(draft));
+          if (draft) onChange(draft);
           setOpen(false);
         }}
+        confirmDisabled={!draft}
       >
-        {DateTimePickerNative ? (
-          <DateTimePickerNative
-            value={draft}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            minimumDate={minimumDate}
-            maximumDate={maximumDate}
-            {...nativePickerThemeProps}
-            onChange={(event, picked) => {
-              if (!picked || !isDatePickerSet(event)) return;
-              setDraft(picked);
-            }}
-            style={styles.picker}
-          />
-        ) : (
-          <DatePickerUnavailableNotice />
-        )}
-      </ModalShell>
+        <DateTimePicker
+          mode="single"
+          date={draft ? dayjs(draft) : undefined}
+          minDate={minimumDate ? dayjs(minimumDate) : undefined}
+          maxDate={maximumDate ? dayjs(maximumDate) : undefined}
+          onChange={({ date }) => {
+            if (date) setDraft(dayjs(date as Parameters<typeof dayjs>[0]).toDate());
+          }}
+          styles={calendarStyles}
+        />
+      </PickerSheet>
     </>
   );
 }
 
+// ─── AppDateTimePicker ────────────────────────────────────────────────────────
+
+/**
+ * Date + time field with a themed calendar and time picker sheet.
+ *
+ * @example
+ * <AppDateTimePicker
+ *   label="Appointment"
+ *   value={datetime}
+ *   onChange={setDatetime}
+ * />
+ */
 export function AppDateTimePicker({
   value,
   onChange,
@@ -404,17 +565,12 @@ export function AppDateTimePicker({
   maximumDate,
   containerStyle,
 }: AppDateTimePickerProps) {
-  const styles = useDatePickerStyles();
-  const nativePickerThemeProps = useNativePickerThemeProps();
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState<Date>(value ?? new Date());
-  const [phase, setPhase] = useState<'date' | 'time'>('date');
+  const [draft, setDraft] = useState<Date | null>(value);
+  const calendarStyles = usePickerCalendarStyles();
 
   useEffect(() => {
-    if (open) {
-      setDraft(value ?? new Date());
-      setPhase('date');
-    }
+    if (open) setDraft(value);
   }, [open, value]);
 
   return (
@@ -432,57 +588,44 @@ export function AppDateTimePicker({
         containerStyle={containerStyle}
       />
 
-      <ModalShell
+      <PickerSheet
         visible={open}
         title={label ?? 'Select date and time'}
-        onCancel={() => setOpen(false)}
+        onClose={() => setOpen(false)}
         onConfirm={() => {
-          if (phase === 'date') {
-            setPhase('time');
-            return;
-          }
-          onChange(draft);
+          if (draft) onChange(draft);
           setOpen(false);
         }}
-        confirmLabel={phase === 'date' ? 'Next' : 'Done'}
+        confirmDisabled={!draft}
       >
-        <View style={styles.phaseTabs}>
-          <Pressable
-            style={[styles.phaseTab, phase === 'date' && styles.phaseTabActive]}
-            onPress={() => setPhase('date')}
-          >
-            <AppText style={[styles.phaseTabText, phase === 'date' && styles.phaseTabTextActive]}>Date</AppText>
-          </Pressable>
-          <Pressable
-            style={[styles.phaseTab, phase === 'time' && styles.phaseTabActive]}
-            onPress={() => setPhase('time')}
-          >
-            <AppText style={[styles.phaseTabText, phase === 'time' && styles.phaseTabTextActive]}>Time</AppText>
-          </Pressable>
-        </View>
-
-        {DateTimePickerNative ? (
-          <DateTimePickerNative
-            value={draft}
-            mode={phase}
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            minimumDate={phase === 'date' ? minimumDate : undefined}
-            maximumDate={phase === 'date' ? maximumDate : undefined}
-            {...nativePickerThemeProps}
-            onChange={(event, picked) => {
-              if (!picked || !isDatePickerSet(event)) return;
-              setDraft(picked);
-            }}
-            style={styles.picker}
-          />
-        ) : (
-          <DatePickerUnavailableNotice />
-        )}
-      </ModalShell>
+        <DateTimePicker
+          mode="single"
+          timePicker
+          date={draft ? dayjs(draft) : undefined}
+          minDate={minimumDate ? dayjs(minimumDate) : undefined}
+          maxDate={maximumDate ? dayjs(maximumDate) : undefined}
+          onChange={({ date }) => {
+            if (date) setDraft(dayjs(date as Parameters<typeof dayjs>[0]).toDate());
+          }}
+          styles={calendarStyles}
+        />
+      </PickerSheet>
     </>
   );
 }
 
+// ─── AppDateRangePicker ───────────────────────────────────────────────────────
+
+/**
+ * Date range field with a themed calendar sheet supporting start + end selection.
+ *
+ * @example
+ * <AppDateRangePicker
+ *   label="Date Range"
+ *   value={{ startDate: null, endDate: null }}
+ *   onChange={setRange}
+ * />
+ */
 export function AppDateRangePicker({
   value,
   onChange,
@@ -495,31 +638,28 @@ export function AppDateRangePicker({
   size = 'md',
   containerStyle,
 }: AppDateRangePickerProps) {
-  const styles = useDatePickerStyles();
-  const nativePickerThemeProps = useNativePickerThemeProps();
   const [open, setOpen] = useState(false);
-  const [activeField, setActiveField] = useState<'start' | 'end'>('start');
-  const [draftStart, setDraftStart] = useState<Date>(value.startDate ?? startOfToday());
-  const [draftEnd, setDraftEnd] = useState<Date>(value.endDate ?? value.startDate ?? startOfToday());
+  const [draftStart, setDraftStart] = useState<Date | null>(value.startDate);
+  const [draftEnd, setDraftEnd] = useState<Date | null>(value.endDate);
+  const calendarStyles = usePickerCalendarStyles();
 
   useEffect(() => {
     if (open) {
-      setDraftStart(value.startDate ?? startOfToday());
-      setDraftEnd(value.endDate ?? value.startDate ?? startOfToday());
-      setActiveField('start');
+      setDraftStart(value.startDate);
+      setDraftEnd(value.endDate);
     }
   }, [
-    open,
-    value.endDate,
-    value.startDate
-  ]);
+open,
+value.startDate,
+value.endDate
+]);
 
   const displayText = useMemo(() => {
     if (!value.startDate && !value.endDate) return '';
-    if (value.startDate && !value.endDate) return `${formatDate(value.startDate)} -`;
-    if (!value.startDate && value.endDate) return `- ${formatDate(value.endDate)}`;
-    return `${formatDate(value.startDate)} - ${formatDate(value.endDate)}`;
-  }, [value.endDate, value.startDate]);
+    if (value.startDate && !value.endDate) return `${formatDate(value.startDate)} →`;
+    if (!value.startDate && value.endDate) return `→ ${formatDate(value.endDate)}`;
+    return `${formatDate(value.startDate)} – ${formatDate(value.endDate)}`;
+  }, [value.startDate, value.endDate]);
 
   return (
     <>
@@ -536,219 +676,138 @@ export function AppDateRangePicker({
         containerStyle={containerStyle}
       />
 
-      <ModalShell
+      <PickerSheet
         visible={open}
         title={label ?? 'Select date range'}
-        onCancel={() => setOpen(false)}
+        onClose={() => setOpen(false)}
         onConfirm={() => {
-          const startDate = toDateOnly(draftStart);
-          const endDate = toDateOnly(draftEnd);
           onChange({
-            startDate,
-            endDate: endDate < startDate ? startDate : endDate,
-          });
+ startDate: draftStart,
+endDate: draftEnd 
+});
           setOpen(false);
         }}
+        confirmDisabled={!draftStart}
       >
-        <View style={styles.phaseTabs}>
-          <Pressable
-            style={[styles.phaseTab, activeField === 'start' && styles.phaseTabActive]}
-            onPress={() => setActiveField('start')}
-          >
-            <AppText style={[styles.phaseTabText, activeField === 'start' && styles.phaseTabTextActive]}>
-              Start
-            </AppText>
-          </Pressable>
-          <Pressable
-            style={[styles.phaseTab, activeField === 'end' && styles.phaseTabActive]}
-            onPress={() => setActiveField('end')}
-          >
-            <AppText style={[styles.phaseTabText, activeField === 'end' && styles.phaseTabTextActive]}>
-              End
-            </AppText>
-          </Pressable>
-        </View>
-
-        {DateTimePickerNative ? (
-          <DateTimePickerNative
-            value={activeField === 'start' ? draftStart : draftEnd}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            minimumDate={activeField === 'end' ? draftStart : undefined}
-            {...nativePickerThemeProps}
-            onChange={(event, picked) => {
-              if (!picked || !isDatePickerSet(event)) return;
-              if (activeField === 'start') {
-                setDraftStart(picked);
-                if (draftEnd < picked) setDraftEnd(picked);
-              } else {
-                setDraftEnd(picked);
-              }
-            }}
-            style={styles.picker}
-          />
-        ) : (
-          <DatePickerUnavailableNotice />
-        )}
-
-        <View style={styles.rangePreview}>
-          <AppText style={styles.rangePreviewText}>
-            {formatDate(draftStart)} - {formatDate(draftEnd)}
-          </AppText>
-        </View>
-      </ModalShell>
+        <DateTimePicker
+          mode="range"
+          startDate={draftStart ? dayjs(draftStart) : undefined}
+          endDate={draftEnd ? dayjs(draftEnd) : undefined}
+          onChange={({ startDate, endDate }) => {
+            setDraftStart(startDate ? dayjs(startDate as Parameters<typeof dayjs>[0]).toDate() : null);
+            setDraftEnd(endDate ? dayjs(endDate as Parameters<typeof dayjs>[0]).toDate() : null);
+          }}
+          styles={calendarStyles}
+        />
+      </PickerSheet>
     </>
   );
 }
 
-const createStyles = (colors: AppColors) => StyleSheet.create({
-  container: {
-    gap: Spacing.xs,
-  },
-  label: {
-    ...Typography.captionMedium,
-    color: colors.textSecondary,
-  },
-  labelError: {
-    color: colors.error,
-  },
-  labelDisabled: {
-    color: colors.textTertiary,
-  },
-  field: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: Radii.sm,
-    paddingHorizontal: Spacing.md,
-    overflow: 'hidden',
-  },
-  valueText: {
-    flex: 1,
-    ...Typography.body,
-    color: colors.textPrimary,
-  },
-  placeholder: {
-    color: colors.textTertiary,
-  },
-  valueDisabled: {
-    color: colors.textTertiary,
-  },
-  supportText: {
-    ...Typography.small,
-  },
-  errorText: {
-    color: colors.error,
-  },
-  hintText: {
-    color: colors.textTertiary,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.overlay,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.xxxl,
-  },
-  modalCard: {
-    backgroundColor: colors.surface,
-    borderRadius: Radii.xl,
-    overflow: 'hidden',
-  },
-  modalHeader: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.sm,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.borderLight,
-  },
-  modalTitle: {
-    ...Typography.h3,
-    color: colors.textPrimary,
-  },
-  modalBody: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-  },
-  picker: {
-    alignSelf: 'stretch',
-  },
-  modalFooter: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.borderLight,
-  },
-  footerBtn: {
-    minWidth: 92,
-    height: 40,
-    borderRadius: Radii.sm,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
-    backgroundColor: colors.surface,
-  },
-  footerBtnText: {
-    ...Typography.bodyMedium,
-    color: colors.textPrimary,
-  },
-  footerBtnPrimary: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  footerBtnDisabled: {
-    opacity: 0.5,
-  },
-  footerBtnPrimaryText: {
-    ...Typography.bodyMedium,
-    color: colors.textInverse,
-  },
-  phaseTabs: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
-  },
-  phaseTab: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.sm,
-    borderRadius: Radii.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  phaseTabActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryFaded,
-  },
-  phaseTabText: {
-    ...Typography.captionMedium,
-    color: colors.textSecondary,
-  },
-  phaseTabTextActive: {
-    color: colors.primary,
-  },
-  rangePreview: {
-    marginTop: Spacing.xs,
-    marginBottom: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
-  },
-  rangePreviewText: {
-    ...Typography.captionMedium,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  unavailableWrap: {
-    paddingVertical: Spacing.lg,
-  },
-  unavailableText: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-});
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
+const createStyles = ({ colors }: AppTheme) =>
+  StyleSheet.create({
+    // ── Trigger field ──
+    container: {
+      gap: Spacing.xs,
+    },
+    label: {
+      ...Typography.captionMedium,
+      color: colors.textSecondary,
+    },
+    labelError: {
+      color: colors.error,
+    },
+    labelDisabled: {
+      color: colors.textTertiary,
+    },
+    field: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderRadius: Radii.sm,
+      paddingHorizontal: Spacing.md,
+      overflow: 'hidden',
+    },
+    valueText: {
+      flex: 1,
+      ...Typography.body,
+      color: colors.textPrimary,
+    },
+    placeholder: {
+      color: colors.textTertiary,
+    },
+    valueDisabled: {
+      color: colors.textTertiary,
+    },
+    supportText: {
+      ...Typography.small,
+    },
+    errorText: {
+      color: colors.error,
+    },
+    hintText: {
+      color: colors.textTertiary,
+    },
+
+    // ── Sheet ──
+    sheetOverlay: {
+      flex: 1,
+      justifyContent: 'flex-end',
+    },
+    backdrop: {
+      backgroundColor: colors.overlay,
+    },
+    sheet: {
+      backgroundColor: colors.surface,
+      borderTopLeftRadius: Radii.xl,
+      borderTopRightRadius: Radii.xl,
+      width: '100%',
+      alignSelf: 'center',
+      maxWidth: 560,
+    },
+    handle: {
+      alignSelf: 'center',
+      width: 36,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.border,
+      marginTop: Spacing.sm,
+      marginBottom: Spacing.xs,
+    },
+    pickerHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.lg,
+      paddingVertical: Spacing.sm,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: colors.borderLight,
+    },
+    pickerTitle: {
+      ...Typography.h3,
+      color: colors.textPrimary,
+      flex: 1,
+    },
+    closeBtn: {
+      width: 32,
+      height: 32,
+      borderRadius: Radii.sm,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    sheetBody: {
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+    },
+    sheetFooter: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+      paddingHorizontal: Spacing.xl,
+      paddingTop: Spacing.md,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.borderLight,
+    },
+    footerBtn: {
+      flex: 1,
+    },
+  });

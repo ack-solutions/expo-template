@@ -130,7 +130,7 @@ color={colors.success} />
               <AppText variant="bodyMedium">Verified account</AppText>
               <Badge
 label="Pro"
-variant="primary"
+color="primary"
 size="sm" />
             </HStack>
           </AppCard>
@@ -141,7 +141,7 @@ size="sm" />
           <AppCard>
             <HStack justify="space-between" align="center">
               <AppText variant="bodyMedium">Label</AppText>
-              <Badge label="Active" variant="success" />
+              <Badge label="Active" color="success" />
             </HStack>
           </AppCard>
 
@@ -198,23 +198,97 @@ fullWidth />
 
         {/* ── Buttons ─────────────────────────────────────────────────────── */}
         <Section title="Buttons">
-          <AppText variant="captionMedium" color="secondary">Variants (tap for spring animation)</AppText>
+          <AppText variant="captionMedium" color="secondary">Variants — contained / outlined / soft / ghost</AppText>
           <VStack gap="sm">
-            {([
-'primary',
-'secondary',
-'outline',
-'ghost',
-'danger'
-] as const).map((v) => (
-              <Button
-                key={v}
-                title={v.charAt(0).toUpperCase() + v.slice(1)}
-                variant={v}
-                onPress={() => {}}
-              />
-            ))}
+            <Button
+title="Contained (default)"
+variant="contained"
+onPress={() => {}} />
+            <Button
+title="Outlined"
+variant="outlined"
+onPress={() => {}} />
+            <Button
+title="Soft"
+variant="soft"
+onPress={() => {}} />
+            <Button
+title="Ghost"
+variant="ghost"
+onPress={() => {}} />
           </VStack>
+
+          <AppText variant="captionMedium" color="secondary">Colors — primary / secondary / danger / success / warning / neutral</AppText>
+          <VStack gap="sm">
+            <Button
+title="Primary"
+variant="contained"
+color="primary"
+onPress={() => {}} />
+            <Button
+title="Secondary"
+variant="contained"
+color="secondary"
+onPress={() => {}} />
+            <Button
+title="Danger"
+variant="contained"
+color="danger"
+onPress={() => {}} />
+            <Button
+title="Success"
+variant="contained"
+color="success"
+onPress={() => {}} />
+            <Button
+title="Warning"
+variant="contained"
+color="warning"
+onPress={() => {}} />
+            <Button
+title="Neutral"
+variant="contained"
+color="neutral"
+onPress={() => {}} />
+          </VStack>
+
+          <AppText variant="captionMedium" color="secondary">Outlined colors</AppText>
+          <HStack gap="sm" wrap>
+            <Button
+title="Danger"
+variant="outlined"
+color="danger"
+onPress={() => {}} />
+            <Button
+title="Success"
+variant="outlined"
+color="success"
+onPress={() => {}} />
+            <Button
+title="Warning"
+variant="outlined"
+color="warning"
+onPress={() => {}} />
+          </HStack>
+
+          <AppText variant="captionMedium" color="secondary">Soft colors</AppText>
+          <HStack gap="sm" wrap>
+            <Button
+title="Primary"
+variant="soft"
+color="primary"
+onPress={() => {}} />
+            <Button
+title="Danger"
+variant="soft"
+color="danger"
+onPress={() => {}} />
+            <Button
+title="Success"
+variant="soft"
+color="success"
+onPress={() => {}} />
+          </HStack>
 
           <AppText variant="captionMedium" color="secondary">Sizes (sm / md / lg)</AppText>
           <VStack gap="sm">
@@ -243,57 +317,35 @@ title="Disabled"
 disabled
 onPress={() => {}} />
           </HStack>
-          <Button
-            title="With icon"
-            startIcon={
-              <Ionicons
-                name="add"
-                size={17}
-                color={colors.textInverse}
-              />
-            }
-            onPress={() => {}}
-          />
-          <Button
-            title="Start icon"
-            startIcon={
-              <Ionicons
-                name="download-outline"
-                size={18}
-                color={colors.textInverse}
-              />
-            }
-            onPress={() => {}}
-          />
-          <Button
-            title="End icon"
-            endIcon={
-              <Ionicons
-                name="arrow-forward"
-                size={18}
-                color={colors.textInverse}
-              />
-            }
-            onPress={() => {}}
-          />
-          <Button
-            title="Both side icons"
-            startIcon={
-              <Ionicons
-                name="sparkles-outline"
-                size={18}
-                color={colors.textInverse}
-              />
-            }
-            endIcon={
-              <Ionicons
-                name="chevron-forward"
-                size={18}
-                color={colors.textInverse}
-              />
-            }
-            onPress={() => {}}
-          />
+
+          <AppText variant="captionMedium" color="secondary">Icons — size and color auto-injected</AppText>
+          <VStack gap="sm">
+            <Button
+              title="Start icon"
+              startIcon={<Ionicons name="add" />}
+              onPress={() => {}}
+            />
+            <Button
+              title="End icon"
+              variant="outlined"
+              endIcon={<Ionicons name="arrow-forward" />}
+              onPress={() => {}}
+            />
+            <Button
+              title="Both icons"
+              startIcon={<Ionicons name="sparkles-outline" />}
+              endIcon={<Ionicons name="chevron-forward" />}
+              onPress={() => {}}
+            />
+            <Button
+              title="Danger with icon"
+              variant="contained"
+              color="danger"
+              startIcon={<Ionicons name="trash-outline" />}
+              onPress={() => {}}
+            />
+          </VStack>
+
           <Button
 title="Full Width"
 fullWidth
@@ -637,7 +689,23 @@ value: 'a'
 
         {/* ── Badge ───────────────────────────────────────────────────────── */}
         <Section title="Badge">
-          <AppText variant="captionMedium" color="secondary">Variants</AppText>
+          <AppText variant="captionMedium" color="secondary">Variants — soft / filled / outlined</AppText>
+          <HStack gap="sm" wrap>
+            <Badge
+label="Soft"
+variant="soft"
+color="primary" />
+            <Badge
+label="Filled"
+variant="filled"
+color="primary" />
+            <Badge
+label="Outlined"
+variant="outlined"
+color="primary" />
+          </HStack>
+
+          <AppText variant="captionMedium" color="secondary">Colors — primary / success / error / warning / neutral</AppText>
           <HStack gap="sm" wrap>
             {([
 'primary',
@@ -645,11 +713,43 @@ value: 'a'
 'error',
 'warning',
 'neutral'
-] as const).map((v) => (
+] as const).map((c) => (
               <Badge
-key={v}
-label={v}
-variant={v} />
+key={c}
+label={c}
+color={c} />
+            ))}
+          </HStack>
+
+          <AppText variant="captionMedium" color="secondary">Filled colors</AppText>
+          <HStack gap="sm" wrap>
+            {([
+'primary',
+'success',
+'error',
+'warning'
+] as const).map((c) => (
+              <Badge
+key={c}
+label={c}
+variant="filled"
+color={c} />
+            ))}
+          </HStack>
+
+          <AppText variant="captionMedium" color="secondary">Outlined colors</AppText>
+          <HStack gap="sm" wrap>
+            {([
+'primary',
+'success',
+'error',
+'warning'
+] as const).map((c) => (
+              <Badge
+key={c}
+label={c}
+variant="outlined"
+color={c} />
             ))}
           </HStack>
 
@@ -657,15 +757,15 @@ variant={v} />
           <HStack gap="sm" align="center">
             <Badge
 label="sm"
-variant="primary"
+color="primary"
 size="sm" />
             <Badge
 label="md"
-variant="primary"
+color="primary"
 size="md" />
             <Badge
 label="lg"
-variant="primary"
+color="primary"
 size="lg" />
           </HStack>
 
@@ -676,11 +776,11 @@ size="lg" />
 'success',
 'error',
 'warning'
-] as const).map((v) => (
+] as const).map((c) => (
               <Badge
-key={v}
+key={c}
 label=""
-variant={v}
+color={c}
 dot />
             ))}
           </HStack>
@@ -931,7 +1031,7 @@ value: 'option_c'
                 title="Shadow md"
                 right={<Badge
 label="New"
-variant="primary"
+color="primary"
 size="sm" />}
               />
               <AppText variant="body" color="secondary">Medium shadow for elevated panels.</AppText>
@@ -986,7 +1086,7 @@ size={22}
 color={colors.primary} />}
               right={<Badge
 label="5"
-variant="error"
+color="error"
 size="sm" />}
               onPress={() => {}}
               showDivider
@@ -1019,23 +1119,23 @@ color={colors.textTertiary} />}
 
         {/* ── Progress Bar ────────────────────────────────────────────────── */}
         <Section title="Progress Bar">
-          <AppText variant="captionMedium" color="secondary">Variants</AppText>
+          <AppText variant="captionMedium" color="secondary">Colors — primary / success / warning / error</AppText>
           <VStack gap="md">
             <ProgressBar
 value={70}
-variant="primary"
+color="primary"
 showLabel />
             <ProgressBar
 value={85}
-variant="success"
+color="success"
 showLabel />
             <ProgressBar
 value={45}
-variant="warning"
+color="warning"
 showLabel />
             <ProgressBar
 value={30}
-variant="error"
+color="error"
 showLabel />
           </VStack>
 
@@ -1048,7 +1148,7 @@ showLabel />
 
           <ProgressBar
 value={100}
-variant="error"
+color="error"
 label="Upload failed"
 showLabel />
         </Section>
@@ -1112,17 +1212,17 @@ variant: 'ghost'
           <VStack gap="sm">
             <Button
               title="Open Confirm Dialog"
-              variant="outline"
+              variant="outlined"
               onPress={() => setConfirmVisible(true)}
             />
             <Button
               title="Open Feedback Dialog"
-              variant="outline"
+              variant="outlined"
               onPress={() => setFeedbackVisible(true)}
             />
             <Button
               title="Open Action Sheet"
-              variant="outline"
+              variant="outlined"
               onPress={() => setActionSheetVisible(true)}
             />
           </VStack>
@@ -1138,14 +1238,14 @@ variant: 'ghost'
         message="This action cannot be undone. Are you sure you want to delete this item?"
         confirmLabel="Delete"
         cancelLabel="Cancel"
-        variant="danger"
+        color="danger"
         onConfirm={() => setConfirmVisible(false)}
         onCancel={() => setConfirmVisible(false)}
       />
 
       <FeedbackDialog
         visible={feedbackVisible}
-        variant="success"
+        color="success"
         title="Changes saved"
         message="Your changes have been saved successfully."
         onDismiss={() => setFeedbackVisible(false)}
@@ -1182,7 +1282,7 @@ size={20}
 color={colors.error} />}
           label="Delete"
           onPress={() => setActionSheetVisible(false)}
-          variant="danger"
+          color="danger"
           edge="danger"
         />
       </ActionSheet>

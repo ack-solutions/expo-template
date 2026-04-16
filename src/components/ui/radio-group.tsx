@@ -1,7 +1,10 @@
-import { AppColors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
-import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+ Pressable, StyleSheet, View, ViewStyle 
+} from 'react-native';
 
 import { AppText } from './app-text';
 
@@ -37,7 +40,7 @@ interface RadioItemProps extends RadioOption {
 function RadioItem({
  label, value, description, disabled = false, selected, onSelect 
 }: RadioItemProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   return (
     <Pressable
       onPress={onSelect}
@@ -93,7 +96,7 @@ export function RadioGroup({
   direction = 'vertical',
   style,
 }: RadioGroupProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   return (
     <View
       style={[
@@ -120,7 +123,7 @@ export function RadioGroup({
 const RADIO_SIZE = 20;
 const DOT_SIZE = 10;
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
   group: {
     gap: Spacing.md,

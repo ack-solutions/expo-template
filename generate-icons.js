@@ -82,12 +82,22 @@ async function renderPaddedPng({
       width: size,
       height: size,
       channels: 4,
-      background: background ?? { r: 0, g: 0, b: 0, alpha: 0 },
+      background: background ?? {
+ r: 0,
+g: 0,
+b: 0,
+alpha: 0 
+},
     },
   });
 
   await base
-    .composite([{ input: inner, gravity: 'center' }])
+    .composite([
+{
+ input: inner,
+gravity: 'center' 
+}
+])
     .png()
     .toFile(outputPath);
 }

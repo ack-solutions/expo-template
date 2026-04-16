@@ -1,4 +1,5 @@
-import { AppColors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
@@ -11,7 +12,7 @@ import { Button } from './button';
 interface EmptyStateAction {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'outline' | 'ghost';
+  variant?: 'contained' | 'outlined' | 'soft' | 'ghost';
 }
 
 interface EmptyStateProps {
@@ -47,7 +48,7 @@ interface EmptyStateProps {
  *   icon={<Ionicons name="search-outline" size={48} color={Colors.textTertiary} />}
  *   title="No results"
  *   description={`Nothing matched "${query}". Try different keywords.`}
- *   action={{ label: 'Clear search', onPress: clearSearch, variant: 'ghost' }}
+ *   action={{ label: 'Clear search', onPress: clearSearch, variant: 'outlined' }}
  * />
  */
 export function EmptyState({
@@ -58,7 +59,7 @@ export function EmptyState({
   secondaryAction,
   style,
 }: EmptyStateProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
 
   return (
     <View style={[styles.container, style]}>
@@ -76,7 +77,7 @@ export function EmptyState({
             <Button
               title={action.label}
               onPress={action.onPress}
-              variant={action.variant ?? 'primary'}
+              variant={action.variant ?? 'contained'}
               size="md"
             />
           )}
@@ -94,7 +95,7 @@ export function EmptyState({
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     container: {
       flex: 1,

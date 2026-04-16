@@ -1,6 +1,7 @@
 import {
- AppColors, Radii, Shadows, Spacing, Typography 
+ Radii, Shadows, Spacing, Typography
 } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -20,7 +21,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -161,7 +161,7 @@ function OptionRow({
   onPress: (o: SelectOption) => void;
 }) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
 
   return (
     <Pressable
@@ -232,7 +232,7 @@ function SelectBody({
   onQueryChange,
 }: SelectBodyProps) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
 
   const filteredOptions = useMemo(() => {
     if (!query.trim()) return options;
@@ -348,7 +348,7 @@ function SelectSheet({
   searchable,
   searchPlaceholder,
 }: PickerProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, Spacing.lg);
 
@@ -379,7 +379,7 @@ function SelectSheet({
       Keyboard.dismiss();
       backdropOpacity.value = withTiming(0, { duration: 200 });
       translateY.value = withTiming(MAX_SHEET_HEIGHT, { duration: 260 }, (finished) => {
-        if (finished) runOnJS(setRendered)(false);
+        if (finished) setRendered(false);
       });
     }
   }, [
@@ -462,7 +462,7 @@ function SelectDialog({
   searchable,
   searchPlaceholder,
 }: PickerProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const insets = useSafeAreaInsets();
   const [rendered, setRendered] = useState(visible);
   const [query, setQuery] = useState('');
@@ -497,7 +497,7 @@ function SelectDialog({
       backdropOpacity.value = withTiming(0, { duration: 200 });
       scale.value = withTiming(0.92, { duration: 180 });
       opacity.value = withTiming(0, { duration: 180 }, (finished) => {
-        if (finished) runOnJS(setRendered)(false);
+        if (finished) setRendered(false);
       });
     }
   }, [
@@ -632,7 +632,7 @@ export function AppSelect({
   containerStyle,
 }: AppSelectProps) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const hasError = Boolean(error);
@@ -749,7 +749,7 @@ expanded: pickerOpen
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const createStyles = (colors: AppColors) => StyleSheet.create({
+const createStyles = ({ colors }: AppTheme) => StyleSheet.create({
   // ── Trigger ──
   container: {
     gap: Spacing.xs,

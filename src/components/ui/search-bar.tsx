@@ -1,6 +1,7 @@
 import {
- AppColors, Radii, Spacing, Typography 
+ Radii, Spacing, Typography
 } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -52,7 +53,7 @@ export const SearchBar = forwardRef<TextInput, SearchBarProps>(
  onClear, style, onFocus, onBlur, value, ...textInputProps 
 }, ref) => {
     const { colors } = useAppTheme();
-    const styles = useThemedStyle((theme) => createStyles(theme.colors));
+    const styles = useThemedStyle(createStyles);
     const hasValue = Boolean(value && String(value).length > 0);
 
     // 0 = idle, 1 = focused
@@ -138,7 +139,7 @@ SearchBar.displayName = 'SearchBar';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
   container: {
     flexDirection: 'row',

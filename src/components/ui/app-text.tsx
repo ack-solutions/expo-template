@@ -1,7 +1,9 @@
 import { Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native';
+import {
+ StyleProp, StyleSheet, Text, TextStyle 
+} from 'react-native';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

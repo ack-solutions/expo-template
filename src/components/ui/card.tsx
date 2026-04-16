@@ -1,4 +1,7 @@
-import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
+import {
+ Radii, Shadows, Spacing, Typography 
+} from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
 import {
@@ -44,7 +47,7 @@ interface AppCardProps {
 export function AppCard({
  children, style, shadow = 'none', noPadding = false 
 }: AppCardProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const shadowStyle = shadow === 'none' ? undefined : Shadows[shadow];
   return (
     <View style={[
@@ -84,7 +87,7 @@ export function AppPressableCard({
   noPadding = false,
   ...pressableProps
 }: AppPressableCardProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({
@@ -136,12 +139,12 @@ interface CardHeaderProps {
  * CardHeader — standardised title row for cards.
  *
  * @example
- * <CardHeader title="Settings" subtitle="Manage your preferences" right={<Badge label="3" variant="error" />} />
+ * <CardHeader title="Settings" subtitle="Manage your preferences" right={<Badge label="3" color="error" />} />
  */
 export function CardHeader({
  title, subtitle, right, style 
 }: CardHeaderProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   return (
     <View style={[styles.header, style]}>
       <View style={styles.headerLeft}>
@@ -155,7 +158,7 @@ export function CardHeader({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
@@ -166,6 +169,7 @@ const createStyles = (colors: AppColors) =>
   },
   noPadding: {
     padding: 0,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',

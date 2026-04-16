@@ -22,7 +22,9 @@ const COLORS = {
 };
 
 /** Stacked “screens” — reads as a starter / boilerplate template at any size. */
-function svgTemplateMark({ fill = 'rgba(255,255,255,0.2)', coin = COLORS.amber, stroke = 'none' } = {}) {
+function svgTemplateMark({
+ fill = 'rgba(255,255,255,0.2)', coin = COLORS.amber, stroke = 'none' 
+} = {}) {
   return `
     <g>
       <!-- three stacked rounded cards (back → front) -->
@@ -60,7 +62,10 @@ function svgAppIcon() {
     <circle cx="900" cy="860" r="340" fill="rgba(0,0,0,0.08)"/>
 
     <g filter="url(#soft)">
-      ${svgTemplateMark({ fill: 'rgba(255,255,255,0.14)', coin: COLORS.amber })}
+      ${svgTemplateMark({
+ fill: 'rgba(255,255,255,0.14)',
+coin: COLORS.amber 
+})}
     </g>
   </svg>`;
 }
@@ -78,7 +83,10 @@ function svgSplashMark() {
       </filter>
     </defs>
     <g filter="url(#soft)">
-      ${svgTemplateMark({ fill: 'url(#g)', coin: COLORS.amber })}
+      ${svgTemplateMark({
+ fill: 'url(#g)',
+coin: COLORS.amber 
+})}
     </g>
   </svg>`;
 }
@@ -96,7 +104,10 @@ function svgAdaptiveForeground() {
       </filter>
     </defs>
     <g filter="url(#soft)">
-      ${svgTemplateMark({ fill: 'url(#g)', coin: COLORS.amber })}
+      ${svgTemplateMark({
+ fill: 'url(#g)',
+coin: COLORS.amber 
+})}
     </g>
   </svg>`;
 }
@@ -129,7 +140,10 @@ function svgAdaptiveBackground() {
 function svgMonochrome() {
   return `
   <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-    ${svgTemplateMark({ fill: COLORS.ink, coin: COLORS.ink })}
+    ${svgTemplateMark({
+ fill: COLORS.ink,
+coin: COLORS.ink 
+})}
   </svg>`;
 }
 
@@ -152,7 +166,9 @@ function svgFavicon() {
   </svg>`;
 }
 
-async function writePngFromSvg({ svg, outPath, size, transparent = true }) {
+async function writePngFromSvg({
+ svg, outPath, size, transparent = true 
+}) {
   const input = Buffer.from(svg);
   const img = sharp(input, { density: 300 }).resize(size, size, { fit: 'cover' });
   await fs.mkdir(path.dirname(outPath), { recursive: true });
@@ -162,27 +178,62 @@ async function writePngFromSvg({ svg, outPath, size, transparent = true }) {
 
 async function main() {
   const targets = [
-    { file: 'icon.png', svg: svgAppIcon(), size: 1024, transparent: false },
-    { file: 'splash-icon.png', svg: svgSplashMark(), size: 1000, transparent: true },
-    { file: 'android-icon-foreground.png', svg: svgAdaptiveForeground(), size: 1024, transparent: true },
-    { file: 'android-icon-background.png', svg: svgAdaptiveBackground(), size: 1024, transparent: false },
-    { file: 'android-icon-monochrome.png', svg: svgMonochrome(), size: 1024, transparent: true },
-    { file: 'favicon.png', svg: svgFavicon(), size: 256, transparent: false },
+    {
+ file: 'icon.png',
+svg: svgAppIcon(),
+size: 1024,
+transparent: false 
+},
+    {
+ file: 'splash-icon.png',
+svg: svgSplashMark(),
+size: 1000,
+transparent: true 
+},
+    {
+ file: 'android-icon-foreground.png',
+svg: svgAdaptiveForeground(),
+size: 1024,
+transparent: true 
+},
+    {
+ file: 'android-icon-background.png',
+svg: svgAdaptiveBackground(),
+size: 1024,
+transparent: false 
+},
+    {
+ file: 'android-icon-monochrome.png',
+svg: svgMonochrome(),
+size: 1024,
+transparent: true 
+},
+    {
+ file: 'favicon.png',
+svg: svgFavicon(),
+size: 256,
+transparent: false 
+},
   ];
 
   await Promise.all(
     targets.map(async (t) => {
       const outPath = path.join(OUT_DIR, t.file);
-      await writePngFromSvg({ svg: t.svg, outPath, size: t.size, transparent: t.transparent });
+      await writePngFromSvg({
+ svg: t.svg,
+outPath,
+size: t.size,
+transparent: t.transparent 
+});
     }),
   );
 
-  // eslint-disable-next-line no-console
+   
   console.log(`Generated ${targets.length} assets in ${OUT_DIR}`);
 }
 
 main().catch((err) => {
-  // eslint-disable-next-line no-console
+   
   console.error(err);
   process.exitCode = 1;
 });

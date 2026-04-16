@@ -12,7 +12,9 @@ import { AppText } from './app-text';
 
 /** Controls what accessory is shown on the trailing edge of the row. */
 export type ListItemAccessory = 'arrow' | 'none';
-type ListItemTone = 'default' | 'danger';
+
+/** Semantic color applied to the row title. */
+export type ListItemColor = 'default' | 'danger' | 'success' | 'warning';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -23,7 +25,7 @@ interface ListItemProps {
   subtitle?: string;
   /** Node rendered before the title (icon, avatar, etc.). */
   left?: React.ReactNode;
-  /** Node rendered after the title (badge, custom button, etc.). Overrides accessory. */
+  /** Node rendered after the title (badge, custom element, etc.). Overrides accessory. */
   right?: React.ReactNode;
   /** Trailing accessory type. Default: 'none' */
   accessory?: ListItemAccessory;
@@ -31,7 +33,8 @@ interface ListItemProps {
   onPress?: () => void;
   /** Show a hairline divider at the bottom. Default: false */
   showDivider?: boolean;
-  tone?: ListItemTone;
+  /** Semantic color applied to the title. Default: 'default' */
+  color?: ListItemColor;
   disabled?: boolean;
   style?: ViewStyle;
 }
@@ -46,17 +49,23 @@ interface ListItemProps {
  * <ListItem
  *   title="Account"
  *   subtitle="Manage your profile"
- *   left={<Ionicons name="person-circle-outline" size={22} color={Colors.primary} />}
+ *   left={<Ionicons name="person-circle-outline" size={22} color={colors.primary} />}
  *   accessory="arrow"
  *   onPress={() => router.push('/account')}
  *   showDivider
  * />
  *
- * // Static info row with custom right slot
+ * // Destructive action row
  * <ListItem
- *   title="Version"
- *   right={<Badge label="1.0.0" variant="neutral" size="sm" />}
+ *   title="Delete account"
+ *   color="danger"
+ *   left={<Ionicons name="trash-outline" size={22} color={colors.error} />}
+ *   accessory="arrow"
+ *   onPress={handleDelete}
  * />
+ *
+ * // Static info row
+ * <ListItem title="Version" right={<Badge label="1.0.0" color="neutral" size="sm" />} />
  */
 export function ListItem({
   title,
@@ -66,32 +75,35 @@ export function ListItem({
   accessory = 'none',
   onPress,
   showDivider = false,
-  tone = 'default',
+  color = 'default',
   disabled = false,
   style,
 }: ListItemProps) {
   const { colors } = useAppTheme();
+
+  const titleColorMap: Record<ListItemColor, string> = {
+    default: colors.textPrimary,
+    danger: colors.error,
+    success: colors.success,
+    warning: colors.warning,
+  };
+
+  const titleColor = disabled ? colors.textTertiary : titleColorMap[color];
+
   const content = (
     <View
       style={[
         styles.row,
         { borderBottomColor: colors.borderLight },
         showDivider && styles.rowDivider,
-      ]}>
+      ]}
+    >
       {left && <View style={styles.leftSlot}>{left}</View>}
 
       <View style={styles.center}>
         <AppText
           variant="bodyMedium"
-          style={[
-            styles.title,
-            { color: colors.textPrimary },
-            tone === 'danger' && styles.titleDanger,
-            tone === 'danger' && { color: colors.error },
-            disabled && styles.textDisabled
-            ,
-            disabled && { color: colors.textTertiary },
-          ]}
+          style={[styles.title, { color: titleColor }]}
           numberOfLines={1}
         >
           {title}
@@ -99,13 +111,9 @@ export function ListItem({
         {subtitle && (
           <AppText
             variant="caption"
-            style={[
-              styles.subtitle,
-              { color: colors.textSecondary },
-              disabled && styles.textDisabled,
-              disabled && { color: colors.textTertiary },
-            ]}
-            numberOfLines={2}>
+            style={[styles.subtitle, { color: disabled ? colors.textTertiary : colors.textSecondary },]}
+            numberOfLines={2}
+          >
             {subtitle}
           </AppText>
         )}
@@ -132,8 +140,6 @@ export function ListItem({
         disabled={disabled}
         style={({ pressed }) => [
           styles.container,
-          { backgroundColor: colors.surface },
-          pressed && !disabled && styles.pressed,
           pressed && !disabled && { backgroundColor: colors.borderLight },
           disabled && styles.disabled,
           style,
@@ -146,12 +152,7 @@ export function ListItem({
   }
 
   return (
-    <View style={[
-      styles.container,
-      { backgroundColor: colors.surface },
-      disabled && styles.disabled,
-      style
-    ]}>
+    <View style={[styles.container, disabled && styles.disabled, style]}>
       {content}
     </View>
   );
@@ -160,8 +161,7 @@ export function ListItem({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,14 +190,10 @@ const styles = StyleSheet.create({
   title: {
     ...Typography.bodyMedium,
   },
-  titleDanger: {
-  },
   subtitle: {
     ...Typography.caption,
   },
-  pressed: {},
   disabled: {
     opacity: 0.45,
   },
-  textDisabled: {},
 });

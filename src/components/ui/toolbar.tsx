@@ -1,10 +1,13 @@
-import { AppColors, Radii, Spacing, Typography } from '@/constants/theme';
+import { Radii, Spacing, Typography } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Platform, Pressable, StyleSheet, View, ViewStyle
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from './app-text';
@@ -37,8 +40,6 @@ export interface ToolbarProps {
   containerProps?: Record<string, unknown>;
   /** Preferred style prop for the root container. */
   containerStyle?: ViewStyle;
-  /** @deprecated Use containerStyle instead. */
-  style?: ViewStyle;
 }
 
 /**
@@ -67,10 +68,9 @@ export function Toolbar({
   containerComponent: ContainerComponent = View,
   containerProps,
   containerStyle,
-  style,
 }: ToolbarProps) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const hasTitleCluster = Boolean(titleStart || subtitle);
@@ -97,7 +97,12 @@ export function Toolbar({
     <Pressable
       style={({ pressed }) => [styles.backBtn, pressed && styles.backBtnPressed]}
       onPress={handleBack}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      hitSlop={{
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      }}
       accessibilityRole="button"
       accessibilityLabel="Go back"
     >
@@ -120,7 +125,6 @@ export function Toolbar({
           backgroundColor: resolvedBackgroundColor,
         },
         containerStyle,
-        style,
       ]}
     >
       <View style={[styles.bar, hasTitleCluster && styles.barTall]}>
@@ -152,7 +156,7 @@ export function Toolbar({
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     root: {
       borderBottomWidth: StyleSheet.hairlineWidth,

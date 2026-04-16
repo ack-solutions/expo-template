@@ -130,8 +130,8 @@ paddingBottom: resolvedPadV
  *
  * // Horizontal row of badges
  * <HStack gap="sm" wrap>
- *   <Badge label="Active" variant="success" />
- *   <Badge label="Admin" variant="primary" />
+ *   <Badge label="Active" color="success" />
+ *   <Badge label="Admin" color="primary" />
  * </HStack>
  *
  * // Full-height section with padding
@@ -202,7 +202,7 @@ style
  * // Two-button row
  * <HStack gap="sm">
  *   <Button title="Cancel" variant="ghost" flex={1} onPress={onCancel} />
- *   <Button title="Save" variant="primary" flex={1} onPress={onSave} />
+ *   <Button title="Save" variant="contained" flex={1} onPress={onSave} />
  * </HStack>
  */
 export function HStack({

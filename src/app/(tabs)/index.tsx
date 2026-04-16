@@ -2,13 +2,14 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, SafeScreen, Toolbar } from '@/components/ui';
-import { AppColors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import { TemplateCard } from '@/modules/template/components/template-card';
 import { useRouter } from 'expo-router';
 
 export default function HomeTemplateScreen() {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const router = useRouter();
 
   return (
@@ -23,11 +24,11 @@ export default function HomeTemplateScreen() {
             <Button
 title="Open Data"
 onPress={() => router.push('/(tabs)/history')}
-variant="secondary" />
+variant="soft" />
             <Button
 title="Open Settings"
 onPress={() => router.push('/(tabs)/settings')}
-variant="outline" />
+variant="outlined" />
           </View>
         </TemplateCard>
       </View>
@@ -35,7 +36,7 @@ variant="outline" />
   );
 }
 
-const createStyles = (colors: AppColors) => StyleSheet.create({
+const createStyles = ({ colors }: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     padding: Spacing.lg,

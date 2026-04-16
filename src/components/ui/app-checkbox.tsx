@@ -1,9 +1,12 @@
-import { AppColors, Radii, Spacing, Typography } from '@/constants/theme';
+import { Radii, Spacing, Typography } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect } from 'react';
-import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+ Pressable, StyleSheet, View, ViewStyle 
+} from 'react-native';
 
 import { AppText } from './app-text';
 import Animated, {
@@ -68,7 +71,7 @@ export function AppCheckbox({
   style,
 }: AppCheckboxProps) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const isActive = checked || indeterminate;
 
   // 0 = unchecked, 1 = checked
@@ -159,7 +162,7 @@ disabled
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
   row: {
     flexDirection: 'row',

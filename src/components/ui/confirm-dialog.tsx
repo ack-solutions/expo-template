@@ -1,10 +1,18 @@
-import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
+import {
+ Radii, Shadows, Spacing, Typography
+} from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import {
+ Modal, Pressable, StyleSheet, View
+} from 'react-native';
 
 import { AppText } from './app-text';
-import { Button } from './button';
+import { Button, ButtonColor } from './button';
+
+/** Semantic color of the confirm action. */
+export type ConfirmDialogColor = Extract<ButtonColor, 'primary' | 'danger' | 'success' | 'warning'>;
 
 interface ConfirmDialogProps {
   visible: boolean;
@@ -12,22 +20,37 @@ interface ConfirmDialogProps {
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: 'danger' | 'primary';
+  /** Semantic color of the confirm button. Default: 'danger' */
+  color?: ConfirmDialogColor;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
+/**
+ * ConfirmDialog — two-action modal for destructive or irreversible operations.
+ *
+ * @example
+ * <ConfirmDialog
+ *   visible={showDelete}
+ *   title="Delete item?"
+ *   message="This action cannot be undone."
+ *   confirmLabel="Delete"
+ *   color="danger"
+ *   onConfirm={handleDelete}
+ *   onCancel={() => setShowDelete(false)}
+ * />
+ */
 export function ConfirmDialog({
   visible,
   title,
   message,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
-  variant = 'danger',
+  color = 'danger',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
 
   return (
     <Modal
@@ -43,15 +66,17 @@ export function ConfirmDialog({
           <AppText style={styles.message}>{message}</AppText>
           <View style={styles.actions}>
             <Button
-title={cancelLabel}
-onPress={onCancel}
-variant="ghost"
-size="sm"
-style={styles.actionBtn} />
+              title={cancelLabel}
+              onPress={onCancel}
+              variant="ghost"
+              size="sm"
+              style={styles.actionBtn}
+            />
             <Button
               title={confirmLabel}
               onPress={onConfirm}
-              variant={variant}
+              variant="contained"
+              color={color}
               size="sm"
               style={styles.actionBtn}
             />
@@ -62,7 +87,7 @@ style={styles.actionBtn} />
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     overlay: {
       flex: 1,

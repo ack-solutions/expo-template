@@ -119,7 +119,14 @@ containerStyle,
 style
 ]}>
       <View style={styles.initialsContainer}>
-        <AppText style={[styles.initialsText, { color: colors.textInverse, fontSize, lineHeight: dimension }]}>
+        <AppText style={[
+styles.initialsText,
+{
+ color: colors.textInverse,
+fontSize,
+lineHeight: dimension 
+}
+]}>
           {initials}
         </AppText>
       </View>

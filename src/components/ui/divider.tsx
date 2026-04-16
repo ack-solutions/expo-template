@@ -1,5 +1,5 @@
 import { Spacing, Typography } from '@/constants/theme';
-import { AppThemeColors } from '@/theme/types';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React from 'react';
@@ -45,7 +45,7 @@ export function Divider({
   style,
 }: DividerProps) {
   const { colors } = useAppTheme();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const resolvedColor = color ?? colors.border;
 
   if (orientation === 'vertical') {
@@ -93,7 +93,7 @@ flex: 1
   );
 }
 
-const createStyles = (colors: AppThemeColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
   horizontal: {
     height: StyleSheet.hairlineWidth,

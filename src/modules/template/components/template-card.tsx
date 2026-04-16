@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppCard, AppText } from '@/components/ui';
-import { AppColors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 
 type TemplateCardProps = {
@@ -14,7 +15,7 @@ type TemplateCardProps = {
 export function TemplateCard({
   title, description, children
 }: TemplateCardProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   return (
     <AppCard>
       <AppText variant="h3" style={styles.title}>
@@ -31,7 +32,7 @@ export function TemplateCard({
   );
 }
 
-const createStyles = (colors: AppColors) => StyleSheet.create({
+const createStyles = ({ colors }: AppTheme) => StyleSheet.create({
   title: {
     ...Typography.h3,
     color: colors.textPrimary,

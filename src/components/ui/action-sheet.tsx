@@ -1,4 +1,7 @@
-import { AppColors, Radii, Shadows, Spacing, Typography } from '@/constants/theme';
+import {
+ Radii, Shadows, Spacing, Typography 
+} from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -42,7 +45,7 @@ interface ActionSheetProps {
 export function ActionSheet({
   visible, onClose, title, subtitle, children
 }: ActionSheetProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, Spacing.lg);
   const [renderModal, setRenderModal] = useState(visible);
@@ -151,11 +154,15 @@ export function ActionSheet({
   );
 }
 
+/** Semantic color of the action row. Default: 'default' */
+export type ActionSheetRowColor = 'default' | 'danger';
+
 interface ActionSheetRowProps {
   icon: React.ReactNode;
   label: string;
   onPress: () => void;
-  variant?: 'default' | 'danger';
+  /** Semantic color. Default: 'default' */
+  color?: ActionSheetRowColor;
   edge?: ActionSheetRowEdge;
 }
 
@@ -163,11 +170,11 @@ export function ActionSheetRow({
   icon,
   label,
   onPress,
-  variant = 'default',
+  color = 'default',
   edge = 'default',
 }: ActionSheetRowProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
-  const isDanger = variant === 'danger';
+  const styles = useThemedStyle(createStyles);
+  const isDanger = color === 'danger';
   const rowStyle: StyleProp<ViewStyle> = [
     styles.row,
     edge === 'default' && styles.rowBorderBottom,
@@ -194,7 +201,7 @@ export function ActionSheetRow({
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     root: {
       flex: 1,

@@ -7,10 +7,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Button } from '@/components/ui';
 import {
-  AppColors,
   Spacing,
   Typography,
 } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 
 export type ForceUpdateScreenProps = {
@@ -34,7 +34,7 @@ export function ForceUpdateScreen({
   retryLoading = false,
 }: ForceUpdateScreenProps) {
   const insets = useSafeAreaInsets();
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
 
   return (
     <View
@@ -73,7 +73,7 @@ export function ForceUpdateScreen({
             onPress={() => {
               void onRetry();
             }}
-            variant="outline"
+            variant="outlined"
             fullWidth
             loading={retryLoading}
           />
@@ -83,7 +83,7 @@ export function ForceUpdateScreen({
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     root: {
       flex: 1,

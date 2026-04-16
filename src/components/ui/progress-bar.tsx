@@ -1,13 +1,17 @@
 import { Radii, Spacing, Typography } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+ Animated, StyleSheet, View, ViewStyle 
+} from 'react-native';
 
 import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type ProgressBarVariant = 'primary' | 'success' | 'warning' | 'error';
+/** Semantic color of the progress bar. */
+export type ProgressBarColor = 'primary' | 'success' | 'warning' | 'error';
+
 export type ProgressBarSize = 'sm' | 'md' | 'lg';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -15,13 +19,13 @@ export type ProgressBarSize = 'sm' | 'md' | 'lg';
 interface ProgressBarProps {
   /** Progress value from 0 to 100. */
   value: number;
-  /** Color variant. Default: 'primary' */
-  variant?: ProgressBarVariant;
+  /** Semantic color. Default: 'primary' */
+  color?: ProgressBarColor;
   /** Bar thickness. Default: 'md' */
   size?: ProgressBarSize;
   /** Show percentage label at the end. Default: false */
   showLabel?: boolean;
-  /** Custom label text. Overrides percentage display. */
+  /** Custom label text. Overrides the percentage display. */
   label?: string;
   /** Animate the bar fill on value change. Default: true */
   animated?: boolean;
@@ -43,17 +47,17 @@ const sizeHeight: Record<ProgressBarSize, number> = {
  *
  * @example
  * // Upload progress
- * <ProgressBar value={uploadProgress} variant="primary" showLabel />
+ * <ProgressBar value={uploadProgress} color="primary" showLabel />
  *
  * // Step indicator
- * <ProgressBar value={(step / totalSteps) * 100} variant="success" size="sm" />
+ * <ProgressBar value={(step / totalSteps) * 100} color="success" size="sm" />
  *
  * // Error state
- * <ProgressBar value={100} variant="error" label="Upload failed" showLabel />
+ * <ProgressBar value={100} color="error" label="Upload failed" showLabel />
  */
 export function ProgressBar({
   value,
-  variant = 'primary',
+  color = 'primary',
   size = 'md',
   showLabel = false,
   label,
@@ -61,16 +65,18 @@ export function ProgressBar({
   style,
 }: ProgressBarProps) {
   const { colors } = useAppTheme();
-  const variantColor: Record<ProgressBarVariant, string> = {
+
+  const colorMap: Record<ProgressBarColor, string> = {
     primary: colors.primary,
     success: colors.success,
     warning: colors.warning,
     error: colors.error,
   };
+
   const clampedValue = Math.min(100, Math.max(0, value));
   const widthAnim = useRef(new Animated.Value(clampedValue)).current;
   const barHeight = sizeHeight[size];
-  const fillColor = variantColor[variant];
+  const fillColor = colorMap[color];
 
   useEffect(() => {
     if (animated) {
@@ -95,11 +101,11 @@ widthAnim
       <View
         style={[
           styles.track,
-          { backgroundColor: colors.borderLight },
           {
- height: barHeight,
-borderRadius: barHeight / 2 
-},
+            backgroundColor: colors.borderLight,
+            height: barHeight,
+            borderRadius: barHeight / 2,
+          },
         ]}
       >
         <Animated.View

@@ -17,7 +17,12 @@ import { AppText } from './app-text';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+/** Visual style of the chip. */
 export type ChipVariant = 'filled' | 'outlined' | 'ghost';
+
+/** Semantic color of the chip. */
+export type ChipColor = 'primary' | 'success' | 'error' | 'warning' | 'neutral';
+
 export type ChipSize = 'sm' | 'md';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -26,6 +31,8 @@ interface ChipProps {
   label: string;
   /** Visual style. Default: 'outlined' */
   variant?: ChipVariant;
+  /** Semantic color. Default: 'primary' */
+  color?: ChipColor;
   /** Size. Default: 'md' */
   size?: ChipSize;
   /** Highlight as selected state. Default: false */
@@ -50,14 +57,54 @@ const SPRING = {
 
 // ─── Style Helpers ────────────────────────────────────────────────────────────
 
+function resolveColorTokens(
+  color: ChipColor,
+  colors: AppColors,
+): { solid: string; faded: string; faded12: string } {
+  switch (color) {
+    case 'primary':
+      return {
+        solid: colors.primary,
+        faded: colors.primaryFaded,
+        faded12: colors.primaryFaded12,
+      };
+    case 'success':
+      return {
+        solid: colors.success,
+        faded: colors.successFaded,
+        faded12: colors.successFaded,
+      };
+    case 'error':
+      return {
+        solid: colors.error,
+        faded: colors.errorFaded,
+        faded12: colors.errorFaded,
+      };
+    case 'warning':
+      return {
+        solid: colors.warning,
+        faded: colors.warningFaded,
+        faded12: colors.warningFaded,
+      };
+    case 'neutral':
+      return {
+        solid: colors.textSecondary,
+        faded: colors.borderLight,
+        faded12: colors.borderLight,
+      };
+  }
+}
+
 function resolveContainerStyle(
   variant: ChipVariant,
+  color: ChipColor,
   selected: boolean,
   size: ChipSize,
   colors: AppColors,
 ): ViewStyle {
   const paddingH = size === 'sm' ? Spacing.sm : Spacing.md;
   const paddingV = size === 'sm' ? Spacing.xxs + 2 : Spacing.xs + 1;
+  const tokens = resolveColorTokens(color, colors);
 
   const base: ViewStyle = {
     borderRadius: Radii.pill,
@@ -73,31 +120,33 @@ function resolveContainerStyle(
   if (variant === 'filled') {
     return {
       ...base,
-      backgroundColor: selected ? colors.primary : colors.primaryFaded
+      backgroundColor: selected ? tokens.solid : tokens.faded,
     };
   }
   if (variant === 'outlined') {
     return {
       ...base,
-      backgroundColor: selected ? colors.primaryFaded12 : 'transparent',
+      backgroundColor: selected ? tokens.faded12 : 'transparent',
       borderWidth: 1.5,
-      borderColor: selected ? colors.primary : colors.border,
+      borderColor: selected ? tokens.solid : colors.border,
     };
   }
   // ghost
   return {
     ...base,
-    backgroundColor: selected ? colors.primaryFaded : 'transparent'
+    backgroundColor: selected ? tokens.faded : 'transparent',
   };
 }
 
 function resolveTextColor(
   variant: ChipVariant,
+  color: ChipColor,
   selected: boolean,
   colors: AppColors,
 ): string {
-  if (variant === 'filled') return selected ? colors.textInverse : colors.primary;
-  return selected ? colors.primary : colors.textSecondary;
+  const tokens = resolveColorTokens(color, colors);
+  if (variant === 'filled') return selected ? colors.textInverse : tokens.solid;
+  return selected ? tokens.solid : colors.textSecondary;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -107,16 +156,22 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 /**
  * Chip — compact interactive or informational label with spring press animation.
  *
+ * `variant` controls the visual style; `color` controls the semantic meaning.
+ *
  * @example
  * // Filter chip
- * <Chip label="Design" selected={active} onPress={toggle} variant="outlined" />
+ * <Chip label="Design" selected={active} onPress={toggle} variant="outlined" color="primary" />
+ *
+ * // Status chip
+ * <Chip label="Active" variant="filled" color="success" />
  *
  * // Removable tag
- * <Chip label="React Native" onRemove={() => removeTag()} variant="filled" />
+ * <Chip label="React Native" onRemove={() => removeTag()} variant="filled" color="primary" />
  */
 export function Chip({
   label,
   variant = 'outlined',
+  color = 'primary',
   size = 'md',
   selected = false,
   onPress,
@@ -131,8 +186,8 @@ export function Chip({
     transform: [{ scale: scale.value }],
   }));
 
-  const containerStyle = resolveContainerStyle(variant, selected, size, colors);
-  const textColor = resolveTextColor(variant, selected, colors);
+  const containerStyle = resolveContainerStyle(variant, color, selected, size, colors);
+  const textColor = resolveTextColor(variant, color, selected, colors);
   const textStyle = size === 'sm' ? Typography.small : Typography.captionMedium;
   const iconSize = size === 'sm' ? 12 : 14;
 

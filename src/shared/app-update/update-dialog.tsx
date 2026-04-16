@@ -7,11 +7,11 @@ import {
 
 import { AppText, Button } from '@/components/ui';
 import {
-  AppColors,
   Radii,
   Spacing,
   Typography,
 } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 
 export type UpdateDialogProps = {
@@ -34,7 +34,7 @@ export function UpdateDialog({
   onUpdateNow,
   loading = false,
 }: UpdateDialogProps) {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
 
   return (
     <Modal
@@ -77,7 +77,7 @@ style={styles.message}>
   );
 }
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
     backdrop: {
       flex: 1,

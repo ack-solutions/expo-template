@@ -2,12 +2,13 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { SafeScreen, Toolbar } from '@/components/ui';
-import { AppColors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import { TemplateCard } from '@/modules/template/components/template-card';
 
 export default function DataTemplateScreen() {
-  const styles = useThemedStyle((theme) => createStyles(theme.colors));
+  const styles = useThemedStyle(createStyles);
   return (
     <SafeScreen topSafe={false} bottomSafe={false}>
       <Toolbar title="Data" />
@@ -21,7 +22,7 @@ export default function DataTemplateScreen() {
   );
 }
 
-const createStyles = (colors: AppColors) => StyleSheet.create({
+const createStyles = ({ colors }: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

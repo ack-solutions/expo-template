@@ -1,20 +1,20 @@
-import type { FeedbackVariant } from '@/components/ui/feedback-dialog';
+import type { FeedbackColor } from '@/components/ui/feedback-dialog';
 import { useCallback, useState } from 'react';
 
-export type { FeedbackVariant };
+export type { FeedbackColor };
 
 interface FeedbackState {
   visible: boolean;
   message: string;
-  variant: FeedbackVariant;
-  /** Optional title; defaults per variant in FeedbackDialog */
+  color: FeedbackColor;
+  /** Optional title; defaults per color in FeedbackDialog */
   title?: string;
 }
 
 const initial: FeedbackState = {
   visible: false,
   message: '',
-  variant: 'info',
+  color: 'info',
 };
 
 export type ShowToastOptions = {
@@ -36,13 +36,13 @@ export function useToast() {
   const showToast = useCallback(
     (
       message: string,
-      variant: FeedbackVariant = 'info',
+      color: FeedbackColor = 'info',
       options?: ShowToastOptions,
     ) => {
       setToast({
         visible: true,
         message,
-        variant,
+        color,
         title: options?.title,
       });
     },
@@ -51,14 +51,14 @@ export function useToast() {
 
   const hideToast = useCallback(() => {
     setToast((prev) => ({
- ...prev,
-visible: false 
-}));
+      ...prev,
+      visible: false,
+    }));
   }, []);
 
   return {
- toast,
-showToast,
-hideToast 
-};
+    toast,
+    showToast,
+    hideToast,
+  };
 }

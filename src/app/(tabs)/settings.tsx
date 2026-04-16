@@ -281,24 +281,18 @@ export default function SettingsScreen() {
             <Button
               title="Export database"
               onPress={handleExport}
-              variant="secondary"
+              variant="soft"
               size="md"
               loading={exporting}
-              startIcon={<Ionicons
-                name="download-outline"
-                size={16}
-                color={colors.primary} />}
+              startIcon={<Ionicons name="download-outline" />}
               style={styles.backupBtn}
             />
             <Button
               title="Import database"
               onPress={handleImport}
-              variant="outline"
+              variant="outlined"
               size="md"
-              startIcon={<Ionicons
-                name="push-outline"
-                size={16}
-                color={colors.primary} />}
+              startIcon={<Ionicons name="push-outline" />}
               style={styles.backupBtn}
             />
           </View>
@@ -318,7 +312,7 @@ export default function SettingsScreen() {
 
           <ListItem
             title="Reset Template Settings"
-            tone="danger"
+            color="danger"
             left={<Ionicons
               name="trash-outline"
               size={18}
@@ -399,7 +393,7 @@ export default function SettingsScreen() {
           message="This will clear locally saved template settings."
           confirmLabel="Reset"
           cancelLabel="Cancel"
-          variant="danger"
+          color="danger"
           onConfirm={handleClearAll}
           onCancel={() => setShowClearAll(false)}
         />
@@ -409,58 +403,60 @@ export default function SettingsScreen() {
   );
 }
 
-const createStyles = (theme: AppTheme) => StyleSheet.create({
+const createStyles = ({
+ colors, spacing, radii 
+}: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: colors.background,
   },
   content: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: spacing.lg,
   },
   section: {
-    marginBottom: theme.spacing.md,
+    marginBottom: spacing.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.sm,
-    marginBottom: theme.spacing.md,
+    gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   sectionDesc: {
-    marginBottom: theme.spacing.lg,
+    marginBottom: spacing.lg,
   },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: theme.spacing.md,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   settingRowLast: {
     borderBottomWidth: 0,
   },
   backupButtons: {
     flexDirection: 'row',
-    gap: theme.spacing.md,
+    gap: spacing.md,
   },
   themeOptionList: {
-    borderRadius: theme.radii.md,
+    borderRadius: radii.md,
     overflow: 'hidden',
   },
   backupBtn: {
     flex: 1,
   },
   dangerRow: {
-    borderRadius: theme.radii.md,
+    borderRadius: radii.md,
   },
   aboutRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: theme.spacing.md,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   aboutRowLast: {
     borderBottomWidth: 0,
@@ -468,18 +464,18 @@ const createStyles = (theme: AppTheme) => StyleSheet.create({
   offlineBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.xxs,
-    backgroundColor: theme.colors.successFaded,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xxs,
-    borderRadius: theme.radii.pill,
+    gap: spacing.xxs,
+    backgroundColor: colors.successFaded,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+    borderRadius: radii.pill,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: theme.spacing.sm,
-    paddingVertical: theme.spacing.xl,
+    gap: spacing.sm,
+    paddingVertical: spacing.xl,
     opacity: 0.6,
   },
   footerText: {

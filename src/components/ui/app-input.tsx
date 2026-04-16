@@ -1,4 +1,5 @@
-import { AppColors, Radii, Spacing, Typography } from '@/constants/theme';
+import { Radii, Spacing, Typography } from '@/constants/theme';
+import { AppTheme } from '@/theme/types';
 import { useAppTheme } from '@/theme/use-app-theme';
 import { useThemedStyle } from '@/theme/use-themed-styles';
 import React, { forwardRef, useRef } from 'react';
@@ -120,7 +121,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     ref,
   ) => {
     const { colors } = useAppTheme();
-    const styles = useThemedStyle((theme) => createStyles(theme.colors));
+    const styles = useThemedStyle(createStyles);
     const internalRef = useRef<TextInput>(null);
     const inputRef = (ref as React.RefObject<TextInput>) ?? internalRef;
 
@@ -240,7 +241,7 @@ AppInput.displayName = 'AppInput';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const createStyles = (colors: AppColors) =>
+const createStyles = ({ colors }: AppTheme) =>
   StyleSheet.create({
   container: {
     gap: Spacing.xs,
