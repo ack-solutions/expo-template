@@ -1,5 +1,6 @@
 import { Radii } from '@/constants/theme';
 import { useAppTheme } from '@/theme/use-app-theme';
+import { useMemo } from 'react';
 import React, { useEffect, useRef } from 'react';
 import {
  Animated, StyleSheet, View, ViewStyle 
@@ -70,22 +71,28 @@ function usePulse() {
  * <Skeleton height={14} width="70%" />                      // Partial line
  */
 export function Skeleton({
- width = '100%', height = 16, borderRadius = Radii.sm, style 
+  width = '100%', height = 16, borderRadius = Radii.sm, style
 }: SkeletonProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedColorScheme } = useAppTheme();
   const opacity = usePulse();
+  // light mode: borderLight (#F1F5F9) is invisible on white → use border (#E2E8F0)
+  // dark mode:  border (#1F2937) is too dark on dark cards → use borderLight (#334155)
+  const skeletonColor = useMemo(
+    () => resolvedColorScheme === 'dark' ? colors.borderLight : colors.border,
+    [resolvedColorScheme, colors],
+  );
 
   return (
     <Animated.View
       style={[
         styles.block,
         {
- width: width as ViewStyle['width'],
-height,
-borderRadius,
-opacity,
-backgroundColor: colors.borderLight 
-},
+          width: width as ViewStyle['width'],
+          height,
+          borderRadius,
+          opacity,
+          backgroundColor: skeletonColor,
+        },
         style,
       ]}
     />
@@ -101,10 +108,14 @@ backgroundColor: colors.borderLight
  * <SkeletonText lines={4} />
  */
 export function SkeletonText({
- lines = 3, lineHeight = 14, gap = 8, shortenLast = true 
+  lines = 3, lineHeight = 14, gap = 8, shortenLast = true
 }: SkeletonTextProps) {
-  const { colors } = useAppTheme();
+  const { colors, resolvedColorScheme } = useAppTheme();
   const opacity = usePulse();
+  const skeletonColor = useMemo(
+    () => resolvedColorScheme === 'dark' ? colors.borderLight : colors.border,
+    [resolvedColorScheme, colors],
+  );
 
   return (
     <View style={{ gap }}>
@@ -121,7 +132,7 @@ export function SkeletonText({
                 height: lineHeight,
                 borderRadius: Radii.sm,
                 opacity,
-                backgroundColor: colors.borderLight,
+                backgroundColor: skeletonColor,
               },
             ]}
           />
