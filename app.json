@@ -50,7 +50,8 @@
       ],
       "expo-notifications",
       "@sentry/react-native",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true,
