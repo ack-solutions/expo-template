@@ -31,6 +31,18 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "forceStaticLinking": [
+              "RNFBApp",
+              "RNFBCrashlytics"
+            ]
+          }
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -44,14 +56,6 @@
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
       [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
-      ],
-      [
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
@@ -61,8 +65,7 @@
       ],
       "expo-notifications",
       "@sentry/react-native",
-      "expo-sqlite",
-      "expo-build-properties"
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,
